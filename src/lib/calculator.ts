@@ -1,0 +1,79 @@
+import type { CalculatorInput, CalculatorResult } from "@/types";
+import { GAUGE_LEVELS } from "@/types";
+
+/**
+ * The fuel level fraction below which U-Haul charges a $30 service fee.
+ * Based on U-Haul's published policy: vehicles returned with less than 1/4 tank
+ * are subject to an additional service charge on top of fuel costs.
+ */
+const UHAUL_FEE_THRESHOLD = GAUGE_LEVELS.QUARTER;
+
+/**
+ * Default safety buffer in gallons to add for analog gauge imprecision.
+ * U-Haul gauges are known to be unreliable (see Aron v. U-Haul California).
+ * A 0.5 gallon buffer is a conservative but reasonable margin.
+ */
+const DEFAULT_SAFETY_BUFFER = 0.5;
+
+/**
+ * Calculate how many gallons a renter needs to add before returning a moving truck.
+ *
+ * Formula:
+ *   gallonsToAdd =
+ *     (tankCapacity × pickupLevel)     // gallons needed at return
+ *     - (tankCapacity × currentLevel)  // gallons currently in tank
+ *     + (distanceToDropoff / mpg)      // gallons consumed on final drive
+ *     + safetyBuffer                   // buffer for gauge imprecision
+ *
+ * @param input - Calculator inputs
+ * @returns Result with gallons to add, cost estimate, and risk flags
+ */
+export function calculateFuelReturn(input: CalculatorInput): CalculatorResult {
+  const { truck, pickupLevel, currentLevel, distanceToDropoff, gasPricePerGallon } = input;
+  const safetyBuffer = input.safetyBuffer ?? DEFAULT_SAFETY_BUFFER;
+
+  const { tankCapacity, mpg } = truck;
+
+  // Gallons the renter had at pickup (the target level to return to)
+  const gallonsAtPickup = tankCapacity * pickupLevel;
+
+  // Gallons in the tank right now
+  const gallonsNow = tankCapacity * currentLevel;
+
+  // Gallons that will be consumed on the final drive to the drop-off
+  const gallonsForFinalDrive = distanceToDropoff > 0 ? distanceToDropoff / mpg : 0;
+
+  // Deficit = how much is needed minus what's already there
+  const deficit = gallonsAtPickup - gallonsNow + gallonsForFinalDrive;
+
+  // If deficit is negative or zero (and covers buffer), the renter is already sufficient
+  const rawGallonsToAdd = deficit + safetyBuffer;
+
+  const alreadySufficient = rawGallonsToAdd <= 0;
+  const gallonsToAdd = alreadySufficient ? 0 : Math.round(rawGallonsToAdd * 10) / 10;
+
+  // Determine if the renter is at risk of the $30 service fee.
+  // Risk exists when the current level, accounting for the final drive, will drop below 1/4 tank.
+  const levelAfterDrive = (gallonsNow - gallonsForFinalDrive) / tankCapacity;
+  const isAtRisk = levelAfterDrive < UHAUL_FEE_THRESHOLD && !alreadySufficient;
+
+  // Cost estimate (only if gas price provided)
+  const costEstimate =
+    gasPricePerGallon != null && gallonsToAdd > 0
+      ? Math.round(gallonsToAdd * gasPricePerGallon * 100) / 100
+      : null;
+
+  return {
+    gallonsToAdd,
+    alreadySufficient,
+    isAtRisk,
+    bufferApplied: alreadySufficient ? 0 : safetyBuffer,
+    costEstimate,
+    breakdown: {
+      gallonsAtPickup: Math.round(gallonsAtPickup * 10) / 10,
+      gallonsNow: Math.round(gallonsNow * 10) / 10,
+      gallonsForFinalDrive: Math.round(gallonsForFinalDrive * 10) / 10,
+      deficit: Math.round(deficit * 10) / 10,
+    },
+  };
+}
