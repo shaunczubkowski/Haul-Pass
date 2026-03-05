@@ -1,32 +1,190 @@
+"use client";
+
+import { useState } from "react";
+import { FuelGauge } from "@/components/FuelGauge";
+import { TruckSelector } from "@/components/TruckSelector";
+import { DistanceInput } from "@/components/DistanceInput";
+import { calculateFuelReturn } from "@/lib/calculator";
+import { GAUGE_LEVELS } from "@/types";
+import type { GaugeLevel, TruckType } from "@/types";
+
 export default function Home() {
+  const [truck, setTruck] = useState<TruckType | null>(null);
+  const [pickupLevel, setPickupLevel] = useState<GaugeLevel>(GAUGE_LEVELS.FULL);
+  const [currentLevel, setCurrentLevel] = useState<GaugeLevel>(GAUGE_LEVELS.HALF);
+  const [distance, setDistance] = useState<number>(0);
+  const [gasPrice, setGasPrice] = useState<string>("");
+
+  const result =
+    truck != null
+      ? calculateFuelReturn({
+          truck,
+          pickupLevel,
+          currentLevel,
+          distanceToDropoff: distance,
+          gasPricePerGallon: gasPrice !== "" ? parseFloat(gasPrice) : undefined,
+        })
+      : null;
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-zinc-50 px-4 py-16">
-      <div className="w-full max-w-md text-center">
-        <div className="mb-6 text-5xl">⛽</div>
-        <h1 className="mb-3 text-3xl font-bold tracking-tight text-zinc-900">
-          FillRight
-        </h1>
-        <p className="mb-8 text-lg text-zinc-600">
-          U-Haul Fuel Return Calculator
-        </p>
-        <div className="rounded-xl border border-zinc-200 bg-white p-6 text-left shadow-sm">
-          <p className="text-sm text-zinc-500">
-            🚧 Calculator coming soon — follow progress on{" "}
-            <a
-              href="https://github.com/shaunczubkowski/Haul-Pass"
-              className="font-medium text-blue-600 hover:underline"
-              target="_blank"
-              rel="noopener noreferrer"
+    <main className="flex min-h-screen flex-col items-center bg-zinc-50 px-4 py-12">
+      <div className="w-full max-w-lg">
+        {/* Header */}
+        <div className="mb-8 text-center">
+          <div className="mb-3 text-4xl">⛽</div>
+          <h1 className="text-3xl font-bold tracking-tight text-zinc-900">FillRight</h1>
+          <p className="mt-1 text-zinc-500">U-Haul Fuel Return Calculator</p>
+        </div>
+
+        <div className="flex flex-col gap-6">
+          {/* Step 1: Truck */}
+          <section className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
+            <h2 className="mb-4 text-xs font-semibold uppercase tracking-widest text-zinc-400">
+              Step 1 — Your Truck
+            </h2>
+            <TruckSelector value={truck} onChange={setTruck} />
+          </section>
+
+          {/* Step 2: Fuel levels */}
+          <section className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
+            <h2 className="mb-4 text-xs font-semibold uppercase tracking-widest text-zinc-400">
+              Step 2 — Fuel Levels
+            </h2>
+            <div className="grid grid-cols-2 gap-4">
+              <FuelGauge
+                label="At Pickup"
+                value={pickupLevel}
+                onChange={setPickupLevel}
+              />
+              <FuelGauge
+                label="Right Now"
+                value={currentLevel}
+                onChange={setCurrentLevel}
+              />
+            </div>
+            <p className="mt-3 text-xs text-zinc-400 text-center">
+              "At Pickup" is the level shown on your rental contract.
+            </p>
+          </section>
+
+          {/* Step 3: Distance + gas price */}
+          <section className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
+            <h2 className="mb-4 text-xs font-semibold uppercase tracking-widest text-zinc-400">
+              Step 3 — Final Drive
+            </h2>
+            <DistanceInput value={distance} onChange={setDistance} />
+
+            {/* Optional gas price */}
+            <div className="mt-4 flex flex-col gap-2">
+              <label
+                htmlFor="gas-price"
+                className="text-sm font-medium text-gray-600 uppercase tracking-wide"
+              >
+                Gas Price{" "}
+                <span className="text-zinc-400 normal-case font-normal">(optional)</span>
+              </label>
+              <div className="flex rounded-lg border-2 border-gray-200 overflow-hidden focus-within:border-orange-400 transition-colors">
+                <span className="flex items-center px-3 bg-gray-50 text-sm font-semibold text-gray-500 border-r-2 border-gray-200">
+                  $
+                </span>
+                <input
+                  id="gas-price"
+                  type="number"
+                  inputMode="decimal"
+                  min={0}
+                  step={0.01}
+                  placeholder="3.99"
+                  value={gasPrice}
+                  onChange={(e) => setGasPrice(e.target.value)}
+                  aria-label="Gas price per gallon in dollars"
+                  className={[
+                    "flex-1 px-3 py-3 text-lg font-semibold text-gray-900 bg-white",
+                    "outline-none appearance-none",
+                    "[&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none",
+                  ].join(" ")}
+                />
+                <span className="flex items-center px-3 bg-gray-50 text-sm font-semibold text-gray-500 border-l-2 border-gray-200">
+                  /gal
+                </span>
+              </div>
+            </div>
+          </section>
+
+          {/* Result */}
+          {result && (
+            <section
+              aria-live="polite"
+              className={[
+                "rounded-xl border-2 p-5 shadow-sm transition-colors",
+                result.alreadySufficient
+                  ? "border-green-400 bg-green-50"
+                  : result.isAtRisk
+                  ? "border-red-400 bg-red-50"
+                  : "border-orange-400 bg-orange-50",
+              ].join(" ")}
             >
-              GitHub
-            </a>
-            .
-          </p>
-          <p className="mt-3 text-sm text-zinc-500">
-            This tool will tell you exactly how many gallons to add before
-            returning your U-Haul or moving truck — no more guessing at the
-            pump.
-          </p>
+              {result.alreadySufficient ? (
+                <div className="text-center">
+                  <div className="text-3xl mb-1">✅</div>
+                  <p className="text-lg font-bold text-green-800">You're good to go!</p>
+                  <p className="mt-1 text-sm text-green-700">
+                    Your current fuel level is sufficient for return.
+                  </p>
+                </div>
+              ) : (
+                <>
+                  {result.isAtRisk && (
+                    <div className="mb-3 flex items-center gap-2 rounded-lg bg-red-100 px-3 py-2 text-sm font-medium text-red-700">
+                      <span aria-hidden="true">⚠️</span>
+                      At risk of U-Haul's $30 service fee — fill up before returning!
+                    </div>
+                  )}
+                  <div className="text-center">
+                    <p className="text-sm font-medium text-zinc-500 uppercase tracking-wide mb-1">
+                      Add before returning
+                    </p>
+                    <p className="text-5xl font-bold text-zinc-900">
+                      {result.gallonsToAdd}
+                      <span className="text-2xl font-semibold text-zinc-500 ml-1">gal</span>
+                    </p>
+                    {result.costEstimate != null && (
+                      <p className="mt-2 text-xl font-semibold text-orange-600">
+                        ≈ ${result.costEstimate.toFixed(2)}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Breakdown */}
+                  <div className="mt-4 rounded-lg bg-white/60 px-4 py-3 text-sm text-zinc-600 space-y-1">
+                    <div className="flex justify-between">
+                      <span>Needed at return</span>
+                      <span className="font-medium">{result.breakdown.gallonsAtPickup} gal</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>In tank now</span>
+                      <span className="font-medium">{result.breakdown.gallonsNow} gal</span>
+                    </div>
+                    {result.breakdown.gallonsForFinalDrive > 0 && (
+                      <div className="flex justify-between">
+                        <span>Final drive</span>
+                        <span className="font-medium">−{result.breakdown.gallonsForFinalDrive} gal</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between border-t border-zinc-200 pt-1">
+                      <span>Safety buffer</span>
+                      <span className="font-medium">+{result.bufferApplied} gal</span>
+                    </div>
+                  </div>
+                </>
+              )}
+            </section>
+          )}
+
+          {!truck && (
+            <p className="text-center text-sm text-zinc-400">
+              Select your truck above to see results.
+            </p>
+          )}
         </div>
       </div>
     </main>
