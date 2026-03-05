@@ -13,6 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://getfillright.com"),
   title: {
     default: "FillRight — U-Haul Fuel Return Calculator",
     template: "%s | FillRight",
@@ -27,6 +28,7 @@ export const metadata: Metadata = {
     "how many gallons to fill U-Haul",
     "moving truck return fuel estimator",
     "FillRight",
+    "getfillright.com",
   ],
   openGraph: {
     type: "website",
@@ -34,12 +36,16 @@ export const metadata: Metadata = {
     title: "FillRight — U-Haul Fuel Return Calculator",
     description:
       "Calculate exactly how many gallons to add before returning your moving truck. No more guessing at the pump.",
+    url: "https://getfillright.com",
   },
   twitter: {
     card: "summary_large_image",
     title: "FillRight — U-Haul Fuel Return Calculator",
     description:
       "Calculate exactly how many gallons to add before returning your moving truck.",
+  },
+  alternates: {
+    canonical: "https://getfillright.com",
   },
   robots: {
     index: true,

@@ -13,7 +13,7 @@ export default function Home() {
           <p className="text-sm text-zinc-500">
             🚧 Calculator coming soon — follow progress on{" "}
             <a
-              href="https://github.com/shaunczubkowski/FillRight"
+              href="https://github.com/shaunczubkowski/Haul-Pass"
               className="font-medium text-blue-600 hover:underline"
               target="_blank"
               rel="noopener noreferrer"

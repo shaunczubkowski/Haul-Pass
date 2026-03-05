@@ -54,7 +54,7 @@ src/
 
 ## Roadmap
 
-See [GitHub Issues](https://github.com/shaunczubkowski/FillRight/issues) for the full backlog organized by milestone.
+See [GitHub Issues](https://github.com/shaunczubkowski/Haul-Pass/issues) for the full backlog organized by milestone.
 
 | Milestone | Focus |
 |-----------|-------|
@@ -64,7 +64,7 @@ See [GitHub Issues](https://github.com/shaunczubkowski/FillRight/issues) for the
 
 ## Contributing
 
-1. Pick an issue from the [backlog](https://github.com/shaunczubkowski/FillRight/issues)
+1. Pick an issue from the [backlog](https://github.com/shaunczubkowski/Haul-Pass/issues)
 2. Create a branch: `git checkout -b feature/brief-description`
 3. **Write tests first** (TDD is required)
 4. Implement the feature to make tests pass
