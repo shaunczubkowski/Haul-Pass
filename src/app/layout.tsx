@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Haul Pass — Moving Truck Fuel Return Calculator",
-    template: "%s | Haul Pass",
+    default: "FillRight — U-Haul Fuel Return Calculator",
+    template: "%s | FillRight",
   },
   description:
     "Calculate exactly how many gallons of fuel to add before returning your U-Haul or moving truck. Avoid surprise fuel charges — get the precise amount for your truck size and gauge level.",
@@ -26,19 +26,20 @@ export const metadata: Metadata = {
     "U-Haul fuel return",
     "how many gallons to fill U-Haul",
     "moving truck return fuel estimator",
+    "FillRight",
   ],
   openGraph: {
     type: "website",
-    siteName: "Haul Pass",
-    title: "Haul Pass — Moving Truck Fuel Return Calculator",
+    siteName: "FillRight",
+    title: "FillRight — U-Haul Fuel Return Calculator",
     description:
-      "Calculate exactly how many gallons of fuel to add before returning your moving truck. No more guessing at the pump.",
+      "Calculate exactly how many gallons to add before returning your moving truck. No more guessing at the pump.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Haul Pass — Moving Truck Fuel Return Calculator",
+    title: "FillRight — U-Haul Fuel Return Calculator",
     description:
-      "Calculate exactly how many gallons of fuel to add before returning your moving truck.",
+      "Calculate exactly how many gallons to add before returning your moving truck.",
   },
   robots: {
     index: true,
