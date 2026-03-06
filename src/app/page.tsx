@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { FuelGauge } from "@/components/FuelGauge";
 import { TruckSelector } from "@/components/TruckSelector";
 import { DistanceInput } from "@/components/DistanceInput";
@@ -12,57 +12,57 @@ import type { GaugeLevel, TruckType } from "@/types";
 // Only the 5 levels selectable via the UI; used for URL param validation
 const VALID_LEVELS = new Set([0, 0.25, 0.5, 0.75, 1.0]);
 
+function readUrlParams() {
+  if (typeof window === "undefined") {
+    return { truck: null, pickupLevel: GAUGE_LEVELS.FULL, currentLevel: GAUGE_LEVELS.HALF, distance: 0, gasPrice: "" };
+  }
+  const params = new URLSearchParams(window.location.search);
+
+  let truck: TruckType | null = null;
+  const truckId = params.get("truck");
+  if (truckId) {
+    const found = getTruckById(truckId);
+    if (found) truck = found;
+  }
+
+  let pickupLevel: GaugeLevel = GAUGE_LEVELS.FULL;
+  const pickup = params.get("pickup");
+  if (pickup !== null) {
+    const val = parseFloat(pickup);
+    if (VALID_LEVELS.has(val)) pickupLevel = val as GaugeLevel;
+  }
+
+  let currentLevel: GaugeLevel = GAUGE_LEVELS.HALF;
+  const current = params.get("current");
+  if (current !== null) {
+    const val = parseFloat(current);
+    if (VALID_LEVELS.has(val)) currentLevel = val as GaugeLevel;
+  }
+
+  let distance = 0;
+  const dist = params.get("dist");
+  if (dist !== null) {
+    const val = parseFloat(dist);
+    if (!isNaN(val) && val >= 0) distance = val;
+  }
+
+  let gasPrice = "";
+  const gas = params.get("gas");
+  if (gas !== null && gas !== "") gasPrice = gas;
+
+  return { truck, pickupLevel, currentLevel, distance, gasPrice };
+}
+
 export default function Home() {
-  const [truck, setTruck] = useState<TruckType | null>(null);
-  const [pickupLevel, setPickupLevel] = useState<GaugeLevel>(GAUGE_LEVELS.FULL);
-  const [currentLevel, setCurrentLevel] = useState<GaugeLevel>(GAUGE_LEVELS.HALF);
-  const [distance, setDistance] = useState<number>(0);
-  const [gasPrice, setGasPrice] = useState<string>("");
+  const [truck, setTruck] = useState<TruckType | null>(() => readUrlParams().truck);
+  const [pickupLevel, setPickupLevel] = useState<GaugeLevel>(() => readUrlParams().pickupLevel);
+  const [currentLevel, setCurrentLevel] = useState<GaugeLevel>(() => readUrlParams().currentLevel);
+  const [distance, setDistance] = useState<number>(() => readUrlParams().distance);
+  const [gasPrice, setGasPrice] = useState<string>(() => readUrlParams().gasPrice);
   const [copied, setCopied] = useState(false);
 
-  // Track whether we've finished reading from the URL on mount.
-  // The write effect checks this ref so we don't overwrite URL params
-  // with defaults before the read effect has set state from them.
-  const initialized = useRef(false);
-
-  // Read state from URL query params on mount
+  // Sync state to URL (replaceState — no browser history spam)
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-
-    const truckId = params.get("truck");
-    if (truckId) {
-      const found = getTruckById(truckId);
-      if (found) setTruck(found);
-    }
-
-    const pickup = params.get("pickup");
-    if (pickup !== null) {
-      const val = parseFloat(pickup);
-      if (VALID_LEVELS.has(val)) setPickupLevel(val as GaugeLevel);
-    }
-
-    const current = params.get("current");
-    if (current !== null) {
-      const val = parseFloat(current);
-      if (VALID_LEVELS.has(val)) setCurrentLevel(val as GaugeLevel);
-    }
-
-    const dist = params.get("dist");
-    if (dist !== null) {
-      const val = parseFloat(dist);
-      if (!isNaN(val) && val >= 0) setDistance(val);
-    }
-
-    const gas = params.get("gas");
-    if (gas !== null && gas !== "") setGasPrice(gas);
-
-    initialized.current = true;
-  }, []);
-
-  // Sync state to URL after initialization (replaceState — no browser history spam)
-  useEffect(() => {
-    if (!initialized.current) return;
-
     const params = new URLSearchParams();
     if (truck) params.set("truck", truck.id);
     params.set("pickup", String(pickupLevel));
@@ -128,7 +128,7 @@ export default function Home() {
               />
             </div>
             <p className="mt-3 text-xs text-zinc-400 text-center">
-              "At Pickup" is the level shown on your rental contract.
+              &ldquo;At Pickup&rdquo; is the level shown on your rental contract.
             </p>
           </section>
 
@@ -192,7 +192,7 @@ export default function Home() {
               {result.alreadySufficient ? (
                 <div className="text-center">
                   <div className="text-3xl mb-1">✅</div>
-                  <p className="text-lg font-bold text-green-800">You're good to go!</p>
+                  <p className="text-lg font-bold text-green-800">You&apos;re good to go!</p>
                   <p className="mt-1 text-sm text-green-700">
                     Your current fuel level is sufficient for return.
                   </p>
@@ -208,7 +208,7 @@ export default function Home() {
                       <div>
                         <p className="font-bold text-base">$30 Service Fee Risk</p>
                         <p className="text-sm mt-0.5">
-                          Your tank will drop below ¼ before drop-off. Fill up to avoid U-Haul's refueling surcharge.
+                          Your tank will drop below ¼ before drop-off. Fill up to avoid U-Haul&apos;s refueling surcharge.
                         </p>
                       </div>
                     </div>
