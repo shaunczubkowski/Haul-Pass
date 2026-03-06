@@ -15,6 +15,7 @@ export const UHAUL_TRUCKS: TruckType[] = [
     tankCapacity: 34,
     mpg: 19,
     fuelType: "regular",
+    loadSize: "Small load",
   },
   {
     id: "uhaul-cargo-van",
@@ -23,6 +24,7 @@ export const UHAUL_TRUCKS: TruckType[] = [
     tankCapacity: 26,
     mpg: 18,
     fuelType: "regular",
+    loadSize: "Studio",
   },
   {
     id: "uhaul-10ft",
@@ -31,6 +33,7 @@ export const UHAUL_TRUCKS: TruckType[] = [
     tankCapacity: 31,
     mpg: 12,
     fuelType: "regular",
+    loadSize: "1 bedroom",
   },
   {
     id: "uhaul-15ft",
@@ -39,6 +42,7 @@ export const UHAUL_TRUCKS: TruckType[] = [
     tankCapacity: 40,
     mpg: 10,
     fuelType: "regular",
+    loadSize: "2 bedrooms",
   },
   {
     id: "uhaul-17ft",
@@ -47,6 +51,7 @@ export const UHAUL_TRUCKS: TruckType[] = [
     tankCapacity: 40,
     mpg: 10,
     fuelType: "regular",
+    loadSize: "2–3 bedrooms",
   },
   {
     id: "uhaul-20ft",
@@ -55,6 +60,7 @@ export const UHAUL_TRUCKS: TruckType[] = [
     tankCapacity: 40,
     mpg: 10,
     fuelType: "regular",
+    loadSize: "3–4 bedrooms",
   },
   {
     id: "uhaul-24ft",
@@ -63,6 +69,7 @@ export const UHAUL_TRUCKS: TruckType[] = [
     tankCapacity: 60,
     mpg: 7,
     fuelType: "regular",
+    loadSize: "4–5 bedrooms",
   },
   {
     id: "uhaul-26ft",
@@ -71,6 +78,7 @@ export const UHAUL_TRUCKS: TruckType[] = [
     tankCapacity: 60,
     mpg: 7,
     fuelType: "regular",
+    loadSize: "5+ bedrooms",
   },
 ];
 

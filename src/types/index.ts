@@ -9,6 +9,7 @@ export interface TruckType {
   tankCapacity: number; // gallons
   mpg: number; // estimated miles per gallon (empty truck)
   fuelType: FuelType;
+  loadSize?: string; // approximate move size, e.g. "1–2 bedrooms"
 }
 
 // Standard gauge levels (fraction of full tank: 0–1)
