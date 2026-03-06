@@ -22,7 +22,7 @@ export default function Home() {
           pickupLevel,
           currentLevel,
           distanceToDropoff: distance,
-          gasPricePerGallon: gasPrice !== "" ? parseFloat(gasPrice) : undefined,
+          gasPricePerGallon: gasPrice !== "" && !isNaN(parseFloat(gasPrice)) ? parseFloat(gasPrice) : undefined,
         })
       : null;
 
@@ -114,6 +114,7 @@ export default function Home() {
           {result && (
             <section
               aria-live="polite"
+              aria-atomic="true"
               className={[
                 "rounded-xl border-2 p-5 shadow-sm transition-colors",
                 result.alreadySufficient
@@ -134,9 +135,17 @@ export default function Home() {
               ) : (
                 <>
                   {result.isAtRisk && (
-                    <div className="mb-3 flex items-center gap-2 rounded-lg bg-red-100 px-3 py-2 text-sm font-medium text-red-700">
-                      <span aria-hidden="true">⚠️</span>
-                      At risk of U-Haul's $30 service fee — fill up before returning!
+                    <div
+                      role="alert"
+                      className="mb-4 flex items-start gap-3 rounded-lg border-2 border-red-500 bg-red-100 px-4 py-3 text-red-800"
+                    >
+                      <span aria-hidden="true" className="text-2xl leading-none">⚠️</span>
+                      <div>
+                        <p className="font-bold text-base">$30 Service Fee Risk</p>
+                        <p className="text-sm mt-0.5">
+                          Your tank will drop below ¼ before drop-off. Fill up to avoid U-Haul's refueling surcharge.
+                        </p>
+                      </div>
                     </div>
                   )}
                   <div className="text-center">
@@ -181,9 +190,10 @@ export default function Home() {
           )}
 
           {!truck && (
-            <p className="text-center text-sm text-zinc-400">
-              Select your truck above to see results.
-            </p>
+            <div className="rounded-xl border border-zinc-200 bg-white/70 px-5 py-4 text-center text-sm text-zinc-500">
+              <p className="font-medium text-zinc-700 mb-1">👆 Start by selecting your truck size above.</p>
+              <p>Each truck has a different tank capacity and fuel efficiency — FillRight uses these to calculate exactly how much to add.</p>
+            </div>
           )}
         </div>
       </div>

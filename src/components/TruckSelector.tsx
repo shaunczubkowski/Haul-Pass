@@ -15,6 +15,9 @@ export function TruckSelector({ value, onChange }: TruckSelectorProps) {
         Truck Size
       </span>
       {/* Horizontal scroll on mobile, wrapping grid on desktop */}
+      {/* Outer wrapper adds a fade-out on the right edge to signal more trucks off-screen */}
+      <div className="relative">
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-white to-transparent z-10 sm:hidden" />
       <div
         role="radiogroup"
         aria-label="Select truck size"
@@ -47,11 +50,14 @@ export function TruckSelector({ value, onChange }: TruckSelectorProps) {
               >
                 {truck.name}
               </span>
-              <span className="text-xs text-gray-500">{truck.tankCapacity} gal</span>
-              <span className="text-xs text-gray-400">{truck.mpg} MPG</span>
+              {truck.loadSize && (
+                <span className="text-xs text-gray-500 text-center leading-tight">{truck.loadSize}</span>
+              )}
+              <span className="text-xs text-gray-400">{truck.tankCapacity} gal · {truck.mpg} MPG</span>
             </button>
           );
         })}
+      </div>
       </div>
     </div>
   );

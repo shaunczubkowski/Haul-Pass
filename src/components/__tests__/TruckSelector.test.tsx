@@ -23,15 +23,23 @@ describe("TruckSelector", () => {
 
     it("renders tank capacity on each card", () => {
       render(<TruckSelector value={null} onChange={noop} />);
-      expect(screen.getByText("26 gal")).toBeInTheDocument(); // cargo van (unique)
-      expect(screen.getAllByText("40 gal").length).toBeGreaterThan(0); // 15ft/17ft/20ft share 40 gal
-      expect(screen.getAllByText("60 gal").length).toBeGreaterThan(0); // 24ft/26ft share 60 gal
+      // Capacity and MPG are combined in a single element: "26 gal · 18 MPG"
+      expect(screen.getByText(/26 gal/)).toBeInTheDocument(); // cargo van (unique)
+      expect(screen.getAllByText(/40 gal/).length).toBeGreaterThan(0); // 15ft/17ft/20ft share 40 gal
+      expect(screen.getAllByText(/60 gal/).length).toBeGreaterThan(0); // 24ft/26ft share 60 gal
     });
 
     it("renders MPG on each card", () => {
       render(<TruckSelector value={null} onChange={noop} />);
-      expect(screen.getByText("19 MPG")).toBeInTheDocument(); // pickup (unique)
-      expect(screen.getAllByText("7 MPG").length).toBeGreaterThan(0); // 24ft/26ft share 7 MPG
+      // Capacity and MPG are combined in a single element: "34 gal · 19 MPG"
+      expect(screen.getByText(/19 MPG/)).toBeInTheDocument(); // pickup (unique)
+      expect(screen.getAllByText(/7 MPG/).length).toBeGreaterThan(0); // 24ft/26ft share 7 MPG
+    });
+
+    it("renders load size hint on each card", () => {
+      render(<TruckSelector value={null} onChange={noop} />);
+      expect(screen.getByText("2 bedrooms")).toBeInTheDocument(); // 15ft
+      expect(screen.getByText("Studio")).toBeInTheDocument(); // cargo van
     });
 
     it("has a radiogroup with accessible label", () => {

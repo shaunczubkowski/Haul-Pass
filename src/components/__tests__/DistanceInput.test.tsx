@@ -12,10 +12,11 @@ describe("DistanceInput", () => {
       expect(screen.getByLabelText(/distance to drop-off in miles/i)).toBeInTheDocument();
     });
 
-    it("shows 'mi' toggle button by default (miles mode)", () => {
+    it("shows 'km' toggle button by default (miles mode — button shows target unit)", () => {
       render(<DistanceInput value={0} onChange={noop} />);
       expect(screen.getByRole("button", { name: /switch to kilometers/i })).toBeInTheDocument();
-      expect(screen.getByText("mi")).toBeInTheDocument();
+      // Button label shows the unit you'll switch TO (km), not the current unit
+      expect(screen.getByText("km")).toBeInTheDocument();
     });
 
     it("displays empty input when value is 0", () => {
@@ -55,7 +56,8 @@ describe("DistanceInput", () => {
       const user = userEvent.setup();
       render(<DistanceInput value={0} onChange={noop} />);
       await user.click(screen.getByRole("button", { name: /switch to kilometers/i }));
-      expect(screen.getByText("km")).toBeInTheDocument();
+      // Now in km mode: button shows "mi" (the target unit to switch back to)
+      expect(screen.getByText("mi")).toBeInTheDocument();
       expect(screen.getByRole("button", { name: /switch to miles/i })).toBeInTheDocument();
     });
 
@@ -78,7 +80,26 @@ describe("DistanceInput", () => {
       const btn = screen.getByRole("button", { name: /switch to kilometers/i });
       await user.click(btn);
       await user.click(screen.getByRole("button", { name: /switch to miles/i }));
-      expect(screen.getByText("mi")).toBeInTheDocument();
+      // Back in miles mode: button shows "km" (the unit to switch to)
+      expect(screen.getByText("km")).toBeInTheDocument();
+    });
+  });
+
+  describe("input validation", () => {
+    it("ignores negative input values and does not call onChange", () => {
+      const onChange = vi.fn();
+      render(<DistanceInput value={0} onChange={onChange} />);
+      const input = screen.getByRole("spinbutton");
+      fireEvent.change(input, { target: { value: "-50" } });
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it("accepts decimal distances", () => {
+      const onChange = vi.fn();
+      render(<DistanceInput value={0} onChange={onChange} />);
+      const input = screen.getByRole("spinbutton");
+      fireEvent.change(input, { target: { value: "15.5" } });
+      expect(onChange).toHaveBeenLastCalledWith(15.5);
     });
   });
 

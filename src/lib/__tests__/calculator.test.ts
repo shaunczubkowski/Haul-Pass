@@ -129,6 +129,20 @@ describe("calculateFuelReturn", () => {
       expect(result.isAtRisk).toBe(false);
       expect(result.alreadySufficient).toBe(true);
     });
+
+    it("does not set isAtRisk when level after drive is exactly 1/4 tank (boundary)", () => {
+      // Current at 1/2 (20 gal), drive 100 miles (10 gal consumed), ends at exactly 10/40 = 0.25
+      // Exactly at threshold — should NOT be at risk (< not <=)
+      const result = calculateFuelReturn(
+        baseInput({
+          pickupLevel: GAUGE_LEVELS.THREE_QUARTER,
+          currentLevel: GAUGE_LEVELS.HALF,
+          distanceToDropoff: 100, // 10 gal consumed → 20 - 10 = 10 gal = 25% = exactly QUARTER
+          safetyBuffer: 0,
+        })
+      );
+      expect(result.isAtRisk).toBe(false);
+    });
   });
 
   describe("cost estimation", () => {

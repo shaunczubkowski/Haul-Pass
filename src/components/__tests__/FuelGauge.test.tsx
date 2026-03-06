@@ -13,12 +13,19 @@ describe("FuelGauge", () => {
       expect(screen.getByText("Pickup Level")).toBeInTheDocument();
     });
 
-    it("renders all 9 level buttons", () => {
+    it("renders exactly 5 level buttons (E, 1/4, 1/2, 3/4, F)", () => {
       render(<FuelGauge value={GAUGE_LEVELS.EMPTY} onChange={noop} label="Current Level" />);
-      const labels = ["E", "1/8", "1/4", "3/8", "1/2", "5/8", "3/4", "7/8", "F"];
+      const labels = ["E", "1/4", "1/2", "3/4", "F"];
       for (const label of labels) {
         expect(screen.getAllByRole("button", { name: new RegExp(label) }).length).toBeGreaterThan(0);
       }
+      // Intermediate levels should not appear as buttons
+      const allButtons = screen.getAllByRole("button");
+      const buttonTexts = allButtons.map((b) => b.textContent);
+      expect(buttonTexts).not.toContain("1/8");
+      expect(buttonTexts).not.toContain("3/8");
+      expect(buttonTexts).not.toContain("5/8");
+      expect(buttonTexts).not.toContain("7/8");
     });
 
     it("marks the selected button as pressed", () => {
@@ -32,7 +39,7 @@ describe("FuelGauge", () => {
       const notPressedButtons = screen
         .getAllByRole("button")
         .filter((b) => b.getAttribute("aria-pressed") === "false");
-      expect(notPressedButtons.length).toBe(8); // 9 total - 1 selected
+      expect(notPressedButtons.length).toBe(4); // 5 total - 1 selected
     });
   });
 
@@ -62,7 +69,17 @@ describe("FuelGauge", () => {
       const slider = screen.getByRole("slider");
       slider.focus();
       await user.keyboard("{ArrowRight}");
-      expect(onChange).toHaveBeenCalledWith(GAUGE_LEVELS.THREE_EIGHTHS);
+      expect(onChange).toHaveBeenCalledWith(GAUGE_LEVELS.HALF);
+    });
+
+    it("increases value with ArrowUp", async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      render(<FuelGauge value={GAUGE_LEVELS.QUARTER} onChange={onChange} label="Pickup Level" />);
+      const slider = screen.getByRole("slider");
+      slider.focus();
+      await user.keyboard("{ArrowUp}");
+      expect(onChange).toHaveBeenCalledWith(GAUGE_LEVELS.HALF);
     });
 
     it("decreases value with ArrowLeft", async () => {
@@ -72,7 +89,17 @@ describe("FuelGauge", () => {
       const slider = screen.getByRole("slider");
       slider.focus();
       await user.keyboard("{ArrowLeft}");
-      expect(onChange).toHaveBeenCalledWith(GAUGE_LEVELS.THREE_EIGHTHS);
+      expect(onChange).toHaveBeenCalledWith(GAUGE_LEVELS.QUARTER);
+    });
+
+    it("decreases value with ArrowDown", async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      render(<FuelGauge value={GAUGE_LEVELS.HALF} onChange={onChange} label="Pickup Level" />);
+      const slider = screen.getByRole("slider");
+      slider.focus();
+      await user.keyboard("{ArrowDown}");
+      expect(onChange).toHaveBeenCalledWith(GAUGE_LEVELS.QUARTER);
     });
 
     it("does not go below E on ArrowLeft", async () => {
@@ -100,9 +127,10 @@ describe("FuelGauge", () => {
     it("has role=slider with correct aria attributes", () => {
       render(<FuelGauge value={GAUGE_LEVELS.HALF} onChange={noop} label="Pickup Level" />);
       const slider = screen.getByRole("slider");
-      expect(slider).toHaveAttribute("aria-valuenow", "4"); // index of 0.5 in LEVELS array
+      // HALF is index 2 in [E, 1/4, 1/2, 3/4, F]
+      expect(slider).toHaveAttribute("aria-valuenow", "2");
       expect(slider).toHaveAttribute("aria-valuemin", "0");
-      expect(slider).toHaveAttribute("aria-valuemax", "8");
+      expect(slider).toHaveAttribute("aria-valuemax", "4");
       expect(slider).toHaveAttribute("aria-label", "Pickup Level: 1/2");
     });
 

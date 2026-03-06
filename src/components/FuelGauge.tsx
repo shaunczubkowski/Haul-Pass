@@ -3,8 +3,14 @@
 import { GAUGE_LEVELS, GAUGE_LEVEL_LABELS } from "@/types";
 import type { GaugeLevel } from "@/types";
 
-// Ordered array of all 9 standard gauge positions
-const LEVELS = Object.values(GAUGE_LEVELS) as GaugeLevel[];
+// Five canonical gauge levels shown in the UI (matching marks printed on most fuel gauges)
+const DISPLAY_LEVELS: GaugeLevel[] = [
+  GAUGE_LEVELS.EMPTY,
+  GAUGE_LEVELS.QUARTER,
+  GAUGE_LEVELS.HALF,
+  GAUGE_LEVELS.THREE_QUARTER,
+  GAUGE_LEVELS.FULL,
+];
 
 // SVG geometry for the semicircular gauge
 // Arc spans 180° from left (E) to right (F), centered at bottom of the SVG viewport
@@ -38,17 +44,21 @@ interface FuelGaugeProps {
 }
 
 export function FuelGauge({ value, onChange, label, disabled = false }: FuelGaugeProps) {
-  const currentIndex = LEVELS.indexOf(value);
+  // Find the closest display level index; guard against -1 if value is an intermediate level
+  const currentIndex = Math.max(
+    0,
+    DISPLAY_LEVELS.findIndex((l) => l >= value)
+  );
 
   function handleKeyDown(e: React.KeyboardEvent) {
     if (disabled) return;
     if (e.key === "ArrowRight" || e.key === "ArrowUp") {
       e.preventDefault();
-      const next = LEVELS[Math.min(currentIndex + 1, LEVELS.length - 1)];
+      const next = DISPLAY_LEVELS[Math.min(currentIndex + 1, DISPLAY_LEVELS.length - 1)];
       onChange(next);
     } else if (e.key === "ArrowLeft" || e.key === "ArrowDown") {
       e.preventDefault();
-      const prev = LEVELS[Math.max(currentIndex - 1, 0)];
+      const prev = DISPLAY_LEVELS[Math.max(currentIndex - 1, 0)];
       onChange(prev);
     }
   }
@@ -106,7 +116,7 @@ export function FuelGauge({ value, onChange, label, disabled = false }: FuelGaug
         )}
 
         {/* Tick marks */}
-        {LEVELS.map((level) => {
+        {DISPLAY_LEVELS.map((level) => {
           const angle = levelToAngle(level);
           const inner = polarToCartesian(angle);
           const outerR = TICK_OUTER_R;
@@ -122,7 +132,7 @@ export function FuelGauge({ value, onChange, label, disabled = false }: FuelGaug
               x2={outerPt.x}
               y2={outerPt.y}
               stroke={level <= value ? "#f97316" : "#d1d5db"}
-              strokeWidth={level === 0 || level === 1 ? 2 : 1.5}
+              strokeWidth={level === 0 || level === 1 ? 2.5 : 1.5}
             />
           );
         })}
@@ -145,7 +155,7 @@ export function FuelGauge({ value, onChange, label, disabled = false }: FuelGaug
         role="slider"
         aria-valuenow={currentIndex}
         aria-valuemin={0}
-        aria-valuemax={LEVELS.length - 1}
+        aria-valuemax={DISPLAY_LEVELS.length - 1}
         aria-label={`${label}: ${GAUGE_LEVEL_LABELS[value]}`}
         aria-disabled={disabled}
         tabIndex={disabled ? -1 : 0}
@@ -155,7 +165,7 @@ export function FuelGauge({ value, onChange, label, disabled = false }: FuelGaug
 
       {/* Tap targets — visible button grid */}
       <div className="flex gap-1 flex-wrap justify-center">
-        {LEVELS.map((level) => {
+        {DISPLAY_LEVELS.map((level) => {
           const isSelected = level === value;
           const levelLabel = GAUGE_LEVEL_LABELS[level];
           return (
