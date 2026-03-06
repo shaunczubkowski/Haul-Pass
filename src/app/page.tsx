@@ -62,10 +62,6 @@ export default function Home() {
   const [copied, setCopied] = useState(false);
   const resultRef = useRef<HTMLElement | null>(null);
 
-  const scrollResultIntoView = useCallback(() => {
-    resultRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-  }, []);
-
   // Sync state to URL (replaceState — no browser history spam)
   useEffect(() => {
     const params = new URLSearchParams();
@@ -95,6 +91,11 @@ export default function Home() {
           gasPricePerGallon: gasPrice !== "" && !isNaN(parseFloat(gasPrice)) ? parseFloat(gasPrice) : undefined,
         })
       : null;
+
+  const scrollResultIntoView = useCallback(() => {
+    if (!result) return;
+    resultRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }, [result]);
 
   return (
     <main className="flex min-h-screen flex-col items-center bg-zinc-50 px-4 py-12">
@@ -182,101 +183,103 @@ export default function Home() {
           </section>
 
           {/* Result */}
-          {result && (
-            <section
-              ref={resultRef}
-              data-result="true"
-              aria-live="polite"
-              aria-atomic="true"
-              className={[
-                "rounded-xl border-2 p-5 shadow-sm transition-colors",
-                result.alreadySufficient
-                  ? "border-green-400 bg-green-50"
-                  : result.isAtRisk
-                  ? "border-red-400 bg-red-50"
-                  : "border-orange-400 bg-orange-50",
-              ].join(" ")}
-            >
-              {result.alreadySufficient ? (
-                <div className="text-center">
-                  <div className="text-3xl mb-1">✅</div>
-                  <p className="text-lg font-bold text-green-800">You&apos;re good to go!</p>
-                  <p className="mt-1 text-sm text-green-700">
-                    Your current fuel level is sufficient for return.
-                  </p>
-                </div>
-              ) : (
-                <>
-                  {result.isAtRisk && (
-                    <div
-                      role="alert"
-                      className="mb-4 flex items-start gap-3 rounded-lg border-2 border-red-500 bg-red-100 px-4 py-3 text-red-800"
-                    >
-                      <span aria-hidden="true" className="text-2xl leading-none">⚠️</span>
-                      <div>
-                        <p className="font-bold text-base">$30 Service Fee Risk</p>
-                        <p className="text-sm mt-0.5">
-                          Your tank will drop below ¼ before drop-off. Fill up to avoid U-Haul&apos;s refueling surcharge.
-                        </p>
-                      </div>
-                    </div>
-                  )}
+          <section
+            ref={resultRef}
+            data-result="true"
+            aria-live="polite"
+            aria-atomic="true"
+            className={result ? [
+              "rounded-xl border-2 p-5 shadow-sm transition-colors",
+              result.alreadySufficient
+                ? "border-green-400 bg-green-50"
+                : result.isAtRisk
+                ? "border-red-400 bg-red-50"
+                : "border-orange-400 bg-orange-50",
+            ].join(" ") : ""}
+          >
+            {result && (
+              <>
+                {result.alreadySufficient ? (
                   <div className="text-center">
-                    <p className="text-sm font-medium text-zinc-500 uppercase tracking-wide mb-1">
-                      Add before returning
+                    <div className="text-3xl mb-1">✅</div>
+                    <p className="text-lg font-bold text-green-800">You&apos;re good to go!</p>
+                    <p className="mt-1 text-sm text-green-700">
+                      Your current fuel level is sufficient for return.
                     </p>
-                    <p className="text-5xl font-bold text-zinc-900">
-                      {result.gallonsToAdd}
-                      <span className="text-2xl font-semibold text-zinc-500 ml-1">gal</span>
-                    </p>
-                    {result.costEstimate != null && (
-                      <p className="mt-2 text-xl font-semibold text-orange-600">
-                        ≈ ${result.costEstimate.toFixed(2)}
-                      </p>
-                    )}
                   </div>
-
-                  {/* Breakdown */}
-                  <div className="mt-4 rounded-lg bg-white/60 px-4 py-3 text-sm text-zinc-600 space-y-1">
-                    <div className="flex justify-between">
-                      <span>Needed at return</span>
-                      <span className="font-medium">{result.breakdown.gallonsAtPickup} gal</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>In tank now</span>
-                      <span className="font-medium">{result.breakdown.gallonsNow} gal</span>
-                    </div>
-                    {result.breakdown.gallonsForFinalDrive > 0 && (
-                      <div className="flex justify-between">
-                        <span>Final drive</span>
-                        <span className="font-medium">−{result.breakdown.gallonsForFinalDrive} gal</span>
+                ) : (
+                  <>
+                    {result.isAtRisk && (
+                      <div
+                        role="alert"
+                        className="mb-4 flex items-start gap-3 rounded-lg border-2 border-red-500 bg-red-100 px-4 py-3 text-red-800"
+                      >
+                        <span aria-hidden="true" className="text-2xl leading-none">⚠️</span>
+                        <div>
+                          <p className="font-bold text-base">$30 Service Fee Risk</p>
+                          <p className="text-sm mt-0.5">
+                            Your tank will drop below ¼ before drop-off. Fill up to avoid U-Haul&apos;s refueling surcharge.
+                          </p>
+                        </div>
                       </div>
                     )}
-                    <div className="flex justify-between border-t border-zinc-200 pt-1">
-                      <span>Safety buffer</span>
-                      <span className="font-medium">+{result.bufferApplied} gal</span>
+                    <div className="text-center">
+                      <p className="text-sm font-medium text-zinc-500 uppercase tracking-wide mb-1">
+                        Add before returning
+                      </p>
+                      <p className="text-5xl font-bold text-zinc-900">
+                        {result.gallonsToAdd}
+                        <span className="text-2xl font-semibold text-zinc-500 ml-1">gal</span>
+                      </p>
+                      {result.costEstimate != null && (
+                        <p className="mt-2 text-xl font-semibold text-orange-600">
+                          ≈ ${result.costEstimate.toFixed(2)}
+                        </p>
+                      )}
                     </div>
-                  </div>
-                </>
-              )}
 
-              {/* Share link */}
-              <div className="mt-4 flex justify-center">
-                <button
-                  onClick={copyLink}
-                  className={[
-                    "flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors",
-                    copied
-                      ? "bg-green-100 text-green-700"
-                      : "bg-white/70 text-zinc-600 hover:bg-white hover:text-zinc-900",
-                  ].join(" ")}
-                  aria-label="Copy shareable link to clipboard"
-                >
-                  {copied ? "✓ Link copied!" : "Share this calculation"}
-                </button>
-              </div>
-            </section>
-          )}
+                    {/* Breakdown */}
+                    <div className="mt-4 rounded-lg bg-white/60 px-4 py-3 text-sm text-zinc-600 space-y-1">
+                      <div className="flex justify-between">
+                        <span>Needed at return</span>
+                        <span className="font-medium">{result.breakdown.gallonsAtPickup} gal</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>In tank now</span>
+                        <span className="font-medium">{result.breakdown.gallonsNow} gal</span>
+                      </div>
+                      {result.breakdown.gallonsForFinalDrive > 0 && (
+                        <div className="flex justify-between">
+                          <span>Final drive</span>
+                          <span className="font-medium">−{result.breakdown.gallonsForFinalDrive} gal</span>
+                        </div>
+                      )}
+                      <div className="flex justify-between border-t border-zinc-200 pt-1">
+                        <span>Safety buffer</span>
+                        <span className="font-medium">+{result.bufferApplied} gal</span>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {/* Share link */}
+                <div className="mt-4 flex justify-center">
+                  <button
+                    onClick={copyLink}
+                    className={[
+                      "flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors",
+                      copied
+                        ? "bg-green-100 text-green-700"
+                        : "bg-white/70 text-zinc-600 hover:bg-white hover:text-zinc-900",
+                    ].join(" ")}
+                    aria-label="Copy shareable link to clipboard"
+                  >
+                    {copied ? "✓ Link copied!" : "Share this calculation"}
+                  </button>
+                </div>
+              </>
+            )}
+          </section>
 
           {!truck && (
             <div className="rounded-xl border border-zinc-200 bg-white/70 px-5 py-4 text-center text-sm text-zinc-500">
