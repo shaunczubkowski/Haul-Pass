@@ -21,7 +21,7 @@ export function DistanceInput({ value, onChange, disabled = false }: DistanceInp
       ? ""
       : unit === "miles"
       ? String(value)
-      : String(Math.round(value / KM_TO_MILES));
+      : String(parseFloat((value / KM_TO_MILES).toFixed(1)));
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const raw = e.target.value;
@@ -31,7 +31,7 @@ export function DistanceInput({ value, onChange, disabled = false }: DistanceInp
     }
     const parsed = parseFloat(raw);
     if (isNaN(parsed) || parsed < 0) return;
-    const miles = unit === "miles" ? parsed : Math.round(parsed * KM_TO_MILES);
+    const miles = unit === "miles" ? parsed : parseFloat((parsed * KM_TO_MILES).toFixed(1));
     onChange(miles);
   }
 
@@ -41,12 +41,15 @@ export function DistanceInput({ value, onChange, disabled = false }: DistanceInp
 
   return (
     <div className="flex flex-col gap-2">
-      <label
-        htmlFor="distance-input"
-        className="text-sm font-medium text-gray-600 uppercase tracking-wide"
-      >
-        Distance to Drop-off
-      </label>
+      <div>
+        <label
+          htmlFor="distance-input"
+          className="text-sm font-medium text-gray-600 uppercase tracking-wide"
+        >
+          {unit === "miles" ? "Miles" : "km"} to Drop-off
+        </label>
+        <p className="text-xs text-gray-400 mt-0.5">From this pump to the U-Haul location</p>
+      </div>
       <div className="flex rounded-lg border-2 border-gray-200 overflow-hidden focus-within:border-orange-400 transition-colors">
         <input
           id="distance-input"
@@ -57,8 +60,8 @@ export function DistanceInput({ value, onChange, disabled = false }: DistanceInp
           value={displayValue}
           onChange={handleChange}
           disabled={disabled}
-          placeholder="0"
-          aria-label={`Distance to drop-off in ${unit}`}
+          placeholder="e.g. 12"
+          aria-label={`${unit === "miles" ? "Miles" : "km"} to drop-off in ${unit}`}
           className={[
             "flex-1 px-4 py-3 text-lg font-semibold text-gray-900 bg-white",
             "outline-none appearance-none",
