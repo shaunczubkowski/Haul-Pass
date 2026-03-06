@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { metadata } from "@/app/layout";
 
 describe("layout metadata", () => {
@@ -119,6 +119,8 @@ describe("sitemap and robots", () => {
   });
 
   it("sitemap returns array with homepage entry", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-03-06"));
     const sitemapModule = await import("@/app/sitemap");
     const sitemap = await sitemapModule.default();
     expect(Array.isArray(sitemap)).toBe(true);
@@ -127,6 +129,7 @@ describe("sitemap and robots", () => {
     expect(sitemap[0].lastModified).toBeDefined();
     expect(sitemap[0].changeFrequency).toBeDefined();
     expect(sitemap[0].priority).toBeDefined();
+    vi.useRealTimers();
   });
 
   it("robots module exports a default function", async () => {
