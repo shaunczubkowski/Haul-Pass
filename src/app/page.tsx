@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { FuelGauge } from "@/components/FuelGauge";
 import { TruckSelector } from "@/components/TruckSelector";
 import { DistanceInput } from "@/components/DistanceInput";
@@ -60,6 +60,11 @@ export default function Home() {
   const [distance, setDistance] = useState<number>(() => readUrlParams().distance);
   const [gasPrice, setGasPrice] = useState<string>(() => readUrlParams().gasPrice);
   const [copied, setCopied] = useState(false);
+  const resultRef = useRef<HTMLElement | null>(null);
+
+  const scrollResultIntoView = useCallback(() => {
+    resultRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }, []);
 
   // Sync state to URL (replaceState — no browser history spam)
   useEffect(() => {
@@ -137,7 +142,7 @@ export default function Home() {
             <h2 className="mb-4 text-xs font-semibold uppercase tracking-widest text-zinc-400">
               Step 3 — Final Drive
             </h2>
-            <DistanceInput value={distance} onChange={setDistance} />
+            <DistanceInput value={distance} onChange={setDistance} onBlur={scrollResultIntoView} />
 
             {/* Optional gas price */}
             <div className="mt-4 flex flex-col gap-2">
@@ -161,6 +166,7 @@ export default function Home() {
                   placeholder="3.99"
                   value={gasPrice}
                   onChange={(e) => setGasPrice(e.target.value)}
+                  onBlur={scrollResultIntoView}
                   aria-label="Gas price per gallon in dollars"
                   className={[
                     "flex-1 px-3 py-3 text-lg font-semibold text-gray-900 bg-white",
@@ -178,6 +184,8 @@ export default function Home() {
           {/* Result */}
           {result && (
             <section
+              ref={resultRef}
+              data-result="true"
               aria-live="polite"
               aria-atomic="true"
               className={[

@@ -37,12 +37,21 @@ export const metadata: Metadata = {
     description:
       "Calculate exactly how many gallons to add before returning your moving truck. No more guessing at the pump.",
     url: "https://getfillright.com",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "FillRight — U-Haul Fuel Return Calculator",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "FillRight — U-Haul Fuel Return Calculator",
     description:
       "Calculate exactly how many gallons to add before returning your moving truck.",
+    images: ["/og-image.png"],
   },
   alternates: {
     canonical: "https://getfillright.com",
@@ -53,6 +62,31 @@ export const metadata: Metadata = {
   },
 };
 
+export const jsonLdData = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: "FillRight",
+  description:
+    "Calculate exactly how many gallons of fuel to add before returning your U-Haul or moving truck. Avoid surprise fuel charges.",
+  url: "https://getfillright.com",
+  applicationCategory: "UtilityApplication",
+  operatingSystem: "All",
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "USD",
+  },
+};
+
+export function JsonLd() {
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdData) }}
+    />
+  );
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -60,6 +94,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <JsonLd />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
