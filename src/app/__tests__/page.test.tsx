@@ -108,7 +108,7 @@ describe("Home page", () => {
       await selectTruck(user, "10 ft Truck");
       const currentQuarterBtn = screen.getAllByRole("button", { name: /Right Now 1\/4/ })[0];
       await user.click(currentQuarterBtn);
-      const distanceInput = screen.getByLabelText(/distance to drop-off in miles/i);
+      const distanceInput = screen.getByLabelText(/miles to drop-off in miles/i);
       fireEvent.change(distanceInput, { target: { value: "50" } });
       expect(screen.getByRole("alert")).toBeInTheDocument();
       expect(screen.getByText(/\$30 service fee risk/i)).toBeInTheDocument();
@@ -165,7 +165,7 @@ describe("Home page", () => {
       const user = userEvent.setup();
       render(<Home />);
       await selectTruck(user, "8 ft Pickup");
-      const distanceInput = screen.getByLabelText(/distance to drop-off in miles/i);
+      const distanceInput = screen.getByLabelText(/miles to drop-off in miles/i);
       fireEvent.change(distanceInput, { target: { value: "25" } });
       await waitFor(() => expect(window.location.search).toContain("dist=25"));
     });

@@ -9,7 +9,7 @@ describe("DistanceInput", () => {
   describe("rendering", () => {
     it("renders with label", () => {
       render(<DistanceInput value={0} onChange={noop} />);
-      expect(screen.getByLabelText(/distance to drop-off in miles/i)).toBeInTheDocument();
+      expect(screen.getByLabelText(/miles to drop-off in miles/i)).toBeInTheDocument();
     });
 
     it("shows 'km' toggle button by default (miles mode — button shows target unit)", () => {
@@ -70,8 +70,8 @@ describe("DistanceInput", () => {
       const input = screen.getByRole("spinbutton");
       // Use fireEvent.change to avoid controlled-input re-render issue with vi.fn()
       fireEvent.change(input, { target: { value: "100" } });
-      // 100 km ≈ 62 miles (Math.round(100 * 0.621371))
-      expect(onChange).toHaveBeenLastCalledWith(62);
+      // 100 km = 62.1 miles (parseFloat((100 * 0.621371).toFixed(1)))
+      expect(onChange).toHaveBeenLastCalledWith(62.1);
     });
 
     it("toggles back to miles when clicked again", async () => {
