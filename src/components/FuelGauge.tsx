@@ -118,7 +118,6 @@ export function FuelGauge({ value, onChange, label, disabled = false }: FuelGaug
         {/* Tick marks */}
         {DISPLAY_LEVELS.map((level) => {
           const angle = levelToAngle(level);
-          const inner = polarToCartesian(angle);
           const outerR = TICK_OUTER_R;
           const innerR = TICK_INNER_R;
           const rad = ((180 - angle) * Math.PI) / 180;
