@@ -1,16 +1,20 @@
-import { describe, it, expect } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import Home from "@/app/page";
 import { ALL_TRUCKS } from "@/data/trucks";
 
-// Helper: click the first truck card (8ft Pickup)
+// Helper: click a truck card by name
 async function selectTruck(user: ReturnType<typeof userEvent.setup>, name: string) {
   const card = screen.getByText(name).closest("button")!;
   await user.click(card);
 }
 
 describe("Home page", () => {
+  // Reset URL between tests so URL-state reads from one test don't pollute the next
+  beforeEach(() => {
+    window.history.replaceState(null, "", "/");
+  });
   describe("initial state", () => {
     it("renders the app heading", () => {
       render(<Home />);
@@ -108,6 +112,94 @@ describe("Home page", () => {
       fireEvent.change(distanceInput, { target: { value: "50" } });
       expect(screen.getByRole("alert")).toBeInTheDocument();
       expect(screen.getByText(/\$30 service fee risk/i)).toBeInTheDocument();
+    });
+  });
+
+  describe("share button", () => {
+    function stubClipboard() {
+      const writeText = vi.fn().mockResolvedValue(undefined);
+      Object.defineProperty(navigator, "clipboard", {
+        value: { writeText },
+        configurable: true,
+        writable: true,
+      });
+      return writeText;
+    }
+
+    it("renders a share button in the result section", async () => {
+      const user = userEvent.setup();
+      render(<Home />);
+      await selectTruck(user, "8 ft Pickup");
+      expect(screen.getByRole("button", { name: /copy shareable link/i })).toBeInTheDocument();
+    });
+
+    it("shows 'Link copied!' confirmation after clicking", async () => {
+      stubClipboard();
+      const user = userEvent.setup();
+      render(<Home />);
+      await selectTruck(user, "8 ft Pickup");
+      await user.click(screen.getByRole("button", { name: /copy shareable link/i }));
+      expect(screen.getByText(/link copied/i)).toBeInTheDocument();
+    });
+
+    it("displays the share button text before copying", async () => {
+      const user = userEvent.setup();
+      render(<Home />);
+      await selectTruck(user, "8 ft Pickup");
+      // Before clicking: button shows the default label
+      expect(screen.getByText("Share this calculation")).toBeInTheDocument();
+    });
+  });
+
+  describe("URL state", () => {
+    it("syncs truck selection to the URL", async () => {
+      const user = userEvent.setup();
+      render(<Home />);
+      await selectTruck(user, "Cargo Van");
+      await waitFor(() =>
+        expect(window.location.search).toContain("truck=uhaul-cargo-van")
+      );
+    });
+
+    it("syncs distance to the URL when entered", async () => {
+      const user = userEvent.setup();
+      render(<Home />);
+      await selectTruck(user, "8 ft Pickup");
+      const distanceInput = screen.getByLabelText(/distance to drop-off in miles/i);
+      fireEvent.change(distanceInput, { target: { value: "25" } });
+      await waitFor(() => expect(window.location.search).toContain("dist=25"));
+    });
+
+    it("reads truck from URL params on mount", async () => {
+      window.history.replaceState(null, "", "?truck=uhaul-26ft&pickup=0.75&current=0.5");
+      render(<Home />);
+      await waitFor(() =>
+        expect(screen.getByText(/add before returning/i)).toBeInTheDocument()
+      );
+      // 26ft truck is selected: its name should be on the (now-checked) card
+      const selectedCard = screen.getAllByRole("radio").find(
+        (r) => r.getAttribute("aria-checked") === "true"
+      );
+      expect(selectedCard?.textContent).toContain("26 ft Truck");
+    });
+
+    it("ignores unknown truck IDs from URL params", () => {
+      window.history.replaceState(null, "", "?truck=unknown-truck-xyz");
+      render(<Home />);
+      // No truck selected, cold-start guidance shown
+      expect(screen.getByText(/start by selecting your truck size/i)).toBeInTheDocument();
+    });
+
+    it("ignores invalid gauge level values from URL params", async () => {
+      // 0.33 is not a valid display level; should fall back to default (FULL for pickup)
+      window.history.replaceState(null, "", "?truck=uhaul-15ft&pickup=0.33&current=0.5");
+      render(<Home />);
+      await waitFor(() =>
+        expect(screen.getByText(/add before returning/i)).toBeInTheDocument()
+      );
+      // pickup defaults to FULL (1.0) because 0.33 is not a valid level
+      const pickupFullBtn = screen.getByRole("button", { name: /At Pickup F/ });
+      expect(pickupFullBtn).toHaveAttribute("aria-pressed", "true");
     });
   });
 

@@ -1,12 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { FuelGauge } from "@/components/FuelGauge";
 import { TruckSelector } from "@/components/TruckSelector";
 import { DistanceInput } from "@/components/DistanceInput";
 import { calculateFuelReturn } from "@/lib/calculator";
 import { GAUGE_LEVELS } from "@/types";
+import { getTruckById } from "@/data/trucks";
 import type { GaugeLevel, TruckType } from "@/types";
+
+// Only the 5 levels selectable via the UI; used for URL param validation
+const VALID_LEVELS = new Set([0, 0.25, 0.5, 0.75, 1.0]);
 
 export default function Home() {
   const [truck, setTruck] = useState<TruckType | null>(null);
@@ -14,6 +18,67 @@ export default function Home() {
   const [currentLevel, setCurrentLevel] = useState<GaugeLevel>(GAUGE_LEVELS.HALF);
   const [distance, setDistance] = useState<number>(0);
   const [gasPrice, setGasPrice] = useState<string>("");
+  const [copied, setCopied] = useState(false);
+
+  // Track whether we've finished reading from the URL on mount.
+  // The write effect checks this ref so we don't overwrite URL params
+  // with defaults before the read effect has set state from them.
+  const initialized = useRef(false);
+
+  // Read state from URL query params on mount
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+
+    const truckId = params.get("truck");
+    if (truckId) {
+      const found = getTruckById(truckId);
+      if (found) setTruck(found);
+    }
+
+    const pickup = params.get("pickup");
+    if (pickup !== null) {
+      const val = parseFloat(pickup);
+      if (VALID_LEVELS.has(val)) setPickupLevel(val as GaugeLevel);
+    }
+
+    const current = params.get("current");
+    if (current !== null) {
+      const val = parseFloat(current);
+      if (VALID_LEVELS.has(val)) setCurrentLevel(val as GaugeLevel);
+    }
+
+    const dist = params.get("dist");
+    if (dist !== null) {
+      const val = parseFloat(dist);
+      if (!isNaN(val) && val >= 0) setDistance(val);
+    }
+
+    const gas = params.get("gas");
+    if (gas !== null && gas !== "") setGasPrice(gas);
+
+    initialized.current = true;
+  }, []);
+
+  // Sync state to URL after initialization (replaceState — no browser history spam)
+  useEffect(() => {
+    if (!initialized.current) return;
+
+    const params = new URLSearchParams();
+    if (truck) params.set("truck", truck.id);
+    params.set("pickup", String(pickupLevel));
+    params.set("current", String(currentLevel));
+    if (distance > 0) params.set("dist", String(distance));
+    if (gasPrice !== "") params.set("gas", gasPrice);
+
+    const qs = params.toString();
+    window.history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
+  }, [truck, pickupLevel, currentLevel, distance, gasPrice]);
+
+  async function copyLink() {
+    await navigator.clipboard.writeText(window.location.href);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
 
   const result =
     truck != null
@@ -186,6 +251,22 @@ export default function Home() {
                   </div>
                 </>
               )}
+
+              {/* Share link */}
+              <div className="mt-4 flex justify-center">
+                <button
+                  onClick={copyLink}
+                  className={[
+                    "flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors",
+                    copied
+                      ? "bg-green-100 text-green-700"
+                      : "bg-white/70 text-zinc-600 hover:bg-white hover:text-zinc-900",
+                  ].join(" ")}
+                  aria-label="Copy shareable link to clipboard"
+                >
+                  {copied ? "✓ Link copied!" : "Share this calculation"}
+                </button>
+              </div>
             </section>
           )}
 
