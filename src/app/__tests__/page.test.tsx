@@ -213,4 +213,48 @@ describe("Home page", () => {
       expect(resultSection).toHaveAttribute("aria-atomic", "true");
     });
   });
+
+  describe("scroll-into-view on keyboard dismissal", () => {
+    it("calls scrollIntoView on result section when distance input is blurred", async () => {
+      const user = userEvent.setup();
+      render(<Home />);
+      await selectTruck(user, "8 ft Pickup");
+
+      const scrollIntoView = vi.fn();
+      const resultSection = document.querySelector("[aria-live='polite']");
+      expect(resultSection).not.toBeNull();
+      (resultSection as HTMLElement).scrollIntoView = scrollIntoView;
+
+      const distanceInput = screen.getByLabelText(/miles to drop-off in miles/i);
+      await user.click(distanceInput);
+      await user.tab(); // blur the distance input
+
+      expect(scrollIntoView).toHaveBeenCalledWith({ behavior: "smooth", block: "nearest" });
+    });
+
+    it("calls scrollIntoView on result section when gas price input is blurred", async () => {
+      const user = userEvent.setup();
+      render(<Home />);
+      await selectTruck(user, "8 ft Pickup");
+
+      const scrollIntoView = vi.fn();
+      const resultSection = document.querySelector("[aria-live='polite']");
+      expect(resultSection).not.toBeNull();
+      (resultSection as HTMLElement).scrollIntoView = scrollIntoView;
+
+      const gasPriceInput = screen.getByLabelText(/gas price per gallon/i);
+      await user.click(gasPriceInput);
+      await user.tab(); // blur the gas price input
+
+      expect(scrollIntoView).toHaveBeenCalledWith({ behavior: "smooth", block: "nearest" });
+    });
+
+    it("result section has data-result attribute for ref targeting", async () => {
+      const user = userEvent.setup();
+      render(<Home />);
+      await selectTruck(user, "8 ft Pickup");
+      const resultSection = document.querySelector("[data-result='true']");
+      expect(resultSection).not.toBeNull();
+    });
+  });
 });
