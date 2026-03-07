@@ -7,6 +7,7 @@ export default defineConfig({
   test: {
     environment: "jsdom",
     globals: true,
+    css: true,
     setupFiles: ["./src/test/setup.ts"],
     coverage: {
       provider: "v8",
@@ -18,6 +19,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      "next/font/google": path.resolve(__dirname, "./src/test/mocks/next-font-google.ts"),
     },
   },
 });

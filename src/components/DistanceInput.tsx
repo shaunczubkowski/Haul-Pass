@@ -9,10 +9,11 @@ const KM_TO_MILES = 0.621371;
 interface DistanceInputProps {
   value: number; // always in miles internally
   onChange: (miles: number) => void;
+  onBlur?: () => void;
   disabled?: boolean;
 }
 
-export function DistanceInput({ value, onChange, disabled = false }: DistanceInputProps) {
+export function DistanceInput({ value, onChange, onBlur, disabled = false }: DistanceInputProps) {
   const [unit, setUnit] = useState<Unit>("miles");
 
   // Display value in the currently selected unit
@@ -59,6 +60,7 @@ export function DistanceInput({ value, onChange, disabled = false }: DistanceInp
           step="any"
           value={displayValue}
           onChange={handleChange}
+          onBlur={onBlur}
           disabled={disabled}
           placeholder="e.g. 12"
           aria-label={`${unit === "miles" ? "Miles" : "km"} to drop-off in ${unit}`}
