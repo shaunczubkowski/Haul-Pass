@@ -8,6 +8,11 @@ export default defineConfig({
     environment: "jsdom",
     globals: true,
     setupFiles: ["./src/test/setup.ts"],
+    exclude: [
+      ".claude/worktrees/**",
+      ".claude/projects/**",
+      "node_modules/**",
+    ],
     coverage: {
       provider: "v8",
       reporter: ["text", "json", "html"],
