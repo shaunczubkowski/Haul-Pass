@@ -22,7 +22,8 @@
 9. [Mobile UX](#9-mobile-ux)
 10. [Cross-Browser](#10-cross-browser)
 11. [OG / Social Preview](#11-og--social-preview)
-12. [Test Run Log](#12-test-run-log)
+12. [PWA & Offline](#12-pwa--offline)
+13. [Test Run Log](#13-test-run-log)
 
 ---
 
@@ -1162,7 +1163,184 @@ Goal: Confirm the OpenGraph and Twitter Card metadata renders correctly so share
 
 ---
 
-## 12. Test Run Log
+## 12. PWA & Offline
+
+---
+
+### TC-PWA-01 — Service worker registers successfully
+
+| Field | Detail |
+|---|---|
+| **ID** | TC-PWA-01 |
+| **Description** | The service worker registers and activates on first load |
+
+**Steps:**
+
+1. Open https://getfillright.com in Chrome (fresh profile / incognito).
+2. Open DevTools → Application → Service Workers.
+3. Observe the SW status.
+
+**Expected Result:** A service worker for `/sw.js` is listed with status **activated and is running**. No console errors.
+
+| Pass | Fail | N/A |
+|---|---|---|
+| | | |
+
+---
+
+### TC-PWA-02 — Manifest loads and passes Chrome install criteria
+
+| Field | Detail |
+|---|---|
+| **ID** | TC-PWA-02 |
+| **Description** | Chrome reports the manifest as valid and the app meets installability criteria |
+
+**Steps:**
+
+1. Open DevTools → Application → Manifest.
+2. Verify name, short_name, start_url, display, theme_color, background_color, and icons.
+3. Check DevTools → Application → Service Workers for the active SW.
+4. Run Lighthouse → PWA audit.
+
+**Expected Result:** Manifest fields are all populated. Lighthouse PWA score ≥ 90. No "installability errors" are listed.
+
+| Pass | Fail | N/A |
+|---|---|---|
+| | | |
+
+---
+
+### TC-PWA-03 — Offline navigation shows offline page
+
+| Field | Detail |
+|---|---|
+| **ID** | TC-PWA-03 |
+| **Description** | Navigating while offline renders the /offline fallback page |
+
+**Steps:**
+
+1. Load https://getfillright.com and wait for the SW to activate.
+2. In DevTools → Network, tick **Offline**.
+3. Navigate to https://getfillright.com (or click browser refresh).
+4. Observe the page content.
+
+**Expected Result:** The FillRight offline page appears showing the app name, an offline message, and a **Try again** button. The browser does not show a generic "no internet" error page.
+
+| Pass | Fail | N/A |
+|---|---|---|
+| | | |
+
+---
+
+### TC-PWA-04 — "Try again" button reloads the page
+
+| Field | Detail |
+|---|---|
+| **ID** | TC-PWA-04 |
+| **Description** | Clicking Try again triggers a reload so the user gets live content once reconnected |
+
+**Steps:**
+
+1. Follow TC-PWA-03 to reach the offline page.
+2. In DevTools → Network, untick **Offline** to restore connectivity.
+3. Click the **Try again** button on the offline page.
+
+**Expected Result:** The page reloads and the main FillRight calculator is displayed.
+
+| Pass | Fail | N/A |
+|---|---|---|
+| | | |
+
+---
+
+### TC-PWA-05 — Static assets served from cache while offline
+
+| Field | Detail |
+|---|---|
+| **ID** | TC-PWA-05 |
+| **Description** | Next.js static assets cached by the SW are served from cache when offline |
+
+**Steps:**
+
+1. Load the app online so the SW caches `/_next/static/` assets.
+2. In DevTools → Network, tick **Offline**.
+3. Reload the page.
+4. Open DevTools → Network and filter by `_next/static`.
+
+**Expected Result:** Static assets are served from `ServiceWorker` (shown in the Size column), not from the network.
+
+| Pass | Fail | N/A |
+|---|---|---|
+| | | |
+
+---
+
+### TC-PWA-06 — Install to home screen (Android Chrome)
+
+| Field | Detail |
+|---|---|
+| **ID** | TC-PWA-06 |
+| **Description** | The app can be installed to the Android home screen and launches in standalone mode |
+
+**Steps:**
+
+1. Open https://getfillright.com in Chrome on Android.
+2. Tap the browser menu → **Add to Home screen** (or wait for the install banner).
+3. Confirm the install. Find and tap the icon on the home screen.
+
+**Expected Result:** The app launches without browser chrome (no address bar). The app icon shows the orange FillRight icon. The title bar shows the theme color.
+
+| Pass | Fail | N/A |
+|---|---|---|
+| | | |
+
+---
+
+### TC-PWA-07 — Install to home screen (iOS Safari)
+
+| Field | Detail |
+|---|---|
+| **ID** | TC-PWA-07 |
+| **Description** | The app can be added to the iOS home screen with correct icon and title |
+
+**Steps:**
+
+1. Open https://getfillright.com in Safari on iOS.
+2. Tap the Share button → **Add to Home Screen**.
+3. Confirm the name "FillRight" and tap **Add**.
+4. Find and tap the icon on the home screen.
+
+**Expected Result:** The icon displayed is the orange FillRight PNG (not a screenshot of the page). The app launches in standalone mode without Safari chrome.
+
+| Pass | Fail | N/A |
+|---|---|---|
+| | | |
+
+---
+
+### TC-PWA-08 — SW update — new version activates on next navigation
+
+| Field | Detail |
+|---|---|
+| **ID** | TC-PWA-08 |
+| **Description** | When a new SW is deployed the updated worker activates and clears old caches |
+
+**Steps:**
+
+1. Install the app and let the SW activate.
+2. Deploy a new SW with an incremented `CACHE_NAME` (e.g. `fillright-v2`).
+3. Reload the page twice (first reload installs new SW; second activates it).
+4. Check DevTools → Application → Cache Storage.
+
+**Expected Result:** Only the new cache (`fillright-v2`) exists. The old cache (`fillright-v1`) has been deleted.
+
+| Pass | Fail | N/A |
+|---|---|---|
+| | | |
+
+---
+
+## 13. Test Run Log
 
 Use this section to record the outcome of each test run. Add a new entry for each test session.
 
