@@ -9,6 +9,7 @@ export default defineConfig({
     globals: true,
     css: true,
     setupFiles: ["./src/test/setup.ts"],
+    exclude: ["**/node_modules/**", ".claude/worktrees/**", ".claude/projects/**"],
     coverage: {
       provider: "v8",
       reporter: ["text", "json", "html"],

@@ -12,11 +12,11 @@ describe("DistanceInput", () => {
       expect(screen.getByLabelText(/miles to drop-off in miles/i)).toBeInTheDocument();
     });
 
-    it("shows 'km' toggle button by default (miles mode — button shows target unit)", () => {
+    it("shows 'mi' toggle button by default (miles mode — button shows current unit)", () => {
       render(<DistanceInput value={0} onChange={noop} />);
       expect(screen.getByRole("button", { name: /switch to kilometers/i })).toBeInTheDocument();
-      // Button label shows the unit you'll switch TO (km), not the current unit
-      expect(screen.getByText("km")).toBeInTheDocument();
+      // Button label shows the current unit (mi), consistent with the "Miles to Drop-off" label
+      expect(screen.getByText("mi")).toBeInTheDocument();
     });
 
     it("displays empty input when value is 0", () => {
@@ -56,8 +56,8 @@ describe("DistanceInput", () => {
       const user = userEvent.setup();
       render(<DistanceInput value={0} onChange={noop} />);
       await user.click(screen.getByRole("button", { name: /switch to kilometers/i }));
-      // Now in km mode: button shows "mi" (the target unit to switch back to)
-      expect(screen.getByText("mi")).toBeInTheDocument();
+      // Now in km mode: button shows "km" (the current unit)
+      expect(screen.getByText("km")).toBeInTheDocument();
       expect(screen.getByRole("button", { name: /switch to miles/i })).toBeInTheDocument();
     });
 
@@ -80,8 +80,8 @@ describe("DistanceInput", () => {
       const btn = screen.getByRole("button", { name: /switch to kilometers/i });
       await user.click(btn);
       await user.click(screen.getByRole("button", { name: /switch to miles/i }));
-      // Back in miles mode: button shows "km" (the unit to switch to)
-      expect(screen.getByText("km")).toBeInTheDocument();
+      // Back in miles mode: button shows "mi" (the current unit)
+      expect(screen.getByText("mi")).toBeInTheDocument();
     });
   });
 

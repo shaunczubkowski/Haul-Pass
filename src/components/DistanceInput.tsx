@@ -83,7 +83,7 @@ export function DistanceInput({ value, onChange, onBlur, disabled = false }: Dis
             disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer",
           ].join(" ")}
         >
-          {unit === "miles" ? "km" : "mi"}
+          {unit === "miles" ? "mi" : "km"}
         </button>
       </div>
       {unit === "km" && value > 0 && (
