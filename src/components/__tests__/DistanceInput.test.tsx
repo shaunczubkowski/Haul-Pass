@@ -14,8 +14,8 @@ describe("DistanceInput", () => {
 
     it("shows 'mi' toggle button by default (miles mode — button shows current unit)", () => {
       render(<DistanceInput value={0} onChange={noop} />);
-      expect(screen.getByRole("button", { name: /switch to kilometers/i })).toBeInTheDocument();
-      // Button label shows the current unit (mi), consistent with the "Miles to Drop-off" label
+      expect(screen.getByRole("button", { name: /distance unit: miles\. switch to kilometers/i })).toBeInTheDocument();
+      // Button shows the current unit (mi), consistent with the "Miles to Drop-off" label
       expect(screen.getByText("mi")).toBeInTheDocument();
     });
 
