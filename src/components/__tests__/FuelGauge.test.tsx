@@ -123,6 +123,56 @@ describe("FuelGauge", () => {
     });
   });
 
+  describe("tick mark orientation", () => {
+    it("tick marks extend outward beyond the arc stroke, not inward toward the pivot", () => {
+      // Arc geometry: R=80, strokeWidth=12 → outer edge at r=86 from center (CX=100, CY=110)
+      const CX = 100;
+      const CY = 110;
+      const ARC_OUTER_EDGE_R = 86; // R(80) + strokeWidth/2(6)
+
+      const { container } = render(
+        <FuelGauge value={GAUGE_LEVELS.HALF} onChange={noop} label="Test" />
+      );
+
+      const lines = container.querySelectorAll("svg line");
+      expect(lines.length).toBeGreaterThan(0);
+
+      lines.forEach((line) => {
+        const x1 = parseFloat(line.getAttribute("x1")!);
+        const y1 = parseFloat(line.getAttribute("y1")!);
+        const x2 = parseFloat(line.getAttribute("x2")!);
+        const y2 = parseFloat(line.getAttribute("y2")!);
+
+        const r1 = Math.sqrt((x1 - CX) ** 2 + (y1 - CY) ** 2);
+        const r2 = Math.sqrt((x2 - CX) ** 2 + (y2 - CY) ** 2);
+        const outerR = Math.max(r1, r2);
+
+        // The outermost endpoint of each tick must reach beyond the arc stroke
+        expect(outerR).toBeGreaterThan(ARC_OUTER_EDGE_R);
+      });
+    });
+  });
+
+  describe("fill arc", () => {
+    it("fill arc uses sweep=1 so it follows the outer gauge track, not a chord through the interior", () => {
+      // sweep=0 causes the SVG engine to resolve to center (20,30) instead of (100,110),
+      // drawing the fill on a different circle that cuts through the gauge interior.
+      // sweep=1 resolves to center (100,110) and correctly follows the arc track.
+      const { container } = render(
+        <FuelGauge value={GAUGE_LEVELS.HALF} onChange={noop} label="Test" />
+      );
+
+      const paths = container.querySelectorAll("svg path");
+      const filledPath = Array.from(paths).find(
+        (p) => p.getAttribute("stroke") === "#f97316"
+      );
+
+      expect(filledPath).toBeTruthy();
+      // The arc command must use sweep-flag=1 (the "1" after large-arc-flag in "A rx ry rot large sweep x y")
+      expect(filledPath!.getAttribute("d")).toMatch(/A 80 80 0 0 1/);
+    });
+  });
+
   describe("accessibility", () => {
     it("has role=slider with correct aria attributes", () => {
       render(<FuelGauge value={GAUGE_LEVELS.HALF} onChange={noop} label="Pickup Level" />);

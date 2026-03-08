@@ -40,5 +40,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# Claude Code
-.claude/
+# Claude Code agent runtime artifacts (not config)
+.claude/worktrees/
+.claude/projects/

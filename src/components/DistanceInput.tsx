@@ -76,14 +76,14 @@ export function DistanceInput({ value, onChange, onBlur, disabled = false }: Dis
           type="button"
           onClick={toggleUnit}
           disabled={disabled}
-          aria-label={`Switch to ${unit === "miles" ? "kilometers" : "miles"}`}
+          aria-label={`Distance unit: ${unit}. Switch to ${unit === "miles" ? "kilometers" : "miles"}`}
           className={[
             "px-4 border-l-2 border-gray-200 bg-gray-50 text-sm font-semibold text-gray-600",
             "hover:bg-orange-50 hover:text-orange-600 transition-colors min-w-[64px]",
             disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer",
           ].join(" ")}
         >
-          {unit === "miles" ? "km" : "mi"}
+          {unit === "miles" ? "mi" : "km"}
         </button>
       </div>
       {unit === "km" && value > 0 && (

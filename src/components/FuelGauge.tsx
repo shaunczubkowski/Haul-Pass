@@ -32,9 +32,11 @@ function levelToAngle(level: GaugeLevel): number {
   return level * 180;
 }
 
-// Tick mark positions for each gauge level
-const TICK_INNER_R = 70;
-const TICK_OUTER_R = 82;
+// Tick mark positions for each gauge level.
+// TICK_OUTER_R must exceed R + strokeWidth/2 (= 86) so marks extend
+// visibly outward beyond the arc stroke rather than pointing inward.
+const TICK_INNER_R = 72;
+const TICK_OUTER_R = 92;
 
 interface FuelGaugeProps {
   value: GaugeLevel;
@@ -74,12 +76,14 @@ export function FuelGauge({ value, onChange, label, disabled = false }: FuelGaug
   const arcEnd = polarToCartesian(180);
   const arcPath = `M ${arcStart.x} ${arcStart.y} A ${R} ${R} 0 0 0 ${arcEnd.x} ${arcEnd.y}`;
 
-  // Filled arc from E to current value
+  // Filled arc from E to current value.
+  // sweep=1 (clockwise) is required so the SVG arc algorithm resolves to the gauge's
+  // center (CX, CY). sweep=0 with a non-diameter endpoint resolves to a different
+  // circle center, drawing the fill through the gauge interior instead of along the track.
   const filledEnd = polarToCartesian(needleAngle);
-  const filledLargeArc = needleAngle > 180 ? 1 : 0;
   const filledPath =
     needleAngle > 0
-      ? `M ${arcStart.x} ${arcStart.y} A ${R} ${R} 0 ${filledLargeArc} 0 ${filledEnd.x} ${filledEnd.y}`
+      ? `M ${arcStart.x} ${arcStart.y} A ${R} ${R} 0 0 1 ${filledEnd.x} ${filledEnd.y}`
       : null;
 
   return (
