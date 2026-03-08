@@ -32,9 +32,11 @@ function levelToAngle(level: GaugeLevel): number {
   return level * 180;
 }
 
-// Tick mark positions for each gauge level
-const TICK_INNER_R = 70;
-const TICK_OUTER_R = 82;
+// Tick mark positions for each gauge level.
+// TICK_OUTER_R must exceed R + strokeWidth/2 (= 86) so marks extend
+// visibly outward beyond the arc stroke rather than pointing inward.
+const TICK_INNER_R = 72;
+const TICK_OUTER_R = 92;
 
 interface FuelGaugeProps {
   value: GaugeLevel;
