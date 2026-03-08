@@ -153,6 +153,26 @@ describe("FuelGauge", () => {
     });
   });
 
+  describe("fill arc", () => {
+    it("fill arc uses sweep=1 so it follows the outer gauge track, not a chord through the interior", () => {
+      // sweep=0 causes the SVG engine to resolve to center (20,30) instead of (100,110),
+      // drawing the fill on a different circle that cuts through the gauge interior.
+      // sweep=1 resolves to center (100,110) and correctly follows the arc track.
+      const { container } = render(
+        <FuelGauge value={GAUGE_LEVELS.HALF} onChange={noop} label="Test" />
+      );
+
+      const paths = container.querySelectorAll("svg path");
+      const filledPath = Array.from(paths).find(
+        (p) => p.getAttribute("stroke") === "#f97316"
+      );
+
+      expect(filledPath).toBeTruthy();
+      // The arc command must use sweep-flag=1 (the "1" after large-arc-flag in "A rx ry rot large sweep x y")
+      expect(filledPath!.getAttribute("d")).toMatch(/A 80 80 0 0 1/);
+    });
+  });
+
   describe("accessibility", () => {
     it("has role=slider with correct aria attributes", () => {
       render(<FuelGauge value={GAUGE_LEVELS.HALF} onChange={noop} label="Pickup Level" />);
