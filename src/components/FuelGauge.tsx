@@ -74,7 +74,7 @@ export function FuelGauge({ value, onChange, label, disabled = false }: FuelGaug
   // Arc path: full background arc (E to F)
   const arcStart = polarToCartesian(0);
   const arcEnd = polarToCartesian(180);
-  const arcPath = `M ${arcStart.x} ${arcStart.y} A ${R} ${R} 0 0 0 ${arcEnd.x} ${arcEnd.y}`;
+  const arcPath = `M ${arcStart.x} ${arcStart.y} A ${R} ${R} 0 0 1 ${arcEnd.x} ${arcEnd.y}`;
 
   // Filled arc from E to current value.
   // sweep=1 (clockwise) is required so the SVG arc algorithm resolves to the gauge's
