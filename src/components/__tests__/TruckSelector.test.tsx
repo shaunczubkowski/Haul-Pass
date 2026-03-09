@@ -2,19 +2,37 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { TruckSelector } from "@/components/TruckSelector";
-import { ALL_TRUCKS, UHAUL_TRUCKS } from "@/data/trucks";
+import { ALL_TRUCKS, UHAUL_TRUCKS, PENSKE_TRUCKS } from "@/data/trucks";
 
 const noop = () => {};
 
 describe("TruckSelector", () => {
   describe("rendering", () => {
-    it("renders a card for every truck in ALL_TRUCKS", () => {
+    it("renders company selector tabs for all 4 companies", () => {
       render(<TruckSelector value={null} onChange={noop} />);
-      const radios = screen.getAllByRole("radio");
-      expect(radios.length).toBe(ALL_TRUCKS.length);
+      const companyGroup = screen.getByRole("radiogroup", { name: /select rental company/i });
+      const companyButtons = companyGroup.querySelectorAll('[role="radio"]');
+      expect(companyButtons.length).toBe(4);
     });
 
-    it("renders truck name on each card", () => {
+    it("renders only U-Haul trucks by default", () => {
+      render(<TruckSelector value={null} onChange={noop} />);
+      const truckGroup = screen.getByRole("radiogroup", { name: /select truck size/i });
+      const truckButtons = truckGroup.querySelectorAll('[role="radio"]');
+      expect(truckButtons.length).toBe(UHAUL_TRUCKS.length);
+    });
+
+    it("renders Penske trucks when Penske company tab is clicked", async () => {
+      const user = userEvent.setup();
+      render(<TruckSelector value={null} onChange={noop} />);
+      const penskeTab = screen.getByRole("radio", { name: "Penske" });
+      await user.click(penskeTab);
+      const truckGroup = screen.getByRole("radiogroup", { name: /select truck size/i });
+      const truckButtons = truckGroup.querySelectorAll('[role="radio"]');
+      expect(truckButtons.length).toBe(PENSKE_TRUCKS.length);
+    });
+
+    it("renders truck name on each card for the selected company", () => {
       render(<TruckSelector value={null} onChange={noop} />);
       for (const truck of UHAUL_TRUCKS) {
         expect(screen.getByText(truck.name)).toBeInTheDocument();
@@ -42,17 +60,39 @@ describe("TruckSelector", () => {
       expect(screen.getByText("Studio")).toBeInTheDocument(); // cargo van
     });
 
-    it("has a radiogroup with accessible label", () => {
+    it("has a truck size radiogroup with accessible label", () => {
       render(<TruckSelector value={null} onChange={noop} />);
       expect(screen.getByRole("radiogroup", { name: /select truck size/i })).toBeInTheDocument();
+    });
+
+    it("shows diesel warning when Penske is selected", async () => {
+      const user = userEvent.setup();
+      render(<TruckSelector value={null} onChange={noop} />);
+      await user.click(screen.getByRole("radio", { name: "Penske" }));
+      expect(screen.getByRole("alert")).toBeInTheDocument();
+      expect(screen.getByText(/penske trucks use diesel fuel/i)).toBeInTheDocument();
+    });
+
+    it("does not show diesel warning for U-Haul", () => {
+      render(<TruckSelector value={null} onChange={noop} />);
+      expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    });
+
+    it("shows 'diesel' badge on Penske truck cards", async () => {
+      const user = userEvent.setup();
+      render(<TruckSelector value={null} onChange={noop} />);
+      await user.click(screen.getByRole("radio", { name: "Penske" }));
+      const dieselBadges = screen.getAllByText("diesel");
+      expect(dieselBadges.length).toBe(PENSKE_TRUCKS.length);
     });
   });
 
   describe("selection state", () => {
-    it("marks the selected truck as checked", () => {
+    it("marks the selected truck as checked in its truck group", () => {
       const truck15ft = ALL_TRUCKS.find((t) => t.id === "uhaul-15ft")!;
       render(<TruckSelector value={truck15ft} onChange={noop} />);
-      const selected = screen.getAllByRole("radio").find(
+      const truckGroup = screen.getByRole("radiogroup", { name: /select truck size/i });
+      const selected = Array.from(truckGroup.querySelectorAll('[role="radio"]')).find(
         (r) => r.getAttribute("aria-checked") === "true"
       );
       expect(selected).toBeDefined();
@@ -62,18 +102,27 @@ describe("TruckSelector", () => {
     it("marks all other trucks as not checked when one is selected", () => {
       const truck15ft = ALL_TRUCKS.find((t) => t.id === "uhaul-15ft")!;
       render(<TruckSelector value={truck15ft} onChange={noop} />);
-      const unchecked = screen
-        .getAllByRole("radio")
-        .filter((r) => r.getAttribute("aria-checked") === "false");
-      expect(unchecked.length).toBe(ALL_TRUCKS.length - 1);
+      const truckGroup = screen.getByRole("radiogroup", { name: /select truck size/i });
+      const unchecked = Array.from(truckGroup.querySelectorAll('[role="radio"]')).filter(
+        (r) => r.getAttribute("aria-checked") === "false"
+      );
+      expect(unchecked.length).toBe(UHAUL_TRUCKS.length - 1);
     });
 
     it("marks no truck as checked when value is null", () => {
       render(<TruckSelector value={null} onChange={noop} />);
-      const checked = screen
-        .getAllByRole("radio")
-        .filter((r) => r.getAttribute("aria-checked") === "true");
+      const truckGroup = screen.getByRole("radiogroup", { name: /select truck size/i });
+      const checked = Array.from(truckGroup.querySelectorAll('[role="radio"]')).filter(
+        (r) => r.getAttribute("aria-checked") === "true"
+      );
       expect(checked.length).toBe(0);
+    });
+
+    it("switches to Penske company tab when a Penske truck is passed as value", () => {
+      const penskeTruck = PENSKE_TRUCKS[0];
+      render(<TruckSelector value={penskeTruck} onChange={noop} />);
+      const penskeTab = screen.getByRole("radio", { name: "Penske" });
+      expect(penskeTab).toHaveAttribute("aria-checked", "true");
     });
   });
 
@@ -97,6 +146,17 @@ describe("TruckSelector", () => {
       const card = screen.getByText("15 ft Truck").closest("button")!;
       await user.click(card);
       expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ id: "uhaul-15ft" }));
+    });
+
+    it("auto-selects first Penske truck when switching to Penske company tab", async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      const truck15ft = ALL_TRUCKS.find((t) => t.id === "uhaul-15ft")!;
+      render(<TruckSelector value={truck15ft} onChange={onChange} />);
+      await user.click(screen.getByRole("radio", { name: "Penske" }));
+      expect(onChange).toHaveBeenCalledWith(
+        expect.objectContaining({ company: "penske" })
+      );
     });
   });
 });
