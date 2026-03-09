@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import Home from "@/app/page";
-import { ALL_TRUCKS } from "@/data/trucks";
+import { UHAUL_TRUCKS } from "@/data/trucks";
 
 // Helper: click a truck card by name
 async function selectTruck(user: ReturnType<typeof userEvent.setup>, name: string) {
@@ -31,9 +31,10 @@ describe("Home page", () => {
       expect(screen.queryByText(/add before returning/i)).not.toBeInTheDocument();
     });
 
-    it("renders all truck cards", () => {
+    it("renders U-Haul truck cards by default", () => {
       render(<Home />);
-      for (const truck of ALL_TRUCKS) {
+      // Only U-Haul trucks shown by default; other companies require selecting the company tab
+      for (const truck of UHAUL_TRUCKS) {
         expect(screen.getByText(truck.name)).toBeInTheDocument();
       }
     });
@@ -176,8 +177,9 @@ describe("Home page", () => {
       await waitFor(() =>
         expect(screen.getByText(/add before returning/i)).toBeInTheDocument()
       );
-      // 26ft truck is selected: its name should be on the (now-checked) card
-      const selectedCard = screen.getAllByRole("radio").find(
+      // 26ft truck is selected: find the checked card within the truck size radiogroup
+      const truckGroup = screen.getByRole("radiogroup", { name: /select truck size/i });
+      const selectedCard = Array.from(truckGroup.querySelectorAll('[role="radio"]')).find(
         (r) => r.getAttribute("aria-checked") === "true"
       );
       expect(selectedCard?.textContent).toContain("26 ft Truck");

@@ -1,5 +1,13 @@
 import { describe, it, expect } from "vitest";
-import { ALL_TRUCKS, UHAUL_TRUCKS, getTruckById } from "@/data/trucks";
+import {
+  ALL_TRUCKS,
+  UHAUL_TRUCKS,
+  PENSKE_TRUCKS,
+  BUDGET_TRUCKS,
+  ENTERPRISE_TRUCKS,
+  getTruckById,
+  getTrucksByCompany,
+} from "@/data/trucks";
 
 describe("Truck fleet data", () => {
   describe("UHAUL_TRUCKS", () => {
@@ -72,6 +80,132 @@ describe("Truck fleet data", () => {
     });
   });
 
+  describe("PENSKE_TRUCKS", () => {
+    it("contains Penske truck sizes", () => {
+      expect(PENSKE_TRUCKS.length).toBeGreaterThanOrEqual(3);
+    });
+
+    it("all Penske trucks use diesel fuel", () => {
+      PENSKE_TRUCKS.forEach((truck) => {
+        expect(truck.fuelType).toBe("diesel");
+      });
+    });
+
+    it("all Penske trucks belong to the penske company", () => {
+      PENSKE_TRUCKS.forEach((truck) => {
+        expect(truck.company).toBe("penske");
+      });
+    });
+
+    it("all Penske truck IDs start with 'penske-'", () => {
+      PENSKE_TRUCKS.forEach((truck) => {
+        expect(truck.id).toMatch(/^penske-/);
+      });
+    });
+
+    it("contains expected Penske sizes with valid tank capacities", () => {
+      PENSKE_TRUCKS.forEach((truck) => {
+        expect(truck.tankCapacity).toBeGreaterThanOrEqual(20);
+        expect(truck.tankCapacity).toBeLessThanOrEqual(80);
+      });
+    });
+  });
+
+  describe("BUDGET_TRUCKS", () => {
+    it("contains Budget truck sizes", () => {
+      expect(BUDGET_TRUCKS.length).toBeGreaterThanOrEqual(3);
+    });
+
+    it("all Budget trucks use regular unleaded fuel", () => {
+      BUDGET_TRUCKS.forEach((truck) => {
+        expect(truck.fuelType).toBe("regular");
+      });
+    });
+
+    it("all Budget trucks belong to the budget company", () => {
+      BUDGET_TRUCKS.forEach((truck) => {
+        expect(truck.company).toBe("budget");
+      });
+    });
+
+    it("all Budget truck IDs start with 'budget-'", () => {
+      BUDGET_TRUCKS.forEach((truck) => {
+        expect(truck.id).toMatch(/^budget-/);
+      });
+    });
+  });
+
+  describe("ENTERPRISE_TRUCKS", () => {
+    it("contains Enterprise truck sizes", () => {
+      expect(ENTERPRISE_TRUCKS.length).toBeGreaterThanOrEqual(2);
+    });
+
+    it("all Enterprise trucks use regular unleaded fuel", () => {
+      ENTERPRISE_TRUCKS.forEach((truck) => {
+        expect(truck.fuelType).toBe("regular");
+      });
+    });
+
+    it("all Enterprise trucks belong to the enterprise company", () => {
+      ENTERPRISE_TRUCKS.forEach((truck) => {
+        expect(truck.company).toBe("enterprise");
+      });
+    });
+
+    it("all Enterprise truck IDs start with 'enterprise-'", () => {
+      ENTERPRISE_TRUCKS.forEach((truck) => {
+        expect(truck.id).toMatch(/^enterprise-/);
+      });
+    });
+  });
+
+  describe("ALL_TRUCKS", () => {
+    it("includes trucks from all four companies", () => {
+      const companies = new Set(ALL_TRUCKS.map((t) => t.company));
+      expect(companies.has("uhaul")).toBe(true);
+      expect(companies.has("penske")).toBe(true);
+      expect(companies.has("budget")).toBe(true);
+      expect(companies.has("enterprise")).toBe(true);
+    });
+
+    it("all trucks have a valid fuelType", () => {
+      ALL_TRUCKS.forEach((truck) => {
+        expect(["regular", "diesel"]).toContain(truck.fuelType);
+      });
+    });
+  });
+
+  describe("getTrucksByCompany", () => {
+    it("returns only U-Haul trucks for 'uhaul'", () => {
+      const trucks = getTrucksByCompany("uhaul");
+      expect(trucks.length).toBe(UHAUL_TRUCKS.length);
+      trucks.forEach((t) => expect(t.company).toBe("uhaul"));
+    });
+
+    it("returns only Penske trucks for 'penske'", () => {
+      const trucks = getTrucksByCompany("penske");
+      expect(trucks.length).toBe(PENSKE_TRUCKS.length);
+      trucks.forEach((t) => expect(t.company).toBe("penske"));
+    });
+
+    it("returns only Budget trucks for 'budget'", () => {
+      const trucks = getTrucksByCompany("budget");
+      expect(trucks.length).toBe(BUDGET_TRUCKS.length);
+      trucks.forEach((t) => expect(t.company).toBe("budget"));
+    });
+
+    it("returns only Enterprise trucks for 'enterprise'", () => {
+      const trucks = getTrucksByCompany("enterprise");
+      expect(trucks.length).toBe(ENTERPRISE_TRUCKS.length);
+      trucks.forEach((t) => expect(t.company).toBe("enterprise"));
+    });
+
+    it("returns empty array for unknown company", () => {
+      // @ts-expect-error testing unknown company
+      expect(getTrucksByCompany("unknown")).toHaveLength(0);
+    });
+  });
+
   describe("getTruckById", () => {
     it("returns the correct truck for a valid ID", () => {
       const truck = getTruckById("uhaul-15ft");
@@ -83,6 +217,14 @@ describe("Truck fleet data", () => {
     it("returns undefined for an unknown ID", () => {
       const truck = getTruckById("nonexistent-truck");
       expect(truck).toBeUndefined();
+    });
+
+    it("can look up a Penske truck by ID", () => {
+      const penskeTruck = PENSKE_TRUCKS[0];
+      const found = getTruckById(penskeTruck.id);
+      expect(found).toBeDefined();
+      expect(found!.company).toBe("penske");
+      expect(found!.fuelType).toBe("diesel");
     });
   });
 });

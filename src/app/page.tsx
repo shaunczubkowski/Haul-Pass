@@ -104,7 +104,7 @@ export default function Home() {
         <div className="mb-8 text-center">
           <div className="mb-3 text-4xl">⛽</div>
           <h1 className="text-3xl font-bold tracking-tight text-zinc-900">FillRight</h1>
-          <p className="mt-1 text-zinc-500">U-Haul Fuel Return Calculator</p>
+          <p className="mt-1 text-zinc-500">Rental Truck Fuel Return Calculator</p>
         </div>
 
         <div className="flex flex-col gap-6">
@@ -218,7 +218,7 @@ export default function Home() {
                         <div>
                           <p className="font-bold text-base">$30 Service Fee Risk</p>
                           <p className="text-sm mt-0.5">
-                            Your tank will drop below ¼ before drop-off. Fill up to avoid U-Haul&apos;s refueling surcharge.
+                            Your tank will drop below ¼ before drop-off. Fill up to avoid the rental company&apos;s refueling surcharge.
                           </p>
                         </div>
                       </div>
