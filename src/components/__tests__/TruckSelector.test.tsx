@@ -69,13 +69,13 @@ describe("TruckSelector", () => {
       const user = userEvent.setup();
       render(<TruckSelector value={null} onChange={noop} />);
       await user.click(screen.getByRole("radio", { name: "Penske" }));
-      expect(screen.getByRole("alert")).toBeInTheDocument();
+      expect(screen.getByRole("note")).toBeInTheDocument();
       expect(screen.getByText(/penske trucks use diesel fuel/i)).toBeInTheDocument();
     });
 
     it("does not show diesel warning for U-Haul", () => {
       render(<TruckSelector value={null} onChange={noop} />);
-      expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+      expect(screen.queryByRole("note")).not.toBeInTheDocument();
     });
 
     it("shows 'diesel' badge on Penske truck cards", async () => {
@@ -123,6 +123,82 @@ describe("TruckSelector", () => {
       render(<TruckSelector value={penskeTruck} onChange={noop} />);
       const penskeTab = screen.getByRole("radio", { name: "Penske" });
       expect(penskeTab).toHaveAttribute("aria-checked", "true");
+    });
+  });
+
+  describe("keyboard navigation", () => {
+    it("ArrowRight on company tab moves focus and selection to next company", async () => {
+      const user = userEvent.setup();
+      render(<TruckSelector value={null} onChange={noop} />);
+      const uhaulTab = screen.getByRole("radio", { name: "U-Haul" });
+      uhaulTab.focus();
+      await user.keyboard("{ArrowRight}");
+      expect(screen.getByRole("radio", { name: "Penske" })).toHaveFocus();
+      expect(screen.getByRole("radio", { name: "Penske" })).toHaveAttribute("aria-checked", "true");
+      expect(uhaulTab).toHaveAttribute("aria-checked", "false");
+    });
+
+    it("ArrowLeft on company tab moves focus and selection to previous company", async () => {
+      const user = userEvent.setup();
+      render(<TruckSelector value={null} onChange={noop} />);
+      await user.click(screen.getByRole("radio", { name: "Penske" }));
+      const penskeTab = screen.getByRole("radio", { name: "Penske" });
+      penskeTab.focus();
+      await user.keyboard("{ArrowLeft}");
+      expect(screen.getByRole("radio", { name: "U-Haul" })).toHaveFocus();
+      expect(screen.getByRole("radio", { name: "U-Haul" })).toHaveAttribute("aria-checked", "true");
+    });
+
+    it("ArrowRight on last company tab wraps focus to first company", async () => {
+      const user = userEvent.setup();
+      render(<TruckSelector value={null} onChange={noop} />);
+      await user.click(screen.getByRole("radio", { name: "Enterprise" }));
+      const enterpriseTab = screen.getByRole("radio", { name: "Enterprise" });
+      enterpriseTab.focus();
+      await user.keyboard("{ArrowRight}");
+      expect(screen.getByRole("radio", { name: "U-Haul" })).toHaveFocus();
+    });
+
+    it("ArrowLeft on first company tab wraps focus to last company", async () => {
+      const user = userEvent.setup();
+      render(<TruckSelector value={null} onChange={noop} />);
+      const uhaulTab = screen.getByRole("radio", { name: "U-Haul" });
+      uhaulTab.focus();
+      await user.keyboard("{ArrowLeft}");
+      expect(screen.getByRole("radio", { name: "Enterprise" })).toHaveFocus();
+    });
+
+    it("ArrowRight on a truck card selects and focuses the next truck", async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      const pickup = UHAUL_TRUCKS[0]; // uhaul-pickup
+      const cargoVan = UHAUL_TRUCKS[1]; // uhaul-cargo-van
+      render(<TruckSelector value={pickup} onChange={onChange} />);
+      const pickupCard = screen.getByText("8 ft Pickup").closest("button")!;
+      pickupCard.focus();
+      await user.keyboard("{ArrowRight}");
+      expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ id: cargoVan.id }));
+      expect(screen.getByText("Cargo Van").closest("button")).toHaveFocus();
+    });
+
+    it("ArrowLeft on first truck card wraps to last truck", async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      const pickup = UHAUL_TRUCKS[0];
+      const last = UHAUL_TRUCKS[UHAUL_TRUCKS.length - 1];
+      render(<TruckSelector value={pickup} onChange={onChange} />);
+      const pickupCard = screen.getByText("8 ft Pickup").closest("button")!;
+      pickupCard.focus();
+      await user.keyboard("{ArrowLeft}");
+      expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ id: last.id }));
+    });
+
+    it("only the selected company tab is in the natural tab order", () => {
+      render(<TruckSelector value={null} onChange={noop} />);
+      const uhaulTab = screen.getByRole("radio", { name: "U-Haul" });
+      const penskeTab = screen.getByRole("radio", { name: "Penske" });
+      expect(uhaulTab).toHaveAttribute("tabindex", "0");
+      expect(penskeTab).toHaveAttribute("tabindex", "-1");
     });
   });
 
