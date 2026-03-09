@@ -171,6 +171,23 @@ describe("FuelGauge", () => {
       // The arc command must use sweep-flag=1 (the "1" after large-arc-flag in "A rx ry rot large sweep x y")
       expect(filledPath!.getAttribute("d")).toMatch(/A 80 80 0 0 1/);
     });
+
+    it("background arc uses sweep=1 so it draws the upper semicircle, not the lower one", () => {
+      // sweep=0 from (20,110) to (180,110) traces through (100,190) — the lower semicircle,
+      // mostly below the viewBox (height 120) and visually inverted.
+      // sweep=1 traces through (100,30) — the upper semicircle that forms the correct gauge track.
+      const { container } = render(
+        <FuelGauge value={GAUGE_LEVELS.EMPTY} onChange={noop} label="Test" />
+      );
+
+      const paths = container.querySelectorAll("svg path");
+      const bgPath = Array.from(paths).find(
+        (p) => p.getAttribute("stroke") === "#e5e7eb"
+      );
+
+      expect(bgPath).toBeTruthy();
+      expect(bgPath!.getAttribute("d")).toMatch(/A 80 80 0 0 1/);
+    });
   });
 
   describe("accessibility", () => {
