@@ -1,4 +1,4 @@
-import type { TruckType } from "@/types";
+import type { TruckType, RentalCompany } from "@/types";
 
 /**
  * U-Haul truck fleet data.
@@ -83,13 +83,154 @@ export const UHAUL_TRUCKS: TruckType[] = [
 ];
 
 /**
- * All supported truck fleets. Add Penske, Budget, etc. in v1.0 (see issue #15).
+ * Penske truck fleet data.
+ * Sources:
+ * - Tank capacities & MPG: Penske Truck Rental website, mymovingreviews.com, moving community guides
+ * - Fuel type: Penske trucks use diesel fuel. Always fill at diesel pumps.
+ * - MPG estimates are for lightly loaded/empty trucks; loaded MPG will be lower.
  */
-export const ALL_TRUCKS: TruckType[] = [...UHAUL_TRUCKS];
+export const PENSKE_TRUCKS: TruckType[] = [
+  {
+    id: "penske-12ft",
+    name: "12 ft Truck",
+    company: "penske",
+    tankCapacity: 26,
+    mpg: 12,
+    fuelType: "diesel",
+    loadSize: "1 bedroom",
+  },
+  {
+    id: "penske-16ft",
+    name: "16 ft Truck",
+    company: "penske",
+    tankCapacity: 33,
+    mpg: 10,
+    fuelType: "diesel",
+    loadSize: "2 bedrooms",
+  },
+  {
+    id: "penske-22ft",
+    name: "22 ft Truck",
+    company: "penske",
+    tankCapacity: 50,
+    mpg: 8,
+    fuelType: "diesel",
+    loadSize: "3–4 bedrooms",
+  },
+  {
+    id: "penske-26ft",
+    name: "26 ft Truck",
+    company: "penske",
+    tankCapacity: 50,
+    mpg: 7,
+    fuelType: "diesel",
+    loadSize: "5+ bedrooms",
+  },
+];
+
+/**
+ * Budget truck fleet data.
+ * Sources:
+ * - Tank capacities: Budget Truck Rental website, moving guides, community forums
+ * - MPG estimates: Budget documentation, U-Pack rental truck comparison guide
+ * Note: All Budget trucks use regular unleaded gasoline.
+ */
+export const BUDGET_TRUCKS: TruckType[] = [
+  {
+    id: "budget-10ft",
+    name: "10 ft Truck",
+    company: "budget",
+    tankCapacity: 31,
+    mpg: 12,
+    fuelType: "regular",
+    loadSize: "1 bedroom",
+  },
+  {
+    id: "budget-16ft",
+    name: "16 ft Truck",
+    company: "budget",
+    tankCapacity: 40,
+    mpg: 10,
+    fuelType: "regular",
+    loadSize: "2–3 bedrooms",
+  },
+  {
+    id: "budget-24ft",
+    name: "24 ft Truck",
+    company: "budget",
+    tankCapacity: 60,
+    mpg: 7,
+    fuelType: "regular",
+    loadSize: "4–5 bedrooms",
+  },
+  {
+    id: "budget-26ft",
+    name: "26 ft Truck",
+    company: "budget",
+    tankCapacity: 60,
+    mpg: 7,
+    fuelType: "regular",
+    loadSize: "5+ bedrooms",
+  },
+];
+
+/**
+ * Enterprise truck fleet data.
+ * Sources:
+ * - Tank capacities: Enterprise Truck Rental website, moving community guides
+ * - MPG estimates: Industry averages for comparable truck classes
+ * Note: All Enterprise trucks use regular unleaded gasoline.
+ */
+export const ENTERPRISE_TRUCKS: TruckType[] = [
+  {
+    id: "enterprise-10ft",
+    name: "10 ft Truck",
+    company: "enterprise",
+    tankCapacity: 31,
+    mpg: 12,
+    fuelType: "regular",
+    loadSize: "1 bedroom",
+  },
+  {
+    id: "enterprise-16ft",
+    name: "16 ft Truck",
+    company: "enterprise",
+    tankCapacity: 40,
+    mpg: 10,
+    fuelType: "regular",
+    loadSize: "2–3 bedrooms",
+  },
+  {
+    id: "enterprise-26ft",
+    name: "26 ft Truck",
+    company: "enterprise",
+    tankCapacity: 60,
+    mpg: 7,
+    fuelType: "regular",
+    loadSize: "5+ bedrooms",
+  },
+];
+
+/**
+ * All supported truck fleets.
+ */
+export const ALL_TRUCKS: TruckType[] = [
+  ...UHAUL_TRUCKS,
+  ...PENSKE_TRUCKS,
+  ...BUDGET_TRUCKS,
+  ...ENTERPRISE_TRUCKS,
+];
 
 /**
  * Lookup a truck by its ID. Returns undefined if not found.
  */
 export function getTruckById(id: string): TruckType | undefined {
   return ALL_TRUCKS.find((t) => t.id === id);
+}
+
+/**
+ * Return all trucks for a given rental company.
+ */
+export function getTrucksByCompany(company: RentalCompany): TruckType[] {
+  return ALL_TRUCKS.filter((t) => t.company === company);
 }
