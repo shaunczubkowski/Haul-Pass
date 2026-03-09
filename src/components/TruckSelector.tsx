@@ -6,7 +6,7 @@ import type { TruckType, RentalCompany } from "@/types";
 
 interface TruckSelectorProps {
   value: TruckType | null;
-  onChange: (truck: TruckType) => void;
+  onChange: (truck: TruckType | null) => void;
 }
 
 const COMPANIES: { id: RentalCompany; label: string }[] = [
@@ -29,11 +29,8 @@ export function TruckSelector({ value, onChange }: TruckSelectorProps) {
 
   function handleCompanyChange(next: RentalCompany) {
     setCompany(next);
-    // Clear selection if current truck belongs to a different company
     if (value && value.company !== next) {
-      // Reset to first truck of the new company if one exists
-      const available = getTrucksByCompany(next);
-      if (available.length > 0) onChange(available[0]);
+      onChange(null);
     }
   }
 

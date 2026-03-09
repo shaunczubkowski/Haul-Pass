@@ -224,15 +224,24 @@ describe("TruckSelector", () => {
       expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ id: "uhaul-15ft" }));
     });
 
-    it("auto-selects first Penske truck when switching to Penske company tab", async () => {
+    it("clears selection (calls onChange with null) when switching to a different company tab", async () => {
       const user = userEvent.setup();
       const onChange = vi.fn();
       const truck15ft = ALL_TRUCKS.find((t) => t.id === "uhaul-15ft")!;
       render(<TruckSelector value={truck15ft} onChange={onChange} />);
       await user.click(screen.getByRole("radio", { name: "Penske" }));
-      expect(onChange).toHaveBeenCalledWith(
+      expect(onChange).toHaveBeenCalledWith(null);
+      expect(onChange).not.toHaveBeenCalledWith(
         expect.objectContaining({ company: "penske" })
       );
+    });
+
+    it("does not call onChange when switching company tab with no truck selected", async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      render(<TruckSelector value={null} onChange={onChange} />);
+      await user.click(screen.getByRole("radio", { name: "Penske" }));
+      expect(onChange).not.toHaveBeenCalled();
     });
   });
 });
