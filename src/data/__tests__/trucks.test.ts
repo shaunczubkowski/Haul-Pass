@@ -204,6 +204,11 @@ describe("Truck fleet data", () => {
       // @ts-expect-error testing unknown company
       expect(getTrucksByCompany("unknown")).toHaveLength(0);
     });
+
+    it("returns empty array for 'other' (removed from union — regression guard)", () => {
+      // @ts-expect-error "other" was removed from RentalCompany; guards against re-introduction without data
+      expect(getTrucksByCompany("other")).toHaveLength(0);
+    });
   });
 
   describe("getTruckById", () => {
