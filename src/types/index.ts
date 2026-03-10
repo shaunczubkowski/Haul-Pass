@@ -1,6 +1,6 @@
 export type FuelType = "regular" | "diesel";
 
-export type RentalCompany = "uhaul" | "penske" | "budget" | "enterprise" | "other";
+export type RentalCompany = "uhaul" | "penske" | "budget" | "enterprise";
 
 export interface TruckType {
   id: string;
