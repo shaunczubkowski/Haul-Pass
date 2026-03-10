@@ -23,7 +23,7 @@ describe("Home page", () => {
 
     it("shows the cold-start guidance before a truck is selected", () => {
       render(<Home />);
-      expect(screen.getByText(/start by selecting your truck size/i)).toBeInTheDocument();
+      expect(screen.getByText(/select your truck size above/i)).toBeInTheDocument();
     });
 
     it("does not show the result section before a truck is selected", () => {
@@ -189,7 +189,7 @@ describe("Home page", () => {
       window.history.replaceState(null, "", "?truck=unknown-truck-xyz");
       render(<Home />);
       // No truck selected, cold-start guidance shown
-      expect(screen.getByText(/start by selecting your truck size/i)).toBeInTheDocument();
+      expect(screen.getByText(/select your truck size above/i)).toBeInTheDocument();
     });
 
     it("ignores invalid gauge level values from URL params", async () => {

@@ -200,6 +200,36 @@ describe("TruckSelector", () => {
       expect(uhaulTab).toHaveAttribute("tabindex", "0");
       expect(penskeTab).toHaveAttribute("tabindex", "-1");
     });
+
+    it("ArrowRight on company tab emits onChange(null) when a truck from another company is selected", async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      const truck15ft = ALL_TRUCKS.find((t) => t.id === "uhaul-15ft")!;
+      render(<TruckSelector value={truck15ft} onChange={onChange} />);
+      const uhaulTab = screen.getByRole("radio", { name: "U-Haul" });
+      uhaulTab.focus();
+      await user.keyboard("{ArrowRight}");
+      expect(onChange).toHaveBeenCalledWith(null);
+      expect(onChange).not.toHaveBeenCalledWith(expect.objectContaining({ company: "penske" }));
+    });
+
+    it("clicking the already-active company tab does not call onChange", async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      const truck15ft = ALL_TRUCKS.find((t) => t.id === "uhaul-15ft")!;
+      render(<TruckSelector value={truck15ft} onChange={onChange} />);
+      await user.click(screen.getByRole("radio", { name: "U-Haul" }));
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it("first truck card gets tabIndex=0 after selection is cleared by company switch", async () => {
+      const user = userEvent.setup();
+      render(<TruckSelector value={null} onChange={noop} />);
+      await user.click(screen.getByRole("radio", { name: "Penske" }));
+      const truckGroup = screen.getByRole("radiogroup", { name: /select truck size/i });
+      const firstCard = truckGroup.querySelectorAll('[role="radio"]')[0];
+      expect(firstCard).toHaveAttribute("tabindex", "0");
+    });
   });
 
   describe("interaction", () => {
@@ -224,15 +254,24 @@ describe("TruckSelector", () => {
       expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ id: "uhaul-15ft" }));
     });
 
-    it("auto-selects first Penske truck when switching to Penske company tab", async () => {
+    it("clears selection (calls onChange with null) when switching to a different company tab", async () => {
       const user = userEvent.setup();
       const onChange = vi.fn();
       const truck15ft = ALL_TRUCKS.find((t) => t.id === "uhaul-15ft")!;
       render(<TruckSelector value={truck15ft} onChange={onChange} />);
       await user.click(screen.getByRole("radio", { name: "Penske" }));
-      expect(onChange).toHaveBeenCalledWith(
+      expect(onChange).toHaveBeenCalledWith(null);
+      expect(onChange).not.toHaveBeenCalledWith(
         expect.objectContaining({ company: "penske" })
       );
+    });
+
+    it("does not call onChange when switching company tab with no truck selected", async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      render(<TruckSelector value={null} onChange={onChange} />);
+      await user.click(screen.getByRole("radio", { name: "Penske" }));
+      expect(onChange).not.toHaveBeenCalled();
     });
   });
 });

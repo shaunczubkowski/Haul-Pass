@@ -197,6 +197,9 @@ export default function Home() {
                 : "border-orange-400 bg-orange-50",
             ].join(" ") : ""}
           >
+            {!truck && (
+              <p className="sr-only">Select a truck above to see your fuel calculation.</p>
+            )}
             {result && (
               <>
                 {result.alreadySufficient ? (
@@ -283,7 +286,7 @@ export default function Home() {
 
           {!truck && (
             <div className="rounded-xl border border-zinc-200 bg-white/70 px-5 py-4 text-center text-sm text-zinc-500">
-              <p className="font-medium text-zinc-700 mb-1">👆 Start by selecting your truck size above.</p>
+              <p className="font-medium text-zinc-700 mb-1">👆 Select your truck size above to see the calculation.</p>
               <p>Each truck has a different tank capacity and fuel efficiency — FillRight uses these to calculate exactly how much to add.</p>
             </div>
           )}
