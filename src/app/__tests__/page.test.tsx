@@ -86,6 +86,16 @@ describe("Home page", () => {
       expect(screen.getByText(/≈ \$/)).toBeInTheDocument();
     });
 
+    it("does not show a cost estimate for a negative gas price", async () => {
+      const user = userEvent.setup();
+      render(<Home />);
+      await selectTruck(user, "8 ft Pickup");
+      const gasPriceInput = screen.getByLabelText(/gas price per gallon/i);
+      fireEvent.change(gasPriceInput, { target: { value: "-3.99" } });
+      // A negative price must not produce a cost estimate line
+      expect(screen.queryByText(/≈ \$/)).not.toBeInTheDocument();
+    });
+
     it("hides cost estimate when gas price is cleared", async () => {
       const user = userEvent.setup();
       render(<Home />);

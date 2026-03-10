@@ -92,7 +92,7 @@ export default function Home() {
           pickupLevel,
           currentLevel,
           distanceToDropoff: distance,
-          gasPricePerGallon: gasPrice !== "" && !isNaN(parseFloat(gasPrice)) ? parseFloat(gasPrice) : undefined,
+          gasPricePerGallon: gasPrice !== "" && !isNaN(parseFloat(gasPrice)) && parseFloat(gasPrice) > 0 ? parseFloat(gasPrice) : undefined,
         })
       : null;
 
