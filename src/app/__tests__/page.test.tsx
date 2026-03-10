@@ -282,6 +282,11 @@ describe("Home page", () => {
       expect(resultSection).not.toBeNull();
     });
 
+    it("result section does not have data-result attribute before a truck is selected", () => {
+      render(<Home />);
+      expect(document.querySelector("[data-result='true']")).toBeNull();
+    });
+
     it("does not scroll when no result exists (no truck selected)", async () => {
       const user = userEvent.setup();
       render(<Home />);

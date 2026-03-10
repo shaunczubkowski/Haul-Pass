@@ -191,7 +191,7 @@ export default function Home() {
           {/* Result */}
           <section
             ref={resultRef}
-            data-result="true"
+            data-result={result ? "true" : undefined}
             aria-live="polite"
             aria-atomic="true"
             className={result ? [
