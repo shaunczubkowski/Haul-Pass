@@ -85,10 +85,14 @@ describe("Truck fleet data", () => {
       expect(PENSKE_TRUCKS.length).toBeGreaterThanOrEqual(3);
     });
 
-    it("all Penske trucks use diesel fuel", () => {
-      PENSKE_TRUCKS.forEach((truck) => {
-        expect(truck.fuelType).toBe("diesel");
-      });
+    it("Penske 12 ft and 16 ft use regular gasoline", () => {
+      expect(PENSKE_TRUCKS.find((t) => t.id === "penske-12ft")!.fuelType).toBe("regular");
+      expect(PENSKE_TRUCKS.find((t) => t.id === "penske-16ft")!.fuelType).toBe("regular");
+    });
+
+    it("Penske 22 ft and 26 ft use diesel", () => {
+      expect(PENSKE_TRUCKS.find((t) => t.id === "penske-22ft")!.fuelType).toBe("diesel");
+      expect(PENSKE_TRUCKS.find((t) => t.id === "penske-26ft")!.fuelType).toBe("diesel");
     });
 
     it("all Penske trucks belong to the penske company", () => {
@@ -231,11 +235,11 @@ describe("Truck fleet data", () => {
     });
 
     it("can look up a Penske truck by ID", () => {
-      const penskeTruck = PENSKE_TRUCKS[0];
+      const penskeTruck = PENSKE_TRUCKS[0]; // penske-12ft uses regular gasoline
       const found = getTruckById(penskeTruck.id);
       expect(found).toBeDefined();
       expect(found!.company).toBe("penske");
-      expect(found!.fuelType).toBe("diesel");
+      expect(found!.fuelType).toBe("regular");
     });
   });
 });

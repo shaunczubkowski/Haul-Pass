@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { TruckSelector } from "@/components/TruckSelector";
 import { ALL_TRUCKS, UHAUL_TRUCKS, PENSKE_TRUCKS } from "@/data/trucks";
@@ -65,12 +65,12 @@ describe("TruckSelector", () => {
       expect(screen.getByRole("radiogroup", { name: /select truck size/i })).toBeInTheDocument();
     });
 
-    it("shows diesel warning when Penske is selected", async () => {
+    it("shows fuel-type note when Penske is selected", async () => {
       const user = userEvent.setup();
       render(<TruckSelector value={null} onChange={noop} />);
       await user.click(screen.getByRole("radio", { name: "Penske" }));
       expect(screen.getByRole("note")).toBeInTheDocument();
-      expect(screen.getByText(/penske trucks use diesel fuel/i)).toBeInTheDocument();
+      expect(screen.getByText(/penske fuel type varies by truck size/i)).toBeInTheDocument();
     });
 
     it("does not show diesel warning for U-Haul", () => {
@@ -78,12 +78,15 @@ describe("TruckSelector", () => {
       expect(screen.queryByRole("note")).not.toBeInTheDocument();
     });
 
-    it("shows 'diesel' badge on Penske truck cards", async () => {
+    it("shows 'diesel' badge only on Penske 22 ft and 26 ft cards", async () => {
       const user = userEvent.setup();
       render(<TruckSelector value={null} onChange={noop} />);
       await user.click(screen.getByRole("radio", { name: "Penske" }));
-      const dieselBadges = screen.getAllByText("diesel");
-      expect(dieselBadges.length).toBe(PENSKE_TRUCKS.length);
+      // Query only badge spans (px-1 rounded class), not the prose in the note banner
+      const truckGroup = screen.getByRole("radiogroup", { name: /select truck size/i });
+      const dieselBadges = within(truckGroup).getAllByText("diesel");
+      // Only penske-22ft and penske-26ft use diesel; 12 ft and 16 ft use regular
+      expect(dieselBadges.length).toBe(2);
     });
   });
 

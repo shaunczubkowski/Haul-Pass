@@ -119,10 +119,10 @@ export function TruckSelector({ value, onChange }: TruckSelectorProps) {
         >
           <span aria-hidden="true" className="text-lg leading-none mt-0.5">⛽</span>
           <div>
-            <p className="font-bold text-sm">Penske trucks use DIESEL fuel</p>
+            <p className="font-bold text-sm">Penske fuel type varies by truck size</p>
             <p className="text-xs mt-0.5">
-              Fill at the <strong>diesel pump</strong> only — not regular unleaded.
-              Check your rental agreement for the correct fuel grade.
+              22 ft and 26 ft use <strong>diesel</strong>. 12 ft and 16 ft use regular unleaded.
+              Check the badge on each card and your rental agreement.
             </p>
           </div>
         </div>
