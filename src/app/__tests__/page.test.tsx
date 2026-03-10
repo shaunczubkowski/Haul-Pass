@@ -150,6 +150,19 @@ describe("Home page", () => {
       // Before clicking: button shows the default label
       expect(screen.getByText("Share this calculation")).toBeInTheDocument();
     });
+
+    it("handles clipboard API failure gracefully without setting copied state", async () => {
+      // userEvent.setup() installs its own clipboard stub via a getter on navigator.clipboard,
+      // replacing any mock set before it. We must set up userEvent first, then patch the stub.
+      const user = userEvent.setup();
+      const rejectedWriteText = vi.fn().mockRejectedValueOnce(new Error("NotAllowedError"));
+      Object.assign(navigator.clipboard, { writeText: rejectedWriteText });
+      render(<Home />);
+      await selectTruck(user, "8 ft Pickup");
+      await user.click(screen.getByRole("button", { name: /copy shareable link/i }));
+      // Copied confirmation must NOT appear when the API throws
+      expect(screen.queryByText(/link copied/i)).not.toBeInTheDocument();
+    });
   });
 
   describe("URL state", () => {

@@ -76,9 +76,13 @@ export default function Home() {
   }, [truck, pickupLevel, currentLevel, distance, gasPrice]);
 
   async function copyLink() {
-    await navigator.clipboard.writeText(window.location.href);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Clipboard API unavailable (non-secure context, browser permission denied)
+    }
   }
 
   const result =
