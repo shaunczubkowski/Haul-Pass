@@ -2,9 +2,7 @@ import type { TruckType, RentalCompany } from "@/types";
 
 /**
  * U-Haul truck fleet data.
- * Sources:
- * - Tank capacities: HireAHelper rental truck guide, miramarspeedcircuit.com, quora community data
- * - MPG estimates: U-Pack guide, U-Haul documentation (empty truck estimates)
+ * Sources: see SOURCES.md — U-Haul section.
  * Note: All U-Haul trucks use regular unleaded gasoline. Never use diesel.
  */
 export const UHAUL_TRUCKS: TruckType[] = [
@@ -84,10 +82,9 @@ export const UHAUL_TRUCKS: TruckType[] = [
 
 /**
  * Penske truck fleet data.
- * Sources:
- * - Tank capacities & MPG: Penske Truck Rental website, mymovingreviews.com, moving community guides
- * - Fuel type: Penske trucks use diesel fuel. Always fill at diesel pumps.
- * - MPG estimates are for lightly loaded/empty trucks; loaded MPG will be lower.
+ * Sources: see SOURCES.md — Penske section (includes ⚠️ spec-review notes).
+ * Note: 12 ft and 16 ft use gasoline; 22 ft and 26 ft use diesel.
+ * MPG estimates are for empty trucks; loaded MPG will be lower.
  */
 export const PENSKE_TRUCKS: TruckType[] = [
   {
@@ -130,9 +127,7 @@ export const PENSKE_TRUCKS: TruckType[] = [
 
 /**
  * Budget truck fleet data.
- * Sources:
- * - Tank capacities: Budget Truck Rental website, moving guides, community forums
- * - MPG estimates: Budget documentation, U-Pack rental truck comparison guide
+ * Sources: see SOURCES.md — Budget section.
  * Note: All Budget trucks use regular unleaded gasoline.
  */
 export const BUDGET_TRUCKS: TruckType[] = [
@@ -176,9 +171,7 @@ export const BUDGET_TRUCKS: TruckType[] = [
 
 /**
  * Enterprise truck fleet data.
- * Sources:
- * - Tank capacities: Enterprise Truck Rental website, moving community guides
- * - MPG estimates: Industry averages for comparable truck classes
+ * Sources: see SOURCES.md — Enterprise section.
  * Note: All Enterprise trucks use regular unleaded gasoline.
  */
 export const ENTERPRISE_TRUCKS: TruckType[] = [
