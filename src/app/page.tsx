@@ -104,7 +104,7 @@ export default function Home() {
         <div className="mb-8 text-center">
           <div className="mb-3 text-4xl" aria-hidden="true">⛽</div>
           <p className="text-3xl font-bold tracking-tight text-zinc-900">FillRight</p>
-          <h1 className="mt-1 text-base font-semibold text-zinc-600">Moving Truck Fuel Return Calculator</h1>
+          <h1 className="mt-1 text-xl font-semibold text-zinc-900">Moving Truck Fuel Return Calculator</h1>
           <p className="mt-1 text-sm text-zinc-500">Avoid the $30 fuel surcharge — get the exact gallons for U&#8209;Haul, Penske, Budget &amp; Enterprise.</p>
         </div>
 
@@ -302,21 +302,21 @@ export default function Home() {
           <h2 id="how-it-works-heading" className="text-xl font-bold text-zinc-900 mb-5">How FillRight Works</h2>
           <ol className="space-y-5 list-none">
             <li className="flex gap-4">
-              <span className="flex-shrink-0 w-7 h-7 rounded-full bg-orange-100 text-orange-600 font-bold text-sm flex items-center justify-center" aria-hidden="true">1</span>
+              <span className="flex-shrink-0 w-7 h-7 rounded-full bg-orange-100 text-orange-700 font-bold text-sm flex items-center justify-center" aria-hidden="true">1</span>
               <div>
                 <p className="font-semibold text-zinc-800">Select your truck</p>
                 <p className="text-sm text-zinc-500 mt-0.5">Choose your rental company and truck size. FillRight knows the exact tank capacity for every U-Haul, Penske, Budget, and Enterprise model.</p>
               </div>
             </li>
             <li className="flex gap-4">
-              <span className="flex-shrink-0 w-7 h-7 rounded-full bg-orange-100 text-orange-600 font-bold text-sm flex items-center justify-center" aria-hidden="true">2</span>
+              <span className="flex-shrink-0 w-7 h-7 rounded-full bg-orange-100 text-orange-700 font-bold text-sm flex items-center justify-center" aria-hidden="true">2</span>
               <div>
                 <p className="font-semibold text-zinc-800">Set your fuel levels</p>
                 <p className="text-sm text-zinc-500 mt-0.5">Enter the gauge level shown on your rental contract at pickup, then set your current level. FillRight calculates the gap.</p>
               </div>
             </li>
             <li className="flex gap-4">
-              <span className="flex-shrink-0 w-7 h-7 rounded-full bg-orange-100 text-orange-600 font-bold text-sm flex items-center justify-center" aria-hidden="true">3</span>
+              <span className="flex-shrink-0 w-7 h-7 rounded-full bg-orange-100 text-orange-700 font-bold text-sm flex items-center justify-center" aria-hidden="true">3</span>
               <div>
                 <p className="font-semibold text-zinc-800">Get your answer</p>
                 <p className="text-sm text-zinc-500 mt-0.5">See the exact gallons to add, adjusted for any miles still left to drive. Add your gas price for a cost estimate.</p>
