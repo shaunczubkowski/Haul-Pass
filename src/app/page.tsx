@@ -54,11 +54,13 @@ function readUrlParams() {
 }
 
 export default function Home() {
-  const [truck, setTruck] = useState<TruckType | null>(() => readUrlParams().truck);
-  const [pickupLevel, setPickupLevel] = useState<GaugeLevel>(() => readUrlParams().pickupLevel);
-  const [currentLevel, setCurrentLevel] = useState<GaugeLevel>(() => readUrlParams().currentLevel);
-  const [distance, setDistance] = useState<number>(() => readUrlParams().distance);
-  const [gasPrice, setGasPrice] = useState<string>(() => readUrlParams().gasPrice);
+  // Parse URL params once; the lazy initializer runs only on first render.
+  const [initialParams] = useState(readUrlParams);
+  const [truck, setTruck] = useState<TruckType | null>(initialParams.truck);
+  const [pickupLevel, setPickupLevel] = useState<GaugeLevel>(initialParams.pickupLevel);
+  const [currentLevel, setCurrentLevel] = useState<GaugeLevel>(initialParams.currentLevel);
+  const [distance, setDistance] = useState<number>(initialParams.distance);
+  const [gasPrice, setGasPrice] = useState<string>(initialParams.gasPrice);
   const [copied, setCopied] = useState(false);
   const resultRef = useRef<HTMLElement | null>(null);
 
