@@ -102,9 +102,10 @@ export default function Home() {
       <div className="w-full max-w-lg">
         {/* Header */}
         <div className="mb-8 text-center">
-          <div className="mb-3 text-4xl">⛽</div>
-          <h1 className="text-3xl font-bold tracking-tight text-zinc-900">FillRight</h1>
-          <p className="mt-1 text-zinc-500">Rental Truck Fuel Return Calculator</p>
+          <div className="mb-3 text-4xl" aria-hidden="true">⛽</div>
+          <p className="text-3xl font-bold tracking-tight text-zinc-900">FillRight</p>
+          <h1 className="mt-1 text-base font-semibold text-zinc-600">Moving Truck Fuel Return Calculator</h1>
+          <p className="mt-1 text-sm text-zinc-500">Avoid the $30 fuel surcharge — get the exact gallons for U&#8209;Haul, Penske, Budget &amp; Enterprise.</p>
         </div>
 
         <div className="flex flex-col gap-6">
@@ -291,6 +292,78 @@ export default function Home() {
             </div>
           )}
         </div>
+      </div>
+
+      {/* SEO content — How it works, Why it matters, FAQ */}
+      <div className="w-full max-w-lg mt-16 mb-12 space-y-12 text-zinc-700">
+
+        {/* How FillRight Works */}
+        <section aria-labelledby="how-it-works-heading">
+          <h2 id="how-it-works-heading" className="text-xl font-bold text-zinc-900 mb-5">How FillRight Works</h2>
+          <ol className="space-y-5 list-none">
+            <li className="flex gap-4">
+              <span className="flex-shrink-0 w-7 h-7 rounded-full bg-orange-100 text-orange-600 font-bold text-sm flex items-center justify-center" aria-hidden="true">1</span>
+              <div>
+                <p className="font-semibold text-zinc-800">Select your truck</p>
+                <p className="text-sm text-zinc-500 mt-0.5">Choose your rental company and truck size. FillRight knows the exact tank capacity for every U-Haul, Penske, Budget, and Enterprise model.</p>
+              </div>
+            </li>
+            <li className="flex gap-4">
+              <span className="flex-shrink-0 w-7 h-7 rounded-full bg-orange-100 text-orange-600 font-bold text-sm flex items-center justify-center" aria-hidden="true">2</span>
+              <div>
+                <p className="font-semibold text-zinc-800">Set your fuel levels</p>
+                <p className="text-sm text-zinc-500 mt-0.5">Enter the gauge level shown on your rental contract at pickup, then set your current level. FillRight calculates the gap.</p>
+              </div>
+            </li>
+            <li className="flex gap-4">
+              <span className="flex-shrink-0 w-7 h-7 rounded-full bg-orange-100 text-orange-600 font-bold text-sm flex items-center justify-center" aria-hidden="true">3</span>
+              <div>
+                <p className="font-semibold text-zinc-800">Get your answer</p>
+                <p className="text-sm text-zinc-500 mt-0.5">See the exact gallons to add, adjusted for any miles still left to drive. Add your gas price for a cost estimate.</p>
+              </div>
+            </li>
+          </ol>
+        </section>
+
+        {/* Why This Matters */}
+        <section aria-labelledby="why-it-matters-heading" className="rounded-xl border border-amber-200 bg-amber-50 p-5">
+          <h2 id="why-it-matters-heading" className="text-lg font-bold text-zinc-900 mb-2">Why the fuel level matters</h2>
+          <p className="text-sm text-zinc-600 leading-relaxed">
+            U-Haul, Penske, Budget, and Enterprise all charge a <strong>$30+ fuel service fee</strong> if you return a truck below the level shown on your contract — plus above-market per-gallon rates to top up the difference. FillRight gives you the exact number so you fill up at a regular gas station, not theirs.
+          </p>
+        </section>
+
+        {/* FAQ */}
+        <section aria-labelledby="faq-heading">
+          <h2 id="faq-heading" className="text-xl font-bold text-zinc-900 mb-5">Frequently Asked Questions</h2>
+          <dl className="space-y-6">
+            <div>
+              <dt className="font-semibold text-zinc-800">How much gas do I need to return a U-Haul?</dt>
+              <dd className="mt-1 text-sm text-zinc-500 leading-relaxed">It depends on your truck size, the fuel level at pickup, your current level, and how far you still need to drive. Use FillRight above to get the exact gallon count — it accounts for tank capacity, fuel efficiency, and a small safety buffer.</dd>
+            </div>
+            <div>
+              <dt className="font-semibold text-zinc-800">What happens if I return a U-Haul without enough fuel?</dt>
+              <dd className="mt-1 text-sm text-zinc-500 leading-relaxed">U-Haul charges a $30 fuel service fee plus above-market per-gallon rates to top up the difference. You end up paying significantly more than you would at a regular gas station.</dd>
+            </div>
+            <div>
+              <dt className="font-semibold text-zinc-800">Does U-Haul use regular gas or diesel?</dt>
+              <dd className="mt-1 text-sm text-zinc-500 leading-relaxed">All U-Haul trucks use regular unleaded gasoline — never diesel. Penske trucks use diesel. Budget and Enterprise trucks use regular unleaded. FillRight shows the correct fuel type for your truck.</dd>
+            </div>
+            <div>
+              <dt className="font-semibold text-zinc-800">How accurate is the fuel gauge on a moving truck?</dt>
+              <dd className="mt-1 text-sm text-zinc-500 leading-relaxed">Moving truck gauges can lag or read slightly low after refueling. FillRight adds a small safety buffer to your calculation so you&apos;re protected even if the gauge isn&apos;t perfectly accurate at return.</dd>
+            </div>
+            <div>
+              <dt className="font-semibold text-zinc-800">Can I use FillRight for Penske, Budget, and Enterprise trucks?</dt>
+              <dd className="mt-1 text-sm text-zinc-500 leading-relaxed">Yes. FillRight supports all four major rental companies. Each truck model has accurate tank capacity and fuel efficiency data built in, so your result is specific to your exact truck.</dd>
+            </div>
+            <div>
+              <dt className="font-semibold text-zinc-800">What is U-Haul&apos;s fuel policy?</dt>
+              <dd className="mt-1 text-sm text-zinc-500 leading-relaxed">U-Haul requires you to return the truck at the same fuel level documented on your rental agreement at pickup. Returning below that level triggers a service fee plus per-gallon charges at their rates — typically higher than local pump prices.</dd>
+            </div>
+          </dl>
+        </section>
+
       </div>
     </main>
   );
