@@ -157,6 +157,12 @@ describe("Truck fleet data", () => {
         expect(truck.id).toMatch(/^enterprise-/);
       });
     });
+
+    it("uses enterprise-24ft (standard SKU) not enterprise-26ft", () => {
+      const ids = ENTERPRISE_TRUCKS.map((t) => t.id);
+      expect(ids).toContain("enterprise-24ft");
+      expect(ids).not.toContain("enterprise-26ft");
+    });
   });
 
   describe("ALL_TRUCKS", () => {

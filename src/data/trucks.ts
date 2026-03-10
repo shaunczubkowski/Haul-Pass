@@ -201,13 +201,13 @@ export const ENTERPRISE_TRUCKS: TruckType[] = [
     loadSize: "2–3 bedrooms",
   },
   {
-    id: "enterprise-26ft",
-    name: "26 ft Truck",
+    id: "enterprise-24ft",
+    name: "24 ft Truck",
     company: "enterprise",
     tankCapacity: 60,
     mpg: 7,
     fuelType: "regular",
-    loadSize: "5+ bedrooms",
+    loadSize: "4–5 bedrooms",
   },
 ];
 
