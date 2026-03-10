@@ -46,12 +46,12 @@ Penske consumer moving trucks (12 ft, 16 ft) use **regular gasoline**. The 22 ft
 
 | Truck | Tank (gal) | MPG est. | Fuel | Source |
 |---|---|---|---|---|
-| 12 ft | 26 | 12 | gasoline | [pensketruckrental.com/trucks-and-vans/12-foot-truck](https://www.pensketruckrental.com/trucks-and-vans/12-foot-truck/) |
-| 16 ft | 33 | 10 | gasoline* | [pensketruckrental.com/…/16-foot-box-truck](https://www.pensketruckrental.com/commercial-truck-rental/commercial-trucks/light-duty-trucks/16-foot-box-truck/) |
-| 22 ft | 50 | 8 | diesel* | [pensketruckrental.com/…/22-26-foot-box-truck](https://www.pensketruckrental.com/commercial-truck-rental/commercial-trucks/medium-duty-trucks/22-26-foot-box-truck/) |
-| 26 ft | 50 | 7 | diesel* | [pensketruckrental.com/…/22-26-foot-box-truck](https://www.pensketruckrental.com/commercial-truck-rental/commercial-trucks/medium-duty-trucks/22-26-foot-box-truck/) |
+| 12 ft | 26 | 12 | **regular** | [pensketruckrental.com/trucks-and-vans/12-foot-truck](https://www.pensketruckrental.com/trucks-and-vans/12-foot-truck/) |
+| 16 ft | 33 | 10 | **regular** | [pensketruckrental.com/…/16-foot-box-truck](https://www.pensketruckrental.com/commercial-truck-rental/commercial-trucks/light-duty-trucks/16-foot-box-truck/) |
+| 22 ft | 50 | 8 | diesel† | [pensketruckrental.com/…/22-26-foot-box-truck](https://www.pensketruckrental.com/commercial-truck-rental/commercial-trucks/medium-duty-trucks/22-26-foot-box-truck/) |
+| 26 ft | 50 | 7 | diesel† | [pensketruckrental.com/…/22-26-foot-box-truck](https://www.pensketruckrental.com/commercial-truck-rental/commercial-trucks/medium-duty-trucks/22-26-foot-box-truck/) |
 
-\* _Marked for spec review — see note above._
+† _22 ft and 26 ft tank size (currently 50 gal) still marked for spec review — official pages suggest up to 70 gal. See note above._
 
 ---
 

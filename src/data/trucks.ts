@@ -93,7 +93,7 @@ export const PENSKE_TRUCKS: TruckType[] = [
     company: "penske",
     tankCapacity: 26,
     mpg: 12,
-    fuelType: "diesel",
+    fuelType: "regular",
     loadSize: "1 bedroom",
   },
   {
@@ -102,7 +102,7 @@ export const PENSKE_TRUCKS: TruckType[] = [
     company: "penske",
     tankCapacity: 33,
     mpg: 10,
-    fuelType: "diesel",
+    fuelType: "regular",
     loadSize: "2 bedrooms",
   },
   {
