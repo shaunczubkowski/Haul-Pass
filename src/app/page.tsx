@@ -62,6 +62,7 @@ export default function Home() {
   const [distance, setDistance] = useState<number>(initialParams.distance);
   const [gasPrice, setGasPrice] = useState<string>(initialParams.gasPrice);
   const [copied, setCopied] = useState(false);
+  const [copyError, setCopyError] = useState(false);
   const resultRef = useRef<HTMLElement | null>(null);
 
   // Sync state to URL (replaceState — no browser history spam)
@@ -84,6 +85,8 @@ export default function Home() {
       setTimeout(() => setCopied(false), 2000);
     } catch {
       // Clipboard API unavailable (non-secure context, browser permission denied)
+      setCopyError(true);
+      setTimeout(() => setCopyError(false), 4000);
     }
   }
 
@@ -272,7 +275,7 @@ export default function Home() {
                 )}
 
                 {/* Share link */}
-                <div className="mt-4 flex justify-center">
+                <div className="mt-4 flex flex-col items-center gap-2">
                   <button
                     onClick={copyLink}
                     className={[
@@ -285,6 +288,17 @@ export default function Home() {
                   >
                     {copied ? "✓ Link copied!" : "Share this calculation"}
                   </button>
+                  {copyError && (
+                    <p className="text-sm text-red-600 text-center">
+                      Could not copy link — please copy the URL from your address bar.
+                    </p>
+                  )}
+                  {/* Polite live region: announces copy success/failure to screen readers
+                      without the AT cross-browser quirk of dynamic button label changes. */}
+                  <span aria-live="polite" className="sr-only">
+                    {copied ? "Link copied to clipboard." : ""}
+                    {copyError ? "Could not copy link." : ""}
+                  </span>
                 </div>
               </>
             )}
