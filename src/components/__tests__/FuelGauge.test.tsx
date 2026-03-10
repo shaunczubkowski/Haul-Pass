@@ -201,6 +201,18 @@ describe("FuelGauge", () => {
       expect(slider).toHaveAttribute("aria-label", "Pickup Level: 1/2");
     });
 
+    it("has aria-valuetext matching the human-readable gauge label", () => {
+      render(<FuelGauge value={GAUGE_LEVELS.HALF} onChange={noop} label="Pickup Level" />);
+      const slider = screen.getByRole("slider");
+      expect(slider).toHaveAttribute("aria-valuetext", "1/2");
+    });
+
+    it("aria-valuetext reflects the current gauge level", () => {
+      render(<FuelGauge value={GAUGE_LEVELS.THREE_QUARTER} onChange={noop} label="Pickup Level" />);
+      const slider = screen.getByRole("slider");
+      expect(slider).toHaveAttribute("aria-valuetext", "3/4");
+    });
+
     it("sets aria-disabled when disabled", () => {
       render(<FuelGauge value={GAUGE_LEVELS.HALF} onChange={noop} label="Pickup Level" disabled />);
       const slider = screen.getByRole("slider");
