@@ -98,7 +98,7 @@ export default function Home() {
   }, [result]);
 
   return (
-    <main className="flex min-h-screen flex-col items-center bg-zinc-50 px-4 py-12">
+    <main id="main-content" className="flex min-h-screen flex-col items-center bg-zinc-50 px-4 py-12">
       <div className="w-full max-w-lg">
         {/* Header */}
         <div className="mb-8 text-center">
@@ -281,10 +281,6 @@ export default function Home() {
                     {copied ? "✓ Link copied!" : "Share this calculation"}
                   </button>
                 </div>
-
-                <p className="mt-3 text-center text-xs text-zinc-400">
-                  Estimate only — verify with your rental contract. Not affiliated with any rental company.
-                </p>
               </>
             )}
           </section>
@@ -296,6 +292,10 @@ export default function Home() {
             </div>
           )}
         </div>
+
+        <p className="mt-4 text-center text-sm text-zinc-500">
+          Estimates only — verify with your rental contract. Not affiliated with any rental company.
+        </p>
       </div>
 
       {/* SEO content — How it works, Why it matters, FAQ */}

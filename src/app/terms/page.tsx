@@ -4,27 +4,28 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Terms of Service",
   description: "Terms of Service for FillRight, the moving truck fuel return calculator.",
-  robots: { index: false, follow: false },
+  robots: { index: false, follow: true },
 };
 
 export default function TermsOfService() {
   return (
-    <main className="flex min-h-screen flex-col items-center bg-zinc-50 px-4 py-12">
+    <main id="main-content" className="flex min-h-screen flex-col items-center bg-zinc-50 px-4 py-12">
       <div className="w-full max-w-lg">
         <Link
           href="/"
+          aria-label="Back to FillRight"
           className="mb-8 inline-flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-800 transition-colors"
         >
-          ← Back to FillRight
+          <span aria-hidden="true">←</span> Back to FillRight
         </Link>
 
         <h1 className="text-2xl font-bold text-zinc-900 mb-1">Terms of Service</h1>
-        <p className="text-sm text-zinc-400 mb-8">Effective date: March 11, 2025 · Last updated: March 11, 2026</p>
+        <p className="text-sm text-zinc-500 mb-8">Effective date: March 11, 2026 · Last updated: March 11, 2026</p>
 
         <div className="space-y-8 text-zinc-700">
 
-          <section>
-            <h2 className="text-base font-semibold text-zinc-900 mb-2">1. No Affiliation</h2>
+          <section aria-labelledby="section-no-affiliation">
+            <h2 id="section-no-affiliation" className="text-lg font-semibold text-zinc-900 mb-2">1. No Affiliation</h2>
             <p className="text-sm leading-relaxed">
               FillRight is an independent tool and is <strong>not affiliated with, endorsed by, sponsored by, or
               connected to</strong> U-Haul International, Penske Truck Leasing, Budget Truck Rental, Enterprise
@@ -38,11 +39,12 @@ export default function TermsOfService() {
             </p>
           </section>
 
-          <section>
-            <h2 className="text-base font-semibold text-zinc-900 mb-2">2. Estimates Only — Not a Guarantee</h2>
+          <section aria-labelledby="section-estimates-only">
+            <h2 id="section-estimates-only" className="text-lg font-semibold text-zinc-900 mb-2">2. Estimates Only — Not a Guarantee</h2>
             <p className="text-sm leading-relaxed">
-              FillRight provides <strong>fuel estimates only</strong>. Results are approximations based on
-              publicly available truck specifications and are subject to the following limitations:
+              FillRight provides <strong>fuel estimates only</strong> and is intended for informational purposes.
+              Results are approximations based on publicly available truck specifications and do not constitute
+              professional or contractual advice. Estimates are subject to the following limitations:
             </p>
             <ul className="mt-2 space-y-1 text-sm text-zinc-600 list-disc list-inside leading-relaxed">
               <li>Truck specifications (tank size, fuel efficiency) may change without notice.</li>
@@ -56,8 +58,8 @@ export default function TermsOfService() {
             </p>
           </section>
 
-          <section>
-            <h2 className="text-base font-semibold text-zinc-900 mb-2">3. No Liability</h2>
+          <section aria-labelledby="section-no-liability">
+            <h2 id="section-no-liability" className="text-lg font-semibold text-zinc-900 mb-2">3. No Liability</h2>
             <p className="text-sm leading-relaxed">
               FillRight and its operators are <strong>not responsible</strong> for any fuel return fees, service
               charges, surcharges, or costs of any kind that you incur with a rental company as a result of using
@@ -66,8 +68,8 @@ export default function TermsOfService() {
             </p>
           </section>
 
-          <section>
-            <h2 className="text-base font-semibold text-zinc-900 mb-2">4. No Warranty</h2>
+          <section aria-labelledby="section-no-warranty">
+            <h2 id="section-no-warranty" className="text-lg font-semibold text-zinc-900 mb-2">4. No Warranty</h2>
             <p className="text-sm leading-relaxed">
               This tool is provided <strong>&quot;as is&quot;</strong> without warranty of any kind, express or implied,
               including but not limited to warranties of accuracy, merchantability, or fitness for a particular
@@ -76,42 +78,46 @@ export default function TermsOfService() {
             </p>
           </section>
 
-          <section>
-            <h2 className="text-base font-semibold text-zinc-900 mb-2">5. Limitation of Liability</h2>
+          <section aria-labelledby="section-limitation-of-liability">
+            <h2 id="section-limitation-of-liability" className="text-lg font-semibold text-zinc-900 mb-2">5. Limitation of Liability</h2>
             <p className="text-sm leading-relaxed">
               To the maximum extent permitted by applicable law, FillRight and its operators shall not be liable
               for any direct, indirect, incidental, special, or consequential damages arising from your use of —
-              or inability to use — this tool, even if advised of the possibility of such damages.
+              or inability to use — this tool, even if advised of the possibility of such damages. In no event
+              shall FillRight&apos;s total liability to you exceed zero dollars ($0), as this service is provided
+              free of charge.
             </p>
           </section>
 
-          <section>
-            <h2 className="text-base font-semibold text-zinc-900 mb-2">6. Intellectual Property</h2>
+          <section aria-labelledby="section-ip">
+            <h2 id="section-ip" className="text-lg font-semibold text-zinc-900 mb-2">6. Intellectual Property</h2>
             <p className="text-sm leading-relaxed">
               The FillRight application, including its source code, design, and written content, is copyright
-              © 2025 FillRight. All rights reserved. The truck specifications used in this app are sourced from
-              publicly available rental company websites for informational purposes.
+              © 2025–present FillRight. All rights reserved. The truck specifications used in this app are sourced
+              from publicly available rental company websites for informational purposes.
             </p>
           </section>
 
-          <section>
-            <h2 className="text-base font-semibold text-zinc-900 mb-2">7. Changes to These Terms</h2>
+          <section aria-labelledby="section-changes">
+            <h2 id="section-changes" className="text-lg font-semibold text-zinc-900 mb-2">7. Changes to These Terms</h2>
             <p className="text-sm leading-relaxed">
-              These terms may be updated from time to time. Continued use of FillRight after any changes
-              constitutes acceptance of the updated terms.
+              These terms may be updated from time to time. We will update the &quot;Last Updated&quot; date at the top
+              of this page when changes are made. For material changes, we will also note the update on the
+              FillRight homepage where practicable. Continued use of FillRight after any changes constitutes
+              acceptance of the updated terms.
             </p>
           </section>
 
-          <section>
-            <h2 className="text-base font-semibold text-zinc-900 mb-2">8. Governing Law</h2>
+          <section aria-labelledby="section-governing-law">
+            <h2 id="section-governing-law" className="text-lg font-semibold text-zinc-900 mb-2">8. Governing Law</h2>
             <p className="text-sm leading-relaxed">
               These terms are governed by the laws of the State of Wisconsin, without regard to conflict of law
               principles.
             </p>
           </section>
 
-          <section>
-            <h2 className="text-base font-semibold text-zinc-900 mb-2">9. Contact</h2>
+          <section aria-labelledby="section-contact">
+            <h2 id="section-contact" className="text-lg font-semibold text-zinc-900 mb-2">9. Contact</h2>
             <p className="text-sm leading-relaxed">
               For legal inquiries, please contact:{" "}
               <a href="mailto:getfillright@gmail.com" className="text-zinc-700 underline underline-offset-2 hover:text-orange-600 transition-colors">getfillright@gmail.com</a>
@@ -125,7 +131,7 @@ export default function TermsOfService() {
             href="/privacy"
             className="text-sm text-zinc-500 hover:text-zinc-800 transition-colors"
           >
-            Privacy Policy →
+            Privacy Policy <span aria-hidden="true">→</span>
           </Link>
         </div>
       </div>
