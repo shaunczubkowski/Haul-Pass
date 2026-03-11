@@ -114,7 +114,7 @@ export default function TermsOfService() {
             <h2 className="text-base font-semibold text-zinc-900 mb-2">9. Contact</h2>
             <p className="text-sm leading-relaxed">
               For legal inquiries, please contact:{" "}
-              <span className="text-zinc-400">[contact@example.com — update before publishing]</span>
+              <a href="mailto:getfillright@gmail.com" className="text-zinc-700 underline underline-offset-2 hover:text-orange-600 transition-colors">getfillright@gmail.com</a>
             </p>
           </section>
 
