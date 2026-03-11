@@ -11,19 +11,23 @@ describe("layout metadata", () => {
     expect(metadata.title).toBeDefined();
     const title = metadata.title as { default: string; template: string };
     expect(title.default).toContain("FillRight");
+    expect(title.default).toContain("Moving Truck");
     expect(title.template).toBe("%s | FillRight");
   });
 
-  it("has a description with target keywords", () => {
+  it("has a description that mentions the fuel surcharge", () => {
     expect(metadata.description).toBeDefined();
     expect(typeof metadata.description).toBe("string");
-    expect(metadata.description).toBeTruthy();
+    expect(metadata.description).toContain("$30");
   });
 
-  it("has keywords array including target SEO terms", () => {
+  it("has keywords array including all four rental companies", () => {
     expect(Array.isArray(metadata.keywords)).toBe(true);
     const keywords = metadata.keywords as string[];
     expect(keywords.some((k) => k.toLowerCase().includes("u-haul"))).toBe(true);
+    expect(keywords.some((k) => k.toLowerCase().includes("penske"))).toBe(true);
+    expect(keywords.some((k) => k.toLowerCase().includes("budget"))).toBe(true);
+    expect(keywords.some((k) => k.toLowerCase().includes("enterprise"))).toBe(true);
     expect(keywords.some((k) => k.toLowerCase().includes("fuel") || k.toLowerCase().includes("gas"))).toBe(true);
   });
 
@@ -112,6 +116,60 @@ describe("JSON-LD structured data", () => {
   });
 });
 
+describe("FAQPage JSON-LD structured data", () => {
+  it("exports jsonLdFaqData with FAQPage type", async () => {
+    const { jsonLdFaqData } = await import("@/app/layout");
+    expect(jsonLdFaqData).toBeDefined();
+    expect(jsonLdFaqData["@context"]).toBe("https://schema.org");
+    expect(jsonLdFaqData["@type"]).toBe("FAQPage");
+  });
+
+  it("FAQPage has at least 5 questions covering key topics", async () => {
+    const { jsonLdFaqData } = await import("@/app/layout");
+    expect(Array.isArray(jsonLdFaqData.mainEntity)).toBe(true);
+    expect(jsonLdFaqData.mainEntity.length).toBeGreaterThanOrEqual(5);
+    const allText = jsonLdFaqData.mainEntity
+      .map((q) => q.name + q.acceptedAnswer.text)
+      .join(" ")
+      .toLowerCase();
+    expect(allText).toContain("$30");
+    expect(allText).toContain("penske");
+    expect(allText).toContain("diesel");
+  });
+
+  it("exports JsonLdFaq component", async () => {
+    const { JsonLdFaq } = await import("@/app/layout");
+    expect(JsonLdFaq).toBeDefined();
+    expect(typeof JsonLdFaq).toBe("function");
+  });
+});
+
+describe("HowTo JSON-LD structured data", () => {
+  it("exports jsonLdHowToData with HowTo type", async () => {
+    const { jsonLdHowToData } = await import("@/app/layout");
+    expect(jsonLdHowToData).toBeDefined();
+    expect(jsonLdHowToData["@context"]).toBe("https://schema.org");
+    expect(jsonLdHowToData["@type"]).toBe("HowTo");
+  });
+
+  it("HowTo has at least 3 steps", async () => {
+    const { jsonLdHowToData } = await import("@/app/layout");
+    expect(Array.isArray(jsonLdHowToData.step)).toBe(true);
+    expect(jsonLdHowToData.step.length).toBeGreaterThanOrEqual(3);
+    jsonLdHowToData.step.forEach((s) => {
+      expect(s["@type"]).toBe("HowToStep");
+      expect(s.name).toBeTruthy();
+      expect(s.text).toBeTruthy();
+    });
+  });
+
+  it("exports JsonLdHowTo component", async () => {
+    const { JsonLdHowTo } = await import("@/app/layout");
+    expect(JsonLdHowTo).toBeDefined();
+    expect(typeof JsonLdHowTo).toBe("function");
+  });
+});
+
 describe("sitemap and robots", () => {
   it("sitemap module exports a default function", async () => {
     const sitemapModule = await import("@/app/sitemap");
@@ -120,7 +178,7 @@ describe("sitemap and robots", () => {
 
   it("sitemap returns array with homepage entry", async () => {
     vi.useFakeTimers();
-    vi.setSystemTime(new Date("2026-03-06"));
+    vi.setSystemTime(new Date("2026-03-10"));
     const sitemapModule = await import("@/app/sitemap");
     const sitemap = await sitemapModule.default();
     expect(Array.isArray(sitemap)).toBe(true);
