@@ -281,6 +281,10 @@ export default function Home() {
                     {copied ? "✓ Link copied!" : "Share this calculation"}
                   </button>
                 </div>
+
+                <p className="mt-3 text-center text-xs text-zinc-400">
+                  Estimate only — verify with your rental contract. Not affiliated with any rental company.
+                </p>
               </>
             )}
           </section>
