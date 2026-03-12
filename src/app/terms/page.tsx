@@ -9,18 +9,18 @@ export const metadata: Metadata = {
 
 export default function TermsOfService() {
   return (
-    <main id="main-content" className="flex min-h-screen flex-col items-center bg-zinc-50 px-4 py-12">
+    <main id="main-content" className="flex flex-1 flex-col items-center bg-zinc-50 px-4 py-12">
       <div className="w-full max-w-lg">
         <Link
           href="/"
           aria-label="Back to FillRight"
-          className="mb-8 inline-flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-800 transition-colors"
+          className="mb-8 inline-flex items-center gap-1 text-sm text-zinc-600 hover:text-zinc-800 transition-colors"
         >
           <span aria-hidden="true">←</span> Back to FillRight
         </Link>
 
         <h1 className="text-2xl font-bold text-zinc-900 mb-1">Terms of Service</h1>
-        <p className="text-sm text-zinc-500 mb-8">Effective date: March 11, 2026 · Last updated: March 11, 2026</p>
+        <p className="text-sm text-zinc-600 mb-8">Effective date: March 11, 2026 · Last updated: March 11, 2026</p>
 
         <div className="space-y-8 text-zinc-700">
 
@@ -32,7 +32,7 @@ export default function TermsOfService() {
               Truck Rental, or any of their subsidiaries or affiliates. Use of their names is solely for
               identification purposes.
             </p>
-            <p className="mt-2 text-sm leading-relaxed text-zinc-500">
+            <p className="mt-2 text-sm leading-relaxed text-zinc-600">
               U-Haul® is a registered trademark of U-Haul International, Inc. Penske® is a registered trademark
               of Penske Truck Leasing Co., L.P. Budget® is a registered trademark of Avis Budget Group. Enterprise®
               is a registered trademark of Enterprise Holdings, Inc. All rights reserved by their respective owners.
@@ -51,7 +51,7 @@ export default function TermsOfService() {
               <li>Individual vehicle condition, load weight, driving speed, and terrain all affect actual fuel consumption.</li>
               <li>Fuel gauges on moving trucks can lag or read inaccurately, especially after refueling.</li>
               <li>FillRight adds a 0.5-gallon safety buffer to help offset gauge imprecision, but this may not be sufficient in all cases.</li>
-              <li>Penske&apos;s 22 ft and 26 ft trucks use <strong>diesel fuel</strong>. All other supported trucks use regular unleaded. Always confirm the correct fuel type before filling up.</li>
+              <li>Penske&apos;s 22 ft and 26 ft trucks use <strong>diesel fuel</strong>. All other currently supported trucks use regular unleaded. Always confirm the correct fuel type before filling up.</li>
             </ul>
             <p className="mt-3 text-sm font-medium text-zinc-800">
               Always verify the required return fuel level with your rental contract and your rental company before returning the vehicle.
@@ -129,7 +129,7 @@ export default function TermsOfService() {
         <div className="mt-12 pt-6 border-t border-zinc-200">
           <Link
             href="/privacy"
-            className="text-sm text-zinc-500 hover:text-zinc-800 transition-colors"
+            className="text-sm text-zinc-600 hover:text-zinc-800 transition-colors"
           >
             Privacy Policy <span aria-hidden="true">→</span>
           </Link>
