@@ -199,12 +199,7 @@ describe("Home page", () => {
     });
 
     it("checkmark in 'Link copied!' is wrapped in aria-hidden so it is not announced by screen readers", async () => {
-      const writeText = vi.fn().mockResolvedValue(undefined);
-      Object.defineProperty(navigator, "clipboard", {
-        value: { writeText },
-        configurable: true,
-        writable: true,
-      });
+      stubClipboard();
       const user = userEvent.setup();
       render(<Home />);
       await selectTruck(user, "8 ft Pickup");
@@ -214,6 +209,8 @@ describe("Home page", () => {
       const ariaHiddenSpan = btn.querySelector("[aria-hidden='true']");
       expect(ariaHiddenSpan).not.toBeNull();
       expect(ariaHiddenSpan!.textContent).toContain("✓");
+      // Accessible name (computed with aria-hidden excluded) must be exactly "Link copied!"
+      expect(btn).toHaveAccessibleName("Copy shareable link to clipboard");
     });
 
     it("live region announces failure when clipboard API throws", async () => {
@@ -298,6 +295,13 @@ describe("Home page", () => {
       expect(screen.getByText(/≈ \$/)).toBeInTheDocument();
     });
 
+    it("ignores Infinity as a gasPrice from URL params (does not show cost estimate)", async () => {
+      window.history.replaceState(null, "", "?truck=uhaul-10ft&pickup=1&current=0.5&gas=Infinity");
+      render(<Home />);
+      await waitFor(() => expect(screen.getByText(/add before returning/i)).toBeInTheDocument());
+      expect(screen.queryByText(/≈ \$/)).not.toBeInTheDocument();
+    });
+
     it("caps distance from URL params at 10 000 miles", async () => {
       // dist=999999 should be rejected; the field should show 0 (no ?dist= in synced URL)
       window.history.replaceState(null, "", "?truck=uhaul-10ft&pickup=1&current=0.5&dist=999999");
@@ -305,6 +309,13 @@ describe("Home page", () => {
       await waitFor(() => expect(screen.getByText(/add before returning/i)).toBeInTheDocument());
       // distance is capped at 10000, so 999999 miles must not appear in synced URL
       await waitFor(() => expect(window.location.search).not.toContain("dist=999999"));
+    });
+
+    it("accepts distance of exactly 10 000 miles from URL params (boundary inclusive)", async () => {
+      window.history.replaceState(null, "", "?truck=uhaul-10ft&pickup=1&current=0.5&dist=10000");
+      render(<Home />);
+      await waitFor(() => expect(screen.getByText(/add before returning/i)).toBeInTheDocument());
+      await waitFor(() => expect(window.location.search).toContain("dist=10000"));
     });
 
     it("ignores invalid gauge level values from URL params", async () => {

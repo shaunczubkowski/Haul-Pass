@@ -11,6 +11,9 @@ import type { GaugeLevel, TruckType } from "@/types";
 
 // Only the 5 levels selectable via the UI; used for URL param validation
 const VALID_LEVELS = new Set([0, 0.25, 0.5, 0.75, 1.0]);
+// Domain upper bounds for URL param sanitization
+const MAX_DISTANCE_MILES = 10_000;
+const MAX_GAS_PRICE_USD = 50;
 
 function readUrlParams() {
   if (typeof window === "undefined") {
@@ -39,7 +42,6 @@ function readUrlParams() {
     if (VALID_LEVELS.has(val)) currentLevel = val as GaugeLevel;
   }
 
-  const MAX_DISTANCE_MILES = 10_000;
   let distance = 0;
   const dist = params.get("dist");
   if (dist !== null) {
@@ -51,7 +53,7 @@ function readUrlParams() {
   const gas = params.get("gas");
   if (gas !== null && gas !== "") {
     const parsedGas = parseFloat(gas);
-    if (!isNaN(parsedGas) && parsedGas > 0) gasPrice = String(parsedGas);
+    if (isFinite(parsedGas) && parsedGas > 0 && parsedGas <= MAX_GAS_PRICE_USD) gasPrice = String(parsedGas);
   }
 
   return { truck, pickupLevel, currentLevel, distance, gasPrice };
