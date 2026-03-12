@@ -86,6 +86,16 @@ describe("Home page", () => {
       expect(screen.getByText(/≈ \$/)).toBeInTheDocument();
     });
 
+    it("does not show a cost estimate for a negative gas price", async () => {
+      const user = userEvent.setup();
+      render(<Home />);
+      await selectTruck(user, "8 ft Pickup");
+      const gasPriceInput = screen.getByLabelText(/gas price per gallon/i);
+      fireEvent.change(gasPriceInput, { target: { value: "-3.99" } });
+      // A negative price must not produce a cost estimate line
+      expect(screen.queryByText(/≈ \$/)).not.toBeInTheDocument();
+    });
+
     it("hides cost estimate when gas price is cleared", async () => {
       const user = userEvent.setup();
       render(<Home />);
@@ -140,7 +150,8 @@ describe("Home page", () => {
       render(<Home />);
       await selectTruck(user, "8 ft Pickup");
       await user.click(screen.getByRole("button", { name: /copy shareable link/i }));
-      expect(screen.getByText(/link copied/i)).toBeInTheDocument();
+      // Button label changes to the success text
+      expect(screen.getByRole("button", { name: /copy shareable link/i })).toHaveTextContent("Link copied!");
     });
 
     it("displays the share button text before copying", async () => {
@@ -149,6 +160,40 @@ describe("Home page", () => {
       await selectTruck(user, "8 ft Pickup");
       // Before clicking: button shows the default label
       expect(screen.getByText("Share this calculation")).toBeInTheDocument();
+    });
+
+    it("handles clipboard API failure gracefully without setting copied state", async () => {
+      // userEvent.setup() installs its own clipboard stub via a getter on navigator.clipboard,
+      // replacing any mock set before it. We must set up userEvent first, then patch the stub.
+      const user = userEvent.setup();
+      const rejectedWriteText = vi.fn().mockRejectedValueOnce(new Error("NotAllowedError"));
+      Object.assign(navigator.clipboard, { writeText: rejectedWriteText });
+      render(<Home />);
+      await selectTruck(user, "8 ft Pickup");
+      await user.click(screen.getByRole("button", { name: /copy shareable link/i }));
+      // Copied confirmation must NOT appear when the API throws
+      expect(screen.queryByText(/link copied/i)).not.toBeInTheDocument();
+    });
+
+    it("shows an error message when the clipboard API fails", async () => {
+      const user = userEvent.setup();
+      const rejectedWriteText = vi.fn().mockRejectedValueOnce(new Error("NotAllowedError"));
+      Object.assign(navigator.clipboard, { writeText: rejectedWriteText });
+      render(<Home />);
+      await selectTruck(user, "8 ft Pickup");
+      await user.click(screen.getByRole("button", { name: /copy shareable link/i }));
+      // Visible error instructs user to copy from address bar
+      expect(screen.getByText(/please copy the URL from your address bar/i)).toBeInTheDocument();
+    });
+
+    it("has a screen-reader live region that announces the copy status", async () => {
+      const user = userEvent.setup();
+      render(<Home />);
+      await selectTruck(user, "8 ft Pickup");
+      // A polite live region must exist near the share button for reliable AT announcement
+      const shareSection = screen.getByRole("button", { name: /copy shareable link/i }).closest("div")!;
+      const liveSpan = shareSection.querySelector("[aria-live='polite']");
+      expect(liveSpan).not.toBeNull();
     });
   });
 
@@ -257,6 +302,11 @@ describe("Home page", () => {
       await selectTruck(user, "8 ft Pickup");
       const resultSection = document.querySelector("[data-result='true']");
       expect(resultSection).not.toBeNull();
+    });
+
+    it("result section does not have data-result attribute before a truck is selected", () => {
+      render(<Home />);
+      expect(document.querySelector("[data-result='true']")).toBeNull();
     });
 
     it("does not scroll when no result exists (no truck selected)", async () => {

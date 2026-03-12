@@ -160,6 +160,7 @@ export function FuelGauge({ value, onChange, label, disabled = false }: FuelGaug
         aria-valuemin={0}
         aria-valuemax={DISPLAY_LEVELS.length - 1}
         aria-label={`${label}: ${GAUGE_LEVEL_LABELS[value]}`}
+        aria-valuetext={GAUGE_LEVEL_LABELS[value]}
         aria-disabled={disabled}
         tabIndex={disabled ? -1 : 0}
         onKeyDown={handleKeyDown}
