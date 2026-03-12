@@ -39,16 +39,20 @@ function readUrlParams() {
     if (VALID_LEVELS.has(val)) currentLevel = val as GaugeLevel;
   }
 
+  const MAX_DISTANCE_MILES = 10_000;
   let distance = 0;
   const dist = params.get("dist");
   if (dist !== null) {
     const val = parseFloat(dist);
-    if (!isNaN(val) && val >= 0) distance = val;
+    if (!isNaN(val) && val >= 0 && val <= MAX_DISTANCE_MILES) distance = val;
   }
 
   let gasPrice = "";
   const gas = params.get("gas");
-  if (gas !== null && gas !== "") gasPrice = gas;
+  if (gas !== null && gas !== "") {
+    const parsedGas = parseFloat(gas);
+    if (!isNaN(parsedGas) && parsedGas > 0) gasPrice = String(parsedGas);
+  }
 
   return { truck, pickupLevel, currentLevel, distance, gasPrice };
 }
@@ -289,7 +293,7 @@ export default function Home() {
                     ].join(" ")}
                     aria-label="Copy shareable link to clipboard"
                   >
-                    {copied ? "✓ Link copied!" : "Share this calculation"}
+                    {copied ? <><span aria-hidden="true">✓ </span>Link copied!</> : "Share this calculation"}
                   </button>
                   {copyError && (
                     <p className="text-sm text-red-600 text-center">

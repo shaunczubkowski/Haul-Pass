@@ -198,6 +198,24 @@ describe("Home page", () => {
       expect(liveSpan).toHaveTextContent("Link copied to clipboard.");
     });
 
+    it("checkmark in 'Link copied!' is wrapped in aria-hidden so it is not announced by screen readers", async () => {
+      const writeText = vi.fn().mockResolvedValue(undefined);
+      Object.defineProperty(navigator, "clipboard", {
+        value: { writeText },
+        configurable: true,
+        writable: true,
+      });
+      const user = userEvent.setup();
+      render(<Home />);
+      await selectTruck(user, "8 ft Pickup");
+      await user.click(screen.getByRole("button", { name: /copy shareable link/i }));
+      // The checkmark span must carry aria-hidden="true"
+      const btn = screen.getByRole("button", { name: /copy shareable link/i });
+      const ariaHiddenSpan = btn.querySelector("[aria-hidden='true']");
+      expect(ariaHiddenSpan).not.toBeNull();
+      expect(ariaHiddenSpan!.textContent).toContain("✓");
+    });
+
     it("live region announces failure when clipboard API throws", async () => {
       const user = userEvent.setup();
       const rejectedWriteText = vi.fn().mockRejectedValueOnce(new Error("NotAllowedError"));
@@ -249,6 +267,44 @@ describe("Home page", () => {
       render(<Home />);
       // No truck selected, cold-start guidance shown
       expect(screen.getByText(/select your truck size above/i)).toBeInTheDocument();
+    });
+
+    it("ignores a negative gasPrice from URL params (does not show cost estimate)", async () => {
+      window.history.replaceState(null, "", "?truck=uhaul-10ft&pickup=1&current=0.5&gas=-3.99");
+      render(<Home />);
+      await waitFor(() => expect(screen.getByText(/add before returning/i)).toBeInTheDocument());
+      // A negative gas price from the URL must not produce a cost estimate
+      expect(screen.queryByText(/≈ \$/)).not.toBeInTheDocument();
+    });
+
+    it("ignores a zero gasPrice from URL params (does not show cost estimate)", async () => {
+      window.history.replaceState(null, "", "?truck=uhaul-10ft&pickup=1&current=0.5&gas=0");
+      render(<Home />);
+      await waitFor(() => expect(screen.getByText(/add before returning/i)).toBeInTheDocument());
+      expect(screen.queryByText(/≈ \$/)).not.toBeInTheDocument();
+    });
+
+    it("ignores a non-numeric gasPrice from URL params (does not show cost estimate)", async () => {
+      window.history.replaceState(null, "", "?truck=uhaul-10ft&pickup=1&current=0.5&gas=abc");
+      render(<Home />);
+      await waitFor(() => expect(screen.getByText(/add before returning/i)).toBeInTheDocument());
+      expect(screen.queryByText(/≈ \$/)).not.toBeInTheDocument();
+    });
+
+    it("accepts a valid positive gasPrice from URL params", async () => {
+      window.history.replaceState(null, "", "?truck=uhaul-10ft&pickup=1&current=0.5&gas=3.99");
+      render(<Home />);
+      await waitFor(() => expect(screen.getByText(/add before returning/i)).toBeInTheDocument());
+      expect(screen.getByText(/≈ \$/)).toBeInTheDocument();
+    });
+
+    it("caps distance from URL params at 10 000 miles", async () => {
+      // dist=999999 should be rejected; the field should show 0 (no ?dist= in synced URL)
+      window.history.replaceState(null, "", "?truck=uhaul-10ft&pickup=1&current=0.5&dist=999999");
+      render(<Home />);
+      await waitFor(() => expect(screen.getByText(/add before returning/i)).toBeInTheDocument());
+      // distance is capped at 10000, so 999999 miles must not appear in synced URL
+      await waitFor(() => expect(window.location.search).not.toContain("dist=999999"));
     });
 
     it("ignores invalid gauge level values from URL params", async () => {
