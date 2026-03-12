@@ -11,6 +11,9 @@ import type { GaugeLevel, TruckType } from "@/types";
 
 // Only the 5 levels selectable via the UI; used for URL param validation
 const VALID_LEVELS = new Set([0, 0.25, 0.5, 0.75, 1.0]);
+// Domain upper bounds for URL param sanitization
+const MAX_DISTANCE_MILES = 10_000;
+const MAX_GAS_PRICE_USD = 50;
 
 function readUrlParams() {
   if (typeof window === "undefined") {
@@ -43,12 +46,15 @@ function readUrlParams() {
   const dist = params.get("dist");
   if (dist !== null) {
     const val = parseFloat(dist);
-    if (!isNaN(val) && val >= 0) distance = val;
+    if (!isNaN(val) && val >= 0 && val <= MAX_DISTANCE_MILES) distance = val;
   }
 
   let gasPrice = "";
   const gas = params.get("gas");
-  if (gas !== null && gas !== "") gasPrice = gas;
+  if (gas !== null && gas !== "") {
+    const parsedGas = parseFloat(gas);
+    if (isFinite(parsedGas) && parsedGas > 0 && parsedGas <= MAX_GAS_PRICE_USD) gasPrice = String(parsedGas);
+  }
 
   return { truck, pickupLevel, currentLevel, distance, gasPrice };
 }
@@ -289,7 +295,7 @@ export default function Home() {
                     ].join(" ")}
                     aria-label="Copy shareable link to clipboard"
                   >
-                    {copied ? "✓ Link copied!" : "Share this calculation"}
+                    {copied ? <><span aria-hidden="true">✓ </span>Link copied!</> : "Share this calculation"}
                   </button>
                   {copyError && (
                     <p className="text-sm text-red-600 text-center">

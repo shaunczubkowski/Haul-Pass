@@ -218,5 +218,22 @@ describe("FuelGauge", () => {
       const slider = screen.getByRole("slider");
       expect(slider).toHaveAttribute("aria-disabled", "true");
     });
+
+    it("aria-label on slider is stable (does not embed the current value)", () => {
+      render(<FuelGauge value={GAUGE_LEVELS.HALF} onChange={noop} label="Pickup Level" />);
+      const slider = screen.getByRole("slider");
+      // aria-label must be exactly the label prop — value is communicated via aria-valuetext only
+      expect(slider).toHaveAttribute("aria-label", "Pickup Level");
+    });
+
+    it("keyboard events do not fire when the slider is disabled", async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      render(<FuelGauge value={GAUGE_LEVELS.HALF} onChange={onChange} label="Pickup Level" disabled />);
+      const slider = screen.getByRole("slider");
+      slider.focus();
+      await user.keyboard("{ArrowRight}");
+      expect(onChange).not.toHaveBeenCalled();
+    });
   });
 });
