@@ -82,10 +82,12 @@ export default function Home() {
     try {
       await navigator.clipboard.writeText(window.location.href);
       setCopied(true);
+      setCopyError(false);
       setTimeout(() => setCopied(false), 2000);
     } catch {
       // Clipboard API unavailable (non-secure context, browser permission denied)
       setCopyError(true);
+      setCopied(false);
       setTimeout(() => setCopyError(false), 4000);
     }
   }
