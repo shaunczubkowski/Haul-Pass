@@ -198,7 +198,7 @@ describe("FuelGauge", () => {
       expect(slider).toHaveAttribute("aria-valuenow", "2");
       expect(slider).toHaveAttribute("aria-valuemin", "0");
       expect(slider).toHaveAttribute("aria-valuemax", "4");
-      expect(slider).toHaveAttribute("aria-label", "Pickup Level: 1/2");
+      expect(slider).toHaveAttribute("aria-label", "Pickup Level");
     });
 
     it("has aria-valuetext matching the human-readable gauge label", () => {
