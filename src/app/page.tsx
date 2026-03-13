@@ -153,6 +153,7 @@ export default function Home() {
                     aria-pressed={gaugeVariant === v}
                     className={[
                       "px-3 py-1 text-xs font-semibold rounded transition-colors",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-1",
                       gaugeVariant === v
                         ? "bg-white text-orange-600 shadow-sm"
                         : "text-zinc-500 hover:text-zinc-700",
