@@ -99,7 +99,16 @@ export default function PrivacyPolicy() {
               the incoming request (IP address + browser user-agent) that is automatically discarded after
               24 hours and cannot be used to track you across websites or sessions. No personal information is
               retained. The data we see is aggregated only (e.g., &quot;150 visits from mobile browsers this
-              week&quot;) — never individual-level.
+              week&quot;) — never individual-level. You can read more in Vercel&apos;s{" "}
+              <a
+                href="https://vercel.com/docs/analytics/privacy-policy"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-zinc-900 underline underline-offset-2 hover:text-orange-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 rounded"
+              >
+                Web Analytics Privacy Policy<span className="sr-only"> (opens in new tab)</span>
+              </a>
+              .
             </p>
           </section>
 
