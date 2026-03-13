@@ -6,6 +6,121 @@ import { GAUGE_LEVELS } from "@/types";
 
 const noop = () => {};
 
+describe("FuelGauge — horizontal variant", () => {
+  describe("SVG structure", () => {
+    it("renders a background rect with width 260", () => {
+      const { container } = render(
+        <FuelGauge value={GAUGE_LEVELS.HALF} onChange={noop} label="Test" variant="horizontal" />
+      );
+      const rects = container.querySelectorAll("svg rect");
+      const bgRect = rects[0];
+      expect(bgRect).toBeTruthy();
+      expect(bgRect.getAttribute("width")).toBe("260");
+    });
+
+    it("renders a filled rect with width = 260 * value", () => {
+      const { container } = render(
+        <FuelGauge value={GAUGE_LEVELS.QUARTER} onChange={noop} label="Test" variant="horizontal" />
+      );
+      const rects = container.querySelectorAll("svg rect");
+      const filledRect = rects[1];
+      expect(parseFloat(filledRect.getAttribute("width")!)).toBeCloseTo(65, 0);
+    });
+
+    it("filled rect has width 0 at EMPTY", () => {
+      const { container } = render(
+        <FuelGauge value={GAUGE_LEVELS.EMPTY} onChange={noop} label="Test" variant="horizontal" />
+      );
+      const rects = container.querySelectorAll("svg rect");
+      expect(parseFloat(rects[1].getAttribute("width")!)).toBe(0);
+    });
+
+    it("filled rect has width 260 at FULL", () => {
+      const { container } = render(
+        <FuelGauge value={GAUGE_LEVELS.FULL} onChange={noop} label="Test" variant="horizontal" />
+      );
+      const rects = container.querySelectorAll("svg rect");
+      expect(parseFloat(rects[1].getAttribute("width")!)).toBeCloseTo(260, 0);
+    });
+
+    it("renders exactly 5 tick lines", () => {
+      const { container } = render(
+        <FuelGauge value={GAUGE_LEVELS.HALF} onChange={noop} label="Test" variant="horizontal" />
+      );
+      const lines = container.querySelectorAll("svg line");
+      expect(lines.length).toBe(5);
+    });
+
+    it("tick lines are at x positions 20, 85, 150, 215, 280", () => {
+      const { container } = render(
+        <FuelGauge value={GAUGE_LEVELS.HALF} onChange={noop} label="Test" variant="horizontal" />
+      );
+      const lines = container.querySelectorAll("svg line");
+      const xPositions = Array.from(lines).map((l) => parseFloat(l.getAttribute("x1")!));
+      expect(xPositions).toEqual([20, 85, 150, 215, 280]);
+    });
+
+    it("tick lines at or below current value are orange", () => {
+      const { container } = render(
+        <FuelGauge value={GAUGE_LEVELS.HALF} onChange={noop} label="Test" variant="horizontal" />
+      );
+      const lines = container.querySelectorAll("svg line");
+      // HALF = 0.5 — levels 0 (E), 0.25 (1/4), 0.5 (1/2) are <= 0.5 → orange
+      const orangeCount = Array.from(lines).filter(
+        (l) => l.getAttribute("stroke") === "#f97316"
+      ).length;
+      expect(orangeCount).toBe(3);
+    });
+
+    it("needle polygon x-center is at 20 + value * 260", () => {
+      const { container } = render(
+        <FuelGauge value={GAUGE_LEVELS.QUARTER} onChange={noop} label="Test" variant="horizontal" />
+      );
+      const polygon = container.querySelector("svg polygon");
+      expect(polygon).toBeTruthy();
+      // QUARTER = 0.25 → xPos = 20 + 0.25 * 260 = 85
+      const points = polygon!.getAttribute("points")!;
+      // First point is the apex: "85,20"
+      expect(points).toMatch(/^85,/);
+    });
+
+    it("renders E and F text labels", () => {
+      const { container } = render(
+        <FuelGauge value={GAUGE_LEVELS.HALF} onChange={noop} label="Test" variant="horizontal" />
+      );
+      const texts = Array.from(container.querySelectorAll("svg text")).map((t) => t.textContent);
+      expect(texts).toContain("E");
+      expect(texts).toContain("F");
+    });
+  });
+
+  describe("value selection (shared logic)", () => {
+    it("calls onChange when a level button is clicked", async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      render(
+        <FuelGauge value={GAUGE_LEVELS.EMPTY} onChange={onChange} label="Test" variant="horizontal" />
+      );
+      await user.click(screen.getByRole("button", { name: /Test 1\/2/ }));
+      expect(onChange).toHaveBeenCalledWith(GAUGE_LEVELS.HALF);
+    });
+  });
+
+  describe("keyboard interaction (shared logic)", () => {
+    it("increases value with ArrowRight", async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      render(
+        <FuelGauge value={GAUGE_LEVELS.QUARTER} onChange={onChange} label="Test" variant="horizontal" />
+      );
+      const slider = screen.getByRole("slider");
+      slider.focus();
+      await user.keyboard("{ArrowRight}");
+      expect(onChange).toHaveBeenCalledWith(GAUGE_LEVELS.HALF);
+    });
+  });
+});
+
 describe("FuelGauge", () => {
   describe("rendering", () => {
     it("renders the label", () => {

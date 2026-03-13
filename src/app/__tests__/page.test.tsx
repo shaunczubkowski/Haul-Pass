@@ -429,4 +429,94 @@ describe("Home page", () => {
       expect(scrollIntoView).toHaveBeenCalledWith({ behavior: "smooth", block: "nearest" });
     });
   });
+
+  describe("gauge variant toggle", () => {
+    it("renders Arc and Bar toggle buttons in the Step 2 section", () => {
+      render(<Home />);
+      expect(screen.getByRole("button", { name: /^Arc$/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /^Bar$/i })).toBeInTheDocument();
+    });
+
+    it("Arc button is pressed by default", () => {
+      render(<Home />);
+      expect(screen.getByRole("button", { name: /^Arc$/i })).toHaveAttribute("aria-pressed", "true");
+      expect(screen.getByRole("button", { name: /^Bar$/i })).toHaveAttribute("aria-pressed", "false");
+    });
+
+    it("clicking Bar switches aria-pressed state", async () => {
+      const user = userEvent.setup();
+      render(<Home />);
+      await user.click(screen.getByRole("button", { name: /^Bar$/i }));
+      expect(screen.getByRole("button", { name: /^Bar$/i })).toHaveAttribute("aria-pressed", "true");
+      expect(screen.getByRole("button", { name: /^Arc$/i })).toHaveAttribute("aria-pressed", "false");
+    });
+
+    it("clicking Arc after Bar reverts aria-pressed state", async () => {
+      const user = userEvent.setup();
+      render(<Home />);
+      await user.click(screen.getByRole("button", { name: /^Bar$/i }));
+      await user.click(screen.getByRole("button", { name: /^Arc$/i }));
+      expect(screen.getByRole("button", { name: /^Arc$/i })).toHaveAttribute("aria-pressed", "true");
+    });
+
+    it("switching to Bar renders horizontal gauge rects in SVG", async () => {
+      const user = userEvent.setup();
+      const { container } = render(<Home />);
+      await user.click(screen.getByRole("button", { name: /^Bar$/i }));
+      const rects = container.querySelectorAll("svg rect");
+      // Two horizontal gauges, each with 2 rects (background + fill) = at least 4
+      expect(rects.length).toBeGreaterThanOrEqual(4);
+    });
+
+    it("switching back to Arc removes horizontal gauge rects and shows arc paths", async () => {
+      const user = userEvent.setup();
+      const { container } = render(<Home />);
+      // Switch to Bar, record rect count, then switch back to Arc
+      await user.click(screen.getByRole("button", { name: /^Bar$/i }));
+      const barRectCount = container.querySelectorAll("svg rect").length;
+      await user.click(screen.getByRole("button", { name: /^Arc$/i }));
+      // Fewer rects after switching back (horizontal gauge rects gone)
+      expect(container.querySelectorAll("svg rect").length).toBeLessThan(barRectCount);
+      // Arc gauge paths are present (background + filled arcs)
+      expect(container.querySelectorAll("svg path").length).toBeGreaterThan(0);
+    });
+  });
+
+  describe("gauge variant URL param", () => {
+    it("loads horizontal variant from ?variant=horizontal", async () => {
+      window.history.replaceState(null, "", "?variant=horizontal");
+      const { container } = render(<Home />);
+      await waitFor(() => {
+        const rects = container.querySelectorAll("svg rect");
+        expect(rects.length).toBeGreaterThanOrEqual(4);
+      });
+      expect(screen.getByRole("button", { name: /^Bar$/i })).toHaveAttribute("aria-pressed", "true");
+    });
+
+    it("defaults to arc variant when ?variant is absent", () => {
+      render(<Home />);
+      expect(screen.getByRole("button", { name: /^Arc$/i })).toHaveAttribute("aria-pressed", "true");
+    });
+
+    it("ignores invalid ?variant param and defaults to arc", () => {
+      window.history.replaceState(null, "", "?variant=bogus");
+      render(<Home />);
+      expect(screen.getByRole("button", { name: /^Arc$/i })).toHaveAttribute("aria-pressed", "true");
+    });
+
+    it("syncs ?variant=horizontal to URL when Bar is selected", async () => {
+      const user = userEvent.setup();
+      render(<Home />);
+      await user.click(screen.getByRole("button", { name: /^Bar$/i }));
+      await waitFor(() => expect(window.location.search).toContain("variant=horizontal"));
+    });
+
+    it("omits variant param from URL when arc (default) is selected", async () => {
+      const user = userEvent.setup();
+      render(<Home />);
+      await user.click(screen.getByRole("button", { name: /^Bar$/i }));
+      await user.click(screen.getByRole("button", { name: /^Arc$/i }));
+      await waitFor(() => expect(window.location.search).not.toContain("variant="));
+    });
+  });
 });

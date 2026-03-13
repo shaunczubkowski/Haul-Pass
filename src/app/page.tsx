@@ -17,7 +17,7 @@ const MAX_GAS_PRICE_USD = 50;
 
 function readUrlParams() {
   if (typeof window === "undefined") {
-    return { truck: null, pickupLevel: GAUGE_LEVELS.FULL, currentLevel: GAUGE_LEVELS.HALF, distance: 0, gasPrice: "" };
+    return { truck: null, pickupLevel: GAUGE_LEVELS.FULL, currentLevel: GAUGE_LEVELS.HALF, distance: 0, gasPrice: "", gaugeVariant: "arc" as "arc" | "horizontal" };
   }
   const params = new URLSearchParams(window.location.search);
 
@@ -56,7 +56,10 @@ function readUrlParams() {
     if (isFinite(parsedGas) && parsedGas > 0 && parsedGas <= MAX_GAS_PRICE_USD) gasPrice = String(parsedGas);
   }
 
-  return { truck, pickupLevel, currentLevel, distance, gasPrice };
+  let gaugeVariant: "arc" | "horizontal" = "arc";
+  if (params.get("variant") === "horizontal") gaugeVariant = "horizontal";
+
+  return { truck, pickupLevel, currentLevel, distance, gasPrice, gaugeVariant };
 }
 
 export default function Home() {
@@ -67,6 +70,7 @@ export default function Home() {
   const [currentLevel, setCurrentLevel] = useState<GaugeLevel>(initialParams.currentLevel);
   const [distance, setDistance] = useState<number>(initialParams.distance);
   const [gasPrice, setGasPrice] = useState<string>(initialParams.gasPrice);
+  const [gaugeVariant, setGaugeVariant] = useState<"arc" | "horizontal">(initialParams.gaugeVariant);
   const [copied, setCopied] = useState(false);
   const [copyError, setCopyError] = useState(false);
   const resultRef = useRef<HTMLElement | null>(null);
@@ -79,10 +83,11 @@ export default function Home() {
     params.set("current", String(currentLevel));
     if (distance > 0) params.set("dist", String(distance));
     if (gasPrice !== "") params.set("gas", gasPrice);
+    if (gaugeVariant === "horizontal") params.set("variant", "horizontal");
 
     const qs = params.toString();
     window.history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
-  }, [truck, pickupLevel, currentLevel, distance, gasPrice]);
+  }, [truck, pickupLevel, currentLevel, distance, gasPrice, gaugeVariant]);
 
   async function copyLink() {
     try {
@@ -136,19 +141,40 @@ export default function Home() {
 
           {/* Step 2: Fuel levels */}
           <section className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
-            <h2 className="mb-4 text-xs font-semibold uppercase tracking-widest text-zinc-400">
-              Step 2 — Fuel Levels
-            </h2>
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-xs font-semibold uppercase tracking-widest text-zinc-400">
+                Step 2 — Fuel Levels
+              </h2>
+              <div className="flex bg-zinc-100 rounded-md p-0.5 gap-0.5">
+                {(["arc", "horizontal"] as const).map((v) => (
+                  <button
+                    key={v}
+                    onClick={() => setGaugeVariant(v)}
+                    aria-pressed={gaugeVariant === v}
+                    className={[
+                      "px-3 py-1 text-xs font-semibold rounded transition-colors",
+                      gaugeVariant === v
+                        ? "bg-white text-orange-600 shadow-sm"
+                        : "text-zinc-500 hover:text-zinc-700",
+                    ].join(" ")}
+                  >
+                    {v === "arc" ? "Arc" : "Bar"}
+                  </button>
+                ))}
+              </div>
+            </div>
             <div className="grid grid-cols-2 gap-4">
               <FuelGauge
                 label="At Pickup"
                 value={pickupLevel}
                 onChange={setPickupLevel}
+                variant={gaugeVariant}
               />
               <FuelGauge
                 label="Right Now"
                 value={currentLevel}
                 onChange={setCurrentLevel}
+                variant={gaugeVariant}
               />
             </div>
             <p className="mt-3 text-xs text-zinc-400 text-center">

@@ -38,34 +38,15 @@ function levelToAngle(level: GaugeLevel): number {
 const TICK_INNER_R = 72;
 const TICK_OUTER_R = 92;
 
-interface FuelGaugeProps {
-  value: GaugeLevel;
-  onChange: (value: GaugeLevel) => void;
-  label: string;
-  disabled?: boolean;
-}
+// Horizontal gauge geometry
+// Track spans x: 20 → 280 (width = 260), bar centered at y=40 in viewBox "0 0 300 80"
+const H_TRACK_X = 20;
+const H_TRACK_WIDTH = 260;
+const H_BAR_Y = 32;
+const H_BAR_HEIGHT = 16;
+const H_TICK_XS = [20, 85, 150, 215, 280] as const;
 
-export function FuelGauge({ value, onChange, label, disabled = false }: FuelGaugeProps) {
-  // Find the closest display level index; guard against -1 if value is an intermediate level
-  const currentIndex = Math.max(
-    0,
-    DISPLAY_LEVELS.findIndex((l) => l >= value)
-  );
-
-  function handleKeyDown(e: React.KeyboardEvent) {
-    if (disabled) return;
-    if (e.key === "ArrowRight" || e.key === "ArrowUp") {
-      e.preventDefault();
-      const next = DISPLAY_LEVELS[Math.min(currentIndex + 1, DISPLAY_LEVELS.length - 1)];
-      onChange(next);
-    } else if (e.key === "ArrowLeft" || e.key === "ArrowDown") {
-      e.preventDefault();
-      const prev = DISPLAY_LEVELS[Math.max(currentIndex - 1, 0)];
-      onChange(prev);
-    }
-  }
-
-  // Needle tip position
+function ArcGaugeSvg({ value }: { value: GaugeLevel }) {
   const needleAngle = levelToAngle(value);
   const needleTip = polarToCartesian(needleAngle);
   const needleBase1 = { x: CX - 3, y: CY };
@@ -87,6 +68,144 @@ export function FuelGauge({ value, onChange, label, disabled = false }: FuelGaug
       : null;
 
   return (
+    <>
+      {/* Background arc */}
+      <path
+        d={arcPath}
+        fill="none"
+        stroke="#e5e7eb"
+        strokeWidth="12"
+        strokeLinecap="round"
+      />
+
+      {/* Filled arc (orange, up to current value) */}
+      {filledPath && (
+        <path
+          d={filledPath}
+          fill="none"
+          stroke="#f97316"
+          strokeWidth="12"
+          strokeLinecap="round"
+        />
+      )}
+
+      {/* Tick marks */}
+      {DISPLAY_LEVELS.map((level) => {
+        const angle = levelToAngle(level);
+        const outerR = TICK_OUTER_R;
+        const innerR = TICK_INNER_R;
+        const rad = ((180 - angle) * Math.PI) / 180;
+        const outerPt = { x: CX + outerR * Math.cos(rad), y: CY - outerR * Math.sin(rad) };
+        const innerPt = { x: CX + innerR * Math.cos(rad), y: CY - innerR * Math.sin(rad) };
+        return (
+          <line
+            key={level}
+            x1={innerPt.x}
+            y1={innerPt.y}
+            x2={outerPt.x}
+            y2={outerPt.y}
+            stroke={level <= value ? "#f97316" : "#d1d5db"}
+            strokeWidth={level === 0 || level === 1 ? 2.5 : 1.5}
+          />
+        );
+      })}
+
+      {/* Needle */}
+      <polygon
+        points={`${needleTip.x},${needleTip.y} ${needleBase1.x},${needleBase1.y} ${needleBase2.x},${needleBase2.y}`}
+        fill="#111827"
+      />
+      {/* Needle pivot */}
+      <circle cx={CX} cy={CY} r={5} fill="#111827" />
+
+      {/* E and F labels */}
+      <text x={arcStart.x - 8} y={arcStart.y + 4} fontSize="11" fill="#6b7280" fontWeight="600">E</text>
+      <text x={arcEnd.x + 2} y={arcEnd.y + 4} fontSize="11" fill="#6b7280" fontWeight="600">F</text>
+    </>
+  );
+}
+
+function HorizontalGaugeSvg({ value }: { value: GaugeLevel }) {
+  const filledWidth = H_TRACK_WIDTH * value;
+  const needleX = H_TRACK_X + filledWidth;
+
+  return (
+    <>
+      {/* Background track */}
+      <rect
+        x={H_TRACK_X}
+        y={H_BAR_Y}
+        width={H_TRACK_WIDTH}
+        height={H_BAR_HEIGHT}
+        rx="8"
+        fill="#e5e7eb"
+      />
+
+      {/* Filled portion (orange, up to current value) */}
+      <rect
+        x={H_TRACK_X}
+        y={H_BAR_Y}
+        width={filledWidth}
+        height={H_BAR_HEIGHT}
+        rx="8"
+        fill="#f97316"
+      />
+
+      {/* Tick marks */}
+      {DISPLAY_LEVELS.map((level, i) => (
+        <line
+          key={level}
+          x1={H_TICK_XS[i]}
+          y1={24}
+          x2={H_TICK_XS[i]}
+          y2={56}
+          stroke={level <= value ? "#f97316" : "#d1d5db"}
+          strokeWidth={level === 0 || level === 1 ? 2.5 : 1.5}
+        />
+      ))}
+
+      {/* Needle — downward-pointing triangle at current fill position */}
+      <polygon
+        points={`${needleX},20 ${needleX - 5},30 ${needleX + 5},30`}
+        fill="#111827"
+      />
+
+      {/* E and F labels */}
+      <text x={H_TICK_XS[0]} y={70} fontSize="11" fill="#6b7280" fontWeight="600" textAnchor="middle">E</text>
+      <text x={H_TICK_XS[4]} y={70} fontSize="11" fill="#6b7280" fontWeight="600" textAnchor="middle">F</text>
+    </>
+  );
+}
+
+interface FuelGaugeProps {
+  value: GaugeLevel;
+  onChange: (value: GaugeLevel) => void;
+  label: string;
+  disabled?: boolean;
+  variant?: "arc" | "horizontal";
+}
+
+export function FuelGauge({ value, onChange, label, disabled = false, variant = "arc" }: FuelGaugeProps) {
+  // Find the closest display level index; guard against -1 if value is an intermediate level
+  const currentIndex = Math.max(
+    0,
+    DISPLAY_LEVELS.findIndex((l) => l >= value)
+  );
+
+  function handleKeyDown(e: React.KeyboardEvent) {
+    if (disabled) return;
+    if (e.key === "ArrowRight" || e.key === "ArrowUp") {
+      e.preventDefault();
+      const next = DISPLAY_LEVELS[Math.min(currentIndex + 1, DISPLAY_LEVELS.length - 1)];
+      onChange(next);
+    } else if (e.key === "ArrowLeft" || e.key === "ArrowDown") {
+      e.preventDefault();
+      const prev = DISPLAY_LEVELS[Math.max(currentIndex - 1, 0)];
+      onChange(prev);
+    }
+  }
+
+  return (
     <div className="flex flex-col items-center gap-2">
       <span className="text-sm font-medium text-gray-600 uppercase tracking-wide">
         {label}
@@ -94,63 +213,14 @@ export function FuelGauge({ value, onChange, label, disabled = false }: FuelGaug
 
       {/* SVG Gauge */}
       <svg
-        viewBox="0 0 200 120"
+        viewBox={variant === "horizontal" ? "0 0 300 80" : "0 0 200 120"}
         className="w-full max-w-[220px]"
         aria-hidden="true"
         focusable="false"
       >
-        {/* Background arc */}
-        <path
-          d={arcPath}
-          fill="none"
-          stroke="#e5e7eb"
-          strokeWidth="12"
-          strokeLinecap="round"
-        />
-
-        {/* Filled arc (orange, up to current value) */}
-        {filledPath && (
-          <path
-            d={filledPath}
-            fill="none"
-            stroke="#f97316"
-            strokeWidth="12"
-            strokeLinecap="round"
-          />
-        )}
-
-        {/* Tick marks */}
-        {DISPLAY_LEVELS.map((level) => {
-          const angle = levelToAngle(level);
-          const outerR = TICK_OUTER_R;
-          const innerR = TICK_INNER_R;
-          const rad = ((180 - angle) * Math.PI) / 180;
-          const outerPt = { x: CX + outerR * Math.cos(rad), y: CY - outerR * Math.sin(rad) };
-          const innerPt = { x: CX + innerR * Math.cos(rad), y: CY - innerR * Math.sin(rad) };
-          return (
-            <line
-              key={level}
-              x1={innerPt.x}
-              y1={innerPt.y}
-              x2={outerPt.x}
-              y2={outerPt.y}
-              stroke={level <= value ? "#f97316" : "#d1d5db"}
-              strokeWidth={level === 0 || level === 1 ? 2.5 : 1.5}
-            />
-          );
-        })}
-
-        {/* Needle */}
-        <polygon
-          points={`${needleTip.x},${needleTip.y} ${needleBase1.x},${needleBase1.y} ${needleBase2.x},${needleBase2.y}`}
-          fill="#111827"
-        />
-        {/* Needle pivot */}
-        <circle cx={CX} cy={CY} r={5} fill="#111827" />
-
-        {/* E and F labels */}
-        <text x={arcStart.x - 8} y={arcStart.y + 4} fontSize="11" fill="#6b7280" fontWeight="600">E</text>
-        <text x={arcEnd.x + 2} y={arcEnd.y + 4} fontSize="11" fill="#6b7280" fontWeight="600">F</text>
+        {variant === "horizontal"
+          ? <HorizontalGaugeSvg value={value} />
+          : <ArcGaugeSvg value={value} />}
       </svg>
 
       {/* Interactive level buttons — the actual accessible control */}
