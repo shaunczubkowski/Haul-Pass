@@ -21,6 +21,8 @@ export default defineConfig({
     alias: {
       "@": path.resolve(__dirname, "./src"),
       "next/font/google": path.resolve(__dirname, "./src/test/mocks/next-font-google.ts"),
+      "next/link": path.resolve(__dirname, "./src/test/mocks/next-link.ts"),
+      "@vercel/analytics/react": path.resolve(__dirname, "./src/test/mocks/vercel-analytics.ts"),
     },
   },
 });
