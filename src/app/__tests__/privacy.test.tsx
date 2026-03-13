@@ -31,6 +31,11 @@ describe("Privacy Policy page", () => {
     expect(link).toHaveAttribute("href", "mailto:getfillright@gmail.com");
   });
 
+  it("has the short version summary heading", () => {
+    render(<PrivacyPolicy />);
+    expect(screen.getByRole("heading", { name: /the short version/i })).toBeInTheDocument();
+  });
+
   it("has all nine numbered section headings", () => {
     render(<PrivacyPolicy />);
     expect(screen.getByRole("heading", { name: /what we collect/i })).toBeInTheDocument();
@@ -42,5 +47,11 @@ describe("Privacy Policy page", () => {
     expect(screen.getByRole("heading", { name: /children/i })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: /changes to this policy/i })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: /contact/i })).toBeInTheDocument();
+  });
+
+  it("has the main landmark with skip-nav target id", () => {
+    render(<PrivacyPolicy />);
+    expect(screen.getByRole("main")).toBeInTheDocument();
+    expect(screen.getByRole("main")).toHaveAttribute("id", "main-content");
   });
 });
