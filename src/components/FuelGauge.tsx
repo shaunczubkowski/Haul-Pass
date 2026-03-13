@@ -265,9 +265,9 @@ export function FuelGauge({ value, onChange, label, disabled = false, variant = 
               aria-label={`${label} ${levelLabel}`}
               aria-pressed={isSelected}
               className={[
-                "min-w-[40px] min-h-[44px] rounded-md font-semibold transition-colors",
+                "min-w-[32px] sm:min-w-[40px] min-h-[44px] rounded-md transition-colors",
                 "border-2 px-2",
-                isMajor ? "text-sm" : "text-xs",
+                isMajor ? "text-sm font-semibold" : "text-xs font-medium",
                 isSelected
                   ? "bg-orange-500 border-orange-500 text-white"
                   : "bg-white border-gray-200 text-gray-700 hover:border-orange-300",
