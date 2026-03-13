@@ -55,6 +55,13 @@ Do not move on or commit until both are clean.
 - PR description must include: what changed, why, how to test, and which team members reviewed
 - Accessibility (WCAG 2.1 AA) and Core Web Vitals are first-class concerns in every PR
 
+## Third-Party Integrations
+
+### Vercel Web Analytics
+- Integrated via `@vercel/analytics/react` — `<Analytics />` in `src/app/layout.tsx`
+- Cookie-free, no persistent identifiers; only page-view data (URL, referrer, device, region)
+- **Adding `track()` custom events requires Vesper security sign-off before shipping** — custom event properties could inadvertently capture personal data and trigger GDPR obligations
+
 ## Escalation
 
 Pause and ask the user whenever:

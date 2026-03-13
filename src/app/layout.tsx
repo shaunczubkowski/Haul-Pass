@@ -249,9 +249,9 @@ export default function RootLayout({
         <ServiceWorkerRegistration />
         {children}
         <Footer />
-        {/* Vercel Web Analytics — cookie-free, aggregate-only page-view tracking.
-            IMPORTANT: If adding analytics.track() custom events in future, have
-            Vesper review for GDPR personal-data implications before shipping. */}
+        {/* Vercel Web Analytics — cookie-free, no persistent identifiers, page-view tracking only.
+            IMPORTANT: If adding track() custom events (import { track } from "@vercel/analytics")
+            in future, have Vesper review for GDPR personal-data implications before shipping. */}
         <Analytics />
       </body>
     </html>
