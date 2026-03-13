@@ -9,8 +9,8 @@ import { GAUGE_LEVELS } from "@/types";
 import { getTruckById } from "@/data/trucks";
 import type { GaugeLevel, TruckType } from "@/types";
 
-// Only the 5 levels selectable via the UI; used for URL param validation
-const VALID_LEVELS = new Set([0, 0.25, 0.5, 0.75, 1.0]);
+// All 9 eighth-step levels selectable via the UI; used for URL param validation
+const VALID_LEVELS = new Set([0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0]);
 // Domain upper bounds for URL param sanitization
 const MAX_DISTANCE_MILES = 10_000;
 const MAX_GAS_PRICE_USD = 50;
