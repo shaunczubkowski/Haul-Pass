@@ -157,7 +157,7 @@ export default function PrivacyPolicy() {
             <h2 id="section-privacy-contact" className="text-lg font-semibold text-zinc-900 mb-2">9. Contact</h2>
             <p className="text-sm leading-relaxed">
               For privacy questions, please contact:{" "}
-              <a href="mailto:getfillright@gmail.com" className="text-zinc-700 underline underline-offset-2 hover:text-orange-600 transition-colors">getfillright@gmail.com</a>
+              <a href="mailto:getfillright@gmail.com" className="text-zinc-700 underline underline-offset-2 hover:text-orange-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 rounded">getfillright@gmail.com</a>
             </p>
           </section>
 
