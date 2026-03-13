@@ -20,7 +20,7 @@ export default function PrivacyPolicy() {
         </Link>
 
         <h1 className="text-2xl font-bold text-zinc-900 mb-1">Privacy Policy</h1>
-        <p className="text-sm text-zinc-600 mb-8">Effective date: March 11, 2026 · Last updated: March 11, 2026</p>
+        <p className="text-sm text-zinc-600 mb-8">Effective date: March 11, 2026 · Last updated: March 13, 2026</p>
 
         <div className="space-y-8 text-zinc-700">
 
@@ -28,7 +28,7 @@ export default function PrivacyPolicy() {
             <h2 id="section-short-version" className="text-lg font-semibold text-zinc-900 mb-2">The short version</h2>
             <div className="rounded-xl border border-zinc-200 bg-white p-4">
               <ul className="text-sm space-y-1">
-                <li><span aria-hidden="true">✓</span> No analytics or tracking</li>
+                <li><span aria-hidden="true">✓</span> Cookie-free, privacy-friendly analytics (no personal data)</li>
                 <li><span aria-hidden="true">✓</span> No cookies, ever</li>
                 <li><span aria-hidden="true">✓</span> No user accounts or login</li>
                 <li><span aria-hidden="true">✓</span> No personal data sold or shared</li>
@@ -54,9 +54,8 @@ export default function PrivacyPolicy() {
           <section aria-labelledby="section-what-we-dont-collect">
             <h2 id="section-what-we-dont-collect" className="text-lg font-semibold text-zinc-900 mb-2">2. What We Don&apos;t Collect</h2>
             <ul className="text-sm text-zinc-600 list-disc list-inside space-y-1 leading-relaxed">
-              <li>No analytics (no Google Analytics, Mixpanel, or similar)</li>
               <li>No advertising or tracking pixels</li>
-              <li>No cookies</li>
+              <li>No cookies (Vercel Analytics is cookie-free — see §3)</li>
               <li>No localStorage or sessionStorage</li>
               <li>No device fingerprinting</li>
               <li>No email addresses or contact information</li>
@@ -69,7 +68,7 @@ export default function PrivacyPolicy() {
           </section>
 
           <section aria-labelledby="section-hosting">
-            <h2 id="section-hosting" className="text-lg font-semibold text-zinc-900 mb-2">3. Hosting — Vercel</h2>
+            <h2 id="section-hosting" className="text-lg font-semibold text-zinc-900 mb-2">3. Hosting &amp; Analytics — Vercel</h2>
             <p className="text-sm leading-relaxed">
               FillRight is hosted on{" "}
               <a
@@ -92,6 +91,15 @@ export default function PrivacyPolicy() {
                 Vercel&apos;s Privacy Policy<span className="sr-only"> (opens in new tab)</span>
               </a>
               . We do not have access to individual-level log data.
+            </p>
+            <p className="mt-3 text-sm leading-relaxed">
+              FillRight also uses <strong>Vercel Web Analytics</strong> to understand aggregate traffic patterns —
+              which pages are visited, referrer sources, and approximate device, browser, and region breakdown.
+              This service is <strong>cookie-free</strong>: Vercel identifies a visit using a hash derived from
+              the incoming request (IP address + browser user-agent) that is automatically discarded after
+              24 hours and cannot be used to track you across websites or sessions. No personal information is
+              retained. The data we see is aggregated only (e.g., &quot;150 visits from mobile browsers this
+              week&quot;) — never individual-level.
             </p>
           </section>
 
