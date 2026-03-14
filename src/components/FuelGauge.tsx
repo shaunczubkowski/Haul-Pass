@@ -61,8 +61,14 @@ const H_BAR_HEIGHT = 16;
 function ArcGaugeSvg({ value }: { value: GaugeLevel }) {
   const needleAngle = levelToAngle(value);
   const needleTip = polarToCartesian(needleAngle);
-  const needleBase1 = { x: CX - 3, y: CY };
-  const needleBase2 = { x: CX + 3, y: CY };
+  // Base width is perpendicular to the needle direction so the triangle is
+  // non-degenerate at the extremes (E = 0° and F = 180°) where a horizontal
+  // offset would place all three vertices on the same y-coordinate.
+  const rad = ((180 - needleAngle) * Math.PI) / 180;
+  const perpX = 3 * Math.sin(rad);
+  const perpY = 3 * Math.cos(rad);
+  const needleBase1 = { x: CX + perpX, y: CY + perpY };
+  const needleBase2 = { x: CX - perpX, y: CY - perpY };
 
   // Arc path: full background arc (E to F)
   const arcStart = polarToCartesian(0);
