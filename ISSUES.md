@@ -8,21 +8,18 @@ Tracked here until GitHub Issues are accessible from this environment.
 
 ### Security / Validation
 
-**[S-1] Normalize `gasPrice` at URL ingestion, not only at calculation boundary**
+**[S-1] ~~Normalize `gasPrice` at URL ingestion, not only at calculation boundary~~** ✅ RESOLVED
 `src/app/page.tsx` → `readUrlParams()`, `gas` param block.
-Currently `gasPrice` is stored as a raw string from the URL with no sanitization. The
-`parseFloat(gasPrice) > 0` guard in the calculator input prevents bad values from
-affecting arithmetic, but the two validation sites are decoupled — a future caller that
-reads `gasPrice` state directly could skip the guard. Fix: apply the `> 0` parse check
-inside `readUrlParams` and return either a canonical numeric string or `""`.
-_Raised by: Vesper_
+`isFinite(parsedGas) && parsedGas > 0 && parsedGas <= MAX_GAS_PRICE_USD` is now applied
+inside `readUrlParams`, returning a canonical numeric string or `""`. Validation is no
+longer split across ingestion and calculation boundary.
+_Raised by: Vesper — Resolved (confirmed by Vesper in PR #78 review)_
 
-**[S-2] No upper bound on `dist` URL param**
+**[S-2] ~~No upper bound on `dist` URL param~~** ✅ RESOLVED
 `src/app/page.tsx` → `readUrlParams()`, `dist` param block.
-`distance` accepts any `val >= 0` with no maximum. A value like `?dist=999999999` produces
-a nonsensical but non-crashing UI. Recommend capping at a domain-appropriate maximum
-(e.g. 10 000 miles / 16 000 km).
-_Raised by: Vesper_
+`val <= MAX_DISTANCE_MILES` (10 000 miles) is now enforced at ingestion. Values like
+`?dist=999999999` are rejected and fall back to `0`.
+_Raised by: Vesper — Resolved (confirmed by Vesper in PR #78 review)_
 
 **[S-3] Silent copy failure UX risk if app is served over HTTP**
 `src/app/page.tsx` → `copyLink`. _(Partially addressed: error message now shown.)_

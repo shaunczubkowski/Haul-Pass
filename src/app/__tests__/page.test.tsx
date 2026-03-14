@@ -209,7 +209,7 @@ describe("Home page", () => {
       const ariaHiddenSpan = btn.querySelector("[aria-hidden='true']");
       expect(ariaHiddenSpan).not.toBeNull();
       expect(ariaHiddenSpan!.textContent).toContain("✓");
-      // Accessible name (computed with aria-hidden excluded) must be exactly "Link copied!"
+      // Accessible name comes from the button's static aria-label, which is unchanged by the copy state
       expect(btn).toHaveAccessibleName("Copy shareable link to clipboard");
     });
 
