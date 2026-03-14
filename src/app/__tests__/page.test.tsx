@@ -318,6 +318,19 @@ describe("Home page", () => {
       await waitFor(() => expect(window.location.search).toContain("dist=10000"));
     });
 
+    it("accepts eighth-step gauge level values from URL params", async () => {
+      // 0.125 and 0.375 are valid eighth-step levels that were previously rejected
+      window.history.replaceState(null, "", "?truck=uhaul-15ft&pickup=0.875&current=0.125");
+      render(<Home />);
+      await waitFor(() =>
+        expect(screen.getByText(/add before returning/i)).toBeInTheDocument()
+      );
+      const pickupBtn = screen.getByRole("button", { name: /At Pickup 7\/8/ });
+      expect(pickupBtn).toHaveAttribute("aria-pressed", "true");
+      const currentBtn = screen.getByRole("button", { name: /Right Now 1\/8/ });
+      expect(currentBtn).toHaveAttribute("aria-pressed", "true");
+    });
+
     it("ignores invalid gauge level values from URL params", async () => {
       // 0.33 is not a valid display level; should fall back to default (FULL for pickup)
       window.history.replaceState(null, "", "?truck=uhaul-15ft&pickup=0.33&current=0.5");

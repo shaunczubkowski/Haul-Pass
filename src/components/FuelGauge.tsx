@@ -3,14 +3,27 @@
 import { GAUGE_LEVELS, GAUGE_LEVEL_LABELS } from "@/types";
 import type { GaugeLevel } from "@/types";
 
-// Five canonical gauge levels shown in the UI (matching marks printed on most fuel gauges)
-const DISPLAY_LEVELS: GaugeLevel[] = [
+// All nine gauge levels available for precise input
+const ALL_LEVELS: GaugeLevel[] = [
+  GAUGE_LEVELS.EMPTY,
+  GAUGE_LEVELS.ONE_EIGHTH,
+  GAUGE_LEVELS.QUARTER,
+  GAUGE_LEVELS.THREE_EIGHTHS,
+  GAUGE_LEVELS.HALF,
+  GAUGE_LEVELS.FIVE_EIGHTHS,
+  GAUGE_LEVELS.THREE_QUARTER,
+  GAUGE_LEVELS.SEVEN_EIGHTHS,
+  GAUGE_LEVELS.FULL,
+];
+
+// Quarter-step levels get thicker, more prominent tick marks
+const MAJOR_LEVELS = new Set<GaugeLevel>([
   GAUGE_LEVELS.EMPTY,
   GAUGE_LEVELS.QUARTER,
   GAUGE_LEVELS.HALF,
   GAUGE_LEVELS.THREE_QUARTER,
   GAUGE_LEVELS.FULL,
-];
+]);
 
 // SVG geometry for the semicircular gauge
 // Arc spans 180° from left (E) to right (F), centered at bottom of the SVG viewport
@@ -44,13 +57,18 @@ const H_TRACK_X = 20;
 const H_TRACK_WIDTH = 260;
 const H_BAR_Y = 32;
 const H_BAR_HEIGHT = 16;
-const H_TICK_XS = [20, 85, 150, 215, 280] as const;
 
 function ArcGaugeSvg({ value }: { value: GaugeLevel }) {
   const needleAngle = levelToAngle(value);
   const needleTip = polarToCartesian(needleAngle);
-  const needleBase1 = { x: CX - 3, y: CY };
-  const needleBase2 = { x: CX + 3, y: CY };
+  // Base width is perpendicular to the needle direction so the triangle is
+  // non-degenerate at the extremes (E = 0° and F = 180°) where a horizontal
+  // offset would place all three vertices on the same y-coordinate.
+  const rad = ((180 - needleAngle) * Math.PI) / 180;
+  const perpX = 3 * Math.sin(rad);
+  const perpY = 3 * Math.cos(rad);
+  const needleBase1 = { x: CX + perpX, y: CY + perpY };
+  const needleBase2 = { x: CX - perpX, y: CY - perpY };
 
   // Arc path: full background arc (E to F)
   const arcStart = polarToCartesian(0);
@@ -90,7 +108,7 @@ function ArcGaugeSvg({ value }: { value: GaugeLevel }) {
       )}
 
       {/* Tick marks */}
-      {DISPLAY_LEVELS.map((level) => {
+      {ALL_LEVELS.map((level) => {
         const angle = levelToAngle(level);
         const outerR = TICK_OUTER_R;
         const innerR = TICK_INNER_R;
@@ -105,7 +123,7 @@ function ArcGaugeSvg({ value }: { value: GaugeLevel }) {
             x2={outerPt.x}
             y2={outerPt.y}
             stroke={level <= value ? "#f97316" : "#d1d5db"}
-            strokeWidth={level === 0 || level === 1 ? 2.5 : 1.5}
+            strokeWidth={MAJOR_LEVELS.has(level) ? 2.5 : 1.5}
           />
         );
       })}
@@ -152,17 +170,20 @@ function HorizontalGaugeSvg({ value }: { value: GaugeLevel }) {
       />
 
       {/* Tick marks */}
-      {DISPLAY_LEVELS.map((level, i) => (
-        <line
-          key={level}
-          x1={H_TICK_XS[i]}
-          y1={24}
-          x2={H_TICK_XS[i]}
-          y2={56}
-          stroke={level <= value ? "#f97316" : "#d1d5db"}
-          strokeWidth={level === 0 || level === 1 ? 2.5 : 1.5}
-        />
-      ))}
+      {ALL_LEVELS.map((level) => {
+        const tickX = H_TRACK_X + level * H_TRACK_WIDTH;
+        return (
+          <line
+            key={level}
+            x1={tickX}
+            y1={24}
+            x2={tickX}
+            y2={56}
+            stroke={level <= value ? "#f97316" : "#d1d5db"}
+            strokeWidth={MAJOR_LEVELS.has(level) ? 2.5 : 1.5}
+          />
+        );
+      })}
 
       {/* Needle — downward-pointing triangle at current fill position */}
       <polygon
@@ -171,8 +192,8 @@ function HorizontalGaugeSvg({ value }: { value: GaugeLevel }) {
       />
 
       {/* E and F labels */}
-      <text x={H_TICK_XS[0]} y={70} fontSize="11" fill="#6b7280" fontWeight="600" textAnchor="middle">E</text>
-      <text x={H_TICK_XS[4]} y={70} fontSize="11" fill="#6b7280" fontWeight="600" textAnchor="middle">F</text>
+      <text x={H_TRACK_X} y={70} fontSize="11" fill="#6b7280" fontWeight="600" textAnchor="middle">E</text>
+      <text x={H_TRACK_X + H_TRACK_WIDTH} y={70} fontSize="11" fill="#6b7280" fontWeight="600" textAnchor="middle">F</text>
     </>
   );
 }
@@ -186,21 +207,20 @@ interface FuelGaugeProps {
 }
 
 export function FuelGauge({ value, onChange, label, disabled = false, variant = "arc" }: FuelGaugeProps) {
-  // Find the closest display level index; guard against -1 if value is an intermediate level
   const currentIndex = Math.max(
     0,
-    DISPLAY_LEVELS.findIndex((l) => l >= value)
+    ALL_LEVELS.findIndex((l) => l >= value)
   );
 
   function handleKeyDown(e: React.KeyboardEvent) {
     if (disabled) return;
     if (e.key === "ArrowRight" || e.key === "ArrowUp") {
       e.preventDefault();
-      const next = DISPLAY_LEVELS[Math.min(currentIndex + 1, DISPLAY_LEVELS.length - 1)];
+      const next = ALL_LEVELS[Math.min(currentIndex + 1, ALL_LEVELS.length - 1)];
       onChange(next);
     } else if (e.key === "ArrowLeft" || e.key === "ArrowDown") {
       e.preventDefault();
-      const prev = DISPLAY_LEVELS[Math.max(currentIndex - 1, 0)];
+      const prev = ALL_LEVELS[Math.max(currentIndex - 1, 0)];
       onChange(prev);
     }
   }
@@ -228,7 +248,7 @@ export function FuelGauge({ value, onChange, label, disabled = false, variant = 
         role="slider"
         aria-valuenow={currentIndex}
         aria-valuemin={0}
-        aria-valuemax={DISPLAY_LEVELS.length - 1}
+        aria-valuemax={ALL_LEVELS.length - 1}
         aria-label={label}
         aria-valuetext={GAUGE_LEVEL_LABELS[value]}
         aria-disabled={disabled}
@@ -239,9 +259,10 @@ export function FuelGauge({ value, onChange, label, disabled = false, variant = 
 
       {/* Tap targets — visible button grid */}
       <div className="flex gap-1 flex-wrap justify-center">
-        {DISPLAY_LEVELS.map((level) => {
+        {ALL_LEVELS.map((level) => {
           const isSelected = level === value;
           const levelLabel = GAUGE_LEVEL_LABELS[level];
+          const isMajor = MAJOR_LEVELS.has(level);
           return (
             <button
               key={level}
@@ -250,8 +271,9 @@ export function FuelGauge({ value, onChange, label, disabled = false, variant = 
               aria-label={`${label} ${levelLabel}`}
               aria-pressed={isSelected}
               className={[
-                "min-w-[44px] min-h-[44px] rounded-md text-sm font-semibold transition-colors",
+                "min-w-[32px] sm:min-w-[40px] min-h-[44px] rounded-md transition-colors",
                 "border-2 px-2",
+                isMajor ? "text-sm font-semibold" : "text-xs font-medium",
                 isSelected
                   ? "bg-orange-500 border-orange-500 text-white"
                   : "bg-white border-gray-200 text-gray-700 hover:border-orange-300",

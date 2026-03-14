@@ -43,21 +43,24 @@ describe("FuelGauge — horizontal variant", () => {
       expect(parseFloat(rects[1].getAttribute("width")!)).toBeCloseTo(260, 0);
     });
 
-    it("renders exactly 5 tick lines", () => {
+    it("renders exactly 9 tick lines", () => {
       const { container } = render(
         <FuelGauge value={GAUGE_LEVELS.HALF} onChange={noop} label="Test" variant="horizontal" />
       );
       const lines = container.querySelectorAll("svg line");
-      expect(lines.length).toBe(5);
+      expect(lines.length).toBe(9);
     });
 
-    it("tick lines are at x positions 20, 85, 150, 215, 280", () => {
+    it("tick lines are at x positions for all 9 eighth-step levels (20 + level * 260)", () => {
       const { container } = render(
         <FuelGauge value={GAUGE_LEVELS.HALF} onChange={noop} label="Test" variant="horizontal" />
       );
       const lines = container.querySelectorAll("svg line");
       const xPositions = Array.from(lines).map((l) => parseFloat(l.getAttribute("x1")!));
-      expect(xPositions).toEqual([20, 85, 150, 215, 280]);
+      const expectedXs = [0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0].map(
+        (lvl) => 20 + lvl * 260
+      );
+      xPositions.forEach((x, i) => expect(x).toBeCloseTo(expectedXs[i], 1));
     });
 
     it("tick lines at or below current value are orange", () => {
@@ -65,11 +68,11 @@ describe("FuelGauge — horizontal variant", () => {
         <FuelGauge value={GAUGE_LEVELS.HALF} onChange={noop} label="Test" variant="horizontal" />
       );
       const lines = container.querySelectorAll("svg line");
-      // HALF = 0.5 — levels 0 (E), 0.25 (1/4), 0.5 (1/2) are <= 0.5 → orange
+      // HALF = 0.5 — levels 0, 1/8, 1/4, 3/8, 1/2 are all <= 0.5 → 5 orange
       const orangeCount = Array.from(lines).filter(
         (l) => l.getAttribute("stroke") === "#f97316"
       ).length;
-      expect(orangeCount).toBe(3);
+      expect(orangeCount).toBe(5);
     });
 
     it("needle polygon x-center is at 20 + value * 260", () => {
@@ -116,7 +119,7 @@ describe("FuelGauge — horizontal variant", () => {
       const slider = screen.getByRole("slider");
       slider.focus();
       await user.keyboard("{ArrowRight}");
-      expect(onChange).toHaveBeenCalledWith(GAUGE_LEVELS.HALF);
+      expect(onChange).toHaveBeenCalledWith(GAUGE_LEVELS.THREE_EIGHTHS);
     });
   });
 });
@@ -128,19 +131,13 @@ describe("FuelGauge", () => {
       expect(screen.getByText("Pickup Level")).toBeInTheDocument();
     });
 
-    it("renders exactly 5 level buttons (E, 1/4, 1/2, 3/4, F)", () => {
+    it("renders exactly 9 level buttons (E, 1/8, 1/4, 3/8, 1/2, 5/8, 3/4, 7/8, F)", () => {
       render(<FuelGauge value={GAUGE_LEVELS.EMPTY} onChange={noop} label="Current Level" />);
-      const labels = ["E", "1/4", "1/2", "3/4", "F"];
+      const labels = ["E", "1/8", "1/4", "3/8", "1/2", "5/8", "3/4", "7/8", "F"];
       for (const label of labels) {
-        expect(screen.getAllByRole("button", { name: new RegExp(label) }).length).toBeGreaterThan(0);
+        expect(screen.getAllByRole("button", { name: new RegExp(label.replace("/", "\\/")) }).length).toBeGreaterThan(0);
       }
-      // Intermediate levels should not appear as buttons
-      const allButtons = screen.getAllByRole("button");
-      const buttonTexts = allButtons.map((b) => b.textContent);
-      expect(buttonTexts).not.toContain("1/8");
-      expect(buttonTexts).not.toContain("3/8");
-      expect(buttonTexts).not.toContain("5/8");
-      expect(buttonTexts).not.toContain("7/8");
+      expect(screen.getAllByRole("button").length).toBe(9);
     });
 
     it("marks the selected button as pressed", () => {
@@ -154,7 +151,7 @@ describe("FuelGauge", () => {
       const notPressedButtons = screen
         .getAllByRole("button")
         .filter((b) => b.getAttribute("aria-pressed") === "false");
-      expect(notPressedButtons.length).toBe(4); // 5 total - 1 selected
+      expect(notPressedButtons.length).toBe(8); // 9 total - 1 selected
     });
   });
 
@@ -184,7 +181,7 @@ describe("FuelGauge", () => {
       const slider = screen.getByRole("slider");
       slider.focus();
       await user.keyboard("{ArrowRight}");
-      expect(onChange).toHaveBeenCalledWith(GAUGE_LEVELS.HALF);
+      expect(onChange).toHaveBeenCalledWith(GAUGE_LEVELS.THREE_EIGHTHS);
     });
 
     it("increases value with ArrowUp", async () => {
@@ -194,7 +191,7 @@ describe("FuelGauge", () => {
       const slider = screen.getByRole("slider");
       slider.focus();
       await user.keyboard("{ArrowUp}");
-      expect(onChange).toHaveBeenCalledWith(GAUGE_LEVELS.HALF);
+      expect(onChange).toHaveBeenCalledWith(GAUGE_LEVELS.THREE_EIGHTHS);
     });
 
     it("decreases value with ArrowLeft", async () => {
@@ -204,7 +201,7 @@ describe("FuelGauge", () => {
       const slider = screen.getByRole("slider");
       slider.focus();
       await user.keyboard("{ArrowLeft}");
-      expect(onChange).toHaveBeenCalledWith(GAUGE_LEVELS.QUARTER);
+      expect(onChange).toHaveBeenCalledWith(GAUGE_LEVELS.THREE_EIGHTHS);
     });
 
     it("decreases value with ArrowDown", async () => {
@@ -214,7 +211,7 @@ describe("FuelGauge", () => {
       const slider = screen.getByRole("slider");
       slider.focus();
       await user.keyboard("{ArrowDown}");
-      expect(onChange).toHaveBeenCalledWith(GAUGE_LEVELS.QUARTER);
+      expect(onChange).toHaveBeenCalledWith(GAUGE_LEVELS.THREE_EIGHTHS);
     });
 
     it("does not go below E on ArrowLeft", async () => {
@@ -309,10 +306,10 @@ describe("FuelGauge", () => {
     it("has role=slider with correct aria attributes", () => {
       render(<FuelGauge value={GAUGE_LEVELS.HALF} onChange={noop} label="Pickup Level" />);
       const slider = screen.getByRole("slider");
-      // HALF is index 2 in [E, 1/4, 1/2, 3/4, F]
-      expect(slider).toHaveAttribute("aria-valuenow", "2");
+      // HALF is index 4 in [E, 1/8, 1/4, 3/8, 1/2, 5/8, 3/4, 7/8, F]
+      expect(slider).toHaveAttribute("aria-valuenow", "4");
       expect(slider).toHaveAttribute("aria-valuemin", "0");
-      expect(slider).toHaveAttribute("aria-valuemax", "4");
+      expect(slider).toHaveAttribute("aria-valuemax", "8");
       expect(slider).toHaveAttribute("aria-label", "Pickup Level");
     });
 
