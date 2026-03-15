@@ -63,7 +63,10 @@ function readUrlParams() {
 }
 
 export default function Home() {
-  // Parse URL params once; the lazy initializer runs only on first render.
+  // Lazy initializer form: passing `readUrlParams` (not `readUrlParams()`) tells
+  // React to call it once on mount and never again. Subsequent useState(initialParams.x)
+  // calls use the initial-value form, which React also ignores after the first render,
+  // so URL params seed each piece of state exactly once without re-running on updates.
   const [initialParams] = useState(readUrlParams);
   const [truck, setTruck] = useState<TruckType | null>(initialParams.truck);
   const [pickupLevel, setPickupLevel] = useState<GaugeLevel>(initialParams.pickupLevel);
