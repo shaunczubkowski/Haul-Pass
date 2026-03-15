@@ -20,9 +20,12 @@ Spawn team members as sub-agents when a task falls clearly in their domain. Coor
 
 **FillRight** — U-Haul fuel return calculator at [getfillright.com](https://www.getfillright.com)
 
-- **Stack:** Next.js 14 (App Router), TypeScript, Tailwind CSS, Vitest
+- **Stack:** Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS v4, shadcn/ui (new-york), Vitest
+- **PWA:** Service worker, web manifest, offline page — treat PWA reliability as a first-class concern
+- **Analytics:** Vercel Analytics (`@vercel/analytics`)
 - **Deploy:** Vercel — `NEXT_PUBLIC_SITE_URL=https://www.getfillright.com`
 - **Repo:** `shaunczubkowski/Haul-Pass` on GitHub
+- **Note:** Prettier is not configured — rely on ESLint for style enforcement
 
 ## Git Discipline
 
