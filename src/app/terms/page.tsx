@@ -93,7 +93,7 @@ export default function TermsOfService() {
             <h2 id="section-ip" className="text-lg font-semibold text-zinc-900 mb-2">6. Intellectual Property</h2>
             <p className="text-sm leading-relaxed">
               The FillRight application, including its source code, design, and written content, is copyright
-              © 2025–present FillRight. All rights reserved. The truck specifications used in this app are sourced
+              © 2026–present FillRight. All rights reserved. The truck specifications used in this app are sourced
               from publicly available rental company websites for informational purposes.
             </p>
           </section>
