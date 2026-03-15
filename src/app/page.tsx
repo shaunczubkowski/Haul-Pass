@@ -76,7 +76,9 @@ export default function Home() {
   const [gaugeVariant, setGaugeVariant] = useState<"arc" | "horizontal">(initialParams.gaugeVariant);
   const [copied, setCopied] = useState(false);
   const [copyError, setCopyError] = useState(false);
+  const [showFallbackUrl, setShowFallbackUrl] = useState(false);
   const resultRef = useRef<HTMLElement | null>(null);
+  const fallbackInputRef = useRef<HTMLInputElement | null>(null);
 
   // Sync state to URL (replaceState — no browser history spam)
   useEffect(() => {
@@ -97,14 +99,25 @@ export default function Home() {
       await navigator.clipboard.writeText(window.location.href);
       setCopied(true);
       setCopyError(false);
+      setShowFallbackUrl(false);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      // Clipboard API unavailable (non-secure context, browser permission denied)
+      // Clipboard API unavailable (non-secure context, permission denied)
+      // Surface a persistent URL field the user can manually select and copy.
       setCopyError(true);
       setCopied(false);
+      setShowFallbackUrl(true);
       setTimeout(() => setCopyError(false), 4000);
     }
   }
+
+  // When the fallback URL field appears, auto-select its text so the user
+  // can copy immediately with Ctrl+C / Cmd+C.
+  useEffect(() => {
+    if (showFallbackUrl && fallbackInputRef.current) {
+      fallbackInputRef.current.select();
+    }
+  }, [showFallbackUrl]);
 
   const result =
     truck != null
@@ -329,8 +342,20 @@ export default function Home() {
                   </button>
                   {copyError && (
                     <p className="text-sm text-red-600 text-center">
-                      Could not copy link — please copy the URL from your address bar.
+                      Could not copy — use the link below:
                     </p>
+                  )}
+                  {showFallbackUrl && (
+                    <input
+                      ref={fallbackInputRef}
+                      type="url"
+                      readOnly
+                      value={window.location.href}
+                      aria-label="Shareable link — select all and copy"
+                      className="w-full rounded border border-zinc-300 bg-white px-2 py-1 text-sm text-zinc-700 select-all"
+                      onFocus={(e) => e.currentTarget.select()}
+                      onClick={(e) => e.currentTarget.select()}
+                    />
                   )}
                   {/* Polite live region: announces copy success/failure to screen readers
                       without the AT cross-browser quirk of dynamic button label changes. */}
