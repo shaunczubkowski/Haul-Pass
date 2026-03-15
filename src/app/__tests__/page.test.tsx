@@ -233,7 +233,7 @@ describe("Home page", () => {
       const shareSection = screen.getByRole("button", { name: /copy shareable link/i }).closest("div")!;
       const liveSpan = shareSection.querySelector("[aria-live='polite']")!;
       await user.click(screen.getByRole("button", { name: /copy shareable link/i }));
-      expect(liveSpan).toHaveTextContent("Could not copy link.");
+      expect(liveSpan).toHaveTextContent("Could not copy link. A shareable link field is now available below — select all and copy.");
     });
   });
 
