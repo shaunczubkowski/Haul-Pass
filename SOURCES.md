@@ -36,22 +36,14 @@ MPG figures cross-referenced with:
 Penske consumer moving trucks (12 ft, 16 ft) use **regular gasoline**. The 22 ft and
 26 ft trucks are available in **diesel**.
 
-> ⚠️ **Spec review needed:** Official Penske pages
-> ([pensketruckrental.com/trucks-and-vans](https://www.pensketruckrental.com/trucks-and-vans/),
-> retrieved 2026-03-10) indicate the **16 ft truck uses gasoline** (not diesel as
-> currently coded), and the **22/26 ft tanks may be up to 70 gallons** (not 50 gal
-> as currently coded). The current figures were sourced from community guides prior
-> to this audit. A dedicated data-accuracy issue should be filed to verify and
-> correct these entries against current Penske spec pages.
-
 | Truck | Tank (gal) | MPG est. | Fuel | Source |
 |---|---|---|---|---|
 | 12 ft | 26 | 12 | **regular** | [pensketruckrental.com/trucks-and-vans/12-foot-truck](https://www.pensketruckrental.com/trucks-and-vans/12-foot-truck/) |
 | 16 ft | 33 | 10 | **regular** | [pensketruckrental.com/…/16-foot-box-truck](https://www.pensketruckrental.com/commercial-truck-rental/commercial-trucks/light-duty-trucks/16-foot-box-truck/) |
-| 22 ft | 50 | 8 | diesel† | [pensketruckrental.com/…/22-26-foot-box-truck](https://www.pensketruckrental.com/commercial-truck-rental/commercial-trucks/medium-duty-trucks/22-26-foot-box-truck/) |
-| 26 ft | 50 | 7 | diesel† | [pensketruckrental.com/…/22-26-foot-box-truck](https://www.pensketruckrental.com/commercial-truck-rental/commercial-trucks/medium-duty-trucks/22-26-foot-box-truck/) |
+| 22 ft | **70** | 8 | diesel | [pensketruckrental.com/…/22-foot-truck](https://www.pensketruckrental.com/trucks-and-vans/22-foot-truck/) |
+| 26 ft | **70** | 7 | diesel | [pensketruckrental.com/…/22-26-foot-box-truck](https://www.pensketruckrental.com/commercial-truck-rental/commercial-trucks/medium-duty-trucks/22-26-foot-box-truck/) |
 
-† _22 ft and 26 ft tank size (currently 50 gal) still marked for spec review — official pages suggest up to 70 gal. See note above._
+_22 ft and 26 ft tank updated from 50 → 70 gal on 2026-03-15. Penske lists both trucks on the same 22–26 ft spec page with a 70-gallon diesel tank. Closes issues #63 and #50._
 
 ---
 
@@ -67,10 +59,12 @@ All Budget trucks use **regular unleaded gasoline**.
 | 26 ft | 60 | 7 | [budgettruck.com/…/truckdetails26foot](https://www.budgettruck.com/moving-trucks-accessories/truckdetails26foot) |
 
 > **Note:** Budget does not publish exact tank capacities on all truck detail pages.
-> Tank sizes for the 24 ft and 26 ft are derived from community comparisons with
+> Tank sizes for the 24 ft and 26 ft remain derived from community comparisons with
 > equivalent U-Haul sizes and the [HireAHelper rental truck guide](https://blog.hireahelper.com/how-to-save-money-on-your-rental-trucks-gas/)
-> (retrieved 2026-03-10). A direct confirmation from budgettruck.com is preferred
-> if their spec pages are updated.
+> (retrieved 2026-03-10). One third-party source (miramarspeedcircuit.com) suggests
+> the Budget 26 ft tank may be **50 gal** rather than 60 gal. Official Budget spec
+> pages don't publish this figure directly. Keeping 60 gal until a primary source
+> confirms otherwise. See issue #64.
 
 ---
 

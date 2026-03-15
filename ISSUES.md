@@ -85,12 +85,11 @@ _Raised by: Rio_
 
 ### Data Accuracy
 
-**[D-1] Penske 22 ft and 26 ft tank capacity may be 70 gal, not 50 gal**
+**[D-1] ~~Penske 22 ft and 26 ft tank capacity may be 70 gal, not 50 gal~~** ✅ RESOLVED
 `src/data/trucks.ts` → `PENSKE_TRUCKS`, `penske-22ft` and `penske-26ft`.
-SOURCES.md flags this for spec review (issue #42). Under-reporting tank size causes
-the app to under-calculate fuel needed for the final drive on large Penske trucks.
-Verify against official Penske spec pages and update if confirmed.
-_Pre-existing, documented in SOURCES.md_
+Updated from 50 → 70 gal on 2026-03-15. Penske's official 22–26 ft spec page lists
+a 70-gallon diesel tank for both trucks. Closes issues #63 and #50.
+_Resolved 2026-03-15_
 
 **[D-2] Budget 24 ft and 26 ft tank capacities derived from community comparison, not official spec**
 `src/data/trucks.ts` → `BUDGET_TRUCKS`, `budget-24ft` and `budget-26ft`.
