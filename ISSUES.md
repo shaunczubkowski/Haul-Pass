@@ -8,21 +8,18 @@ Tracked here until GitHub Issues are accessible from this environment.
 
 ### Security / Validation
 
-**[S-1] Normalize `gasPrice` at URL ingestion, not only at calculation boundary**
+**[S-1] ~~Normalize `gasPrice` at URL ingestion, not only at calculation boundary~~** ✅ RESOLVED
 `src/app/page.tsx` → `readUrlParams()`, `gas` param block.
-Currently `gasPrice` is stored as a raw string from the URL with no sanitization. The
-`parseFloat(gasPrice) > 0` guard in the calculator input prevents bad values from
-affecting arithmetic, but the two validation sites are decoupled — a future caller that
-reads `gasPrice` state directly could skip the guard. Fix: apply the `> 0` parse check
-inside `readUrlParams` and return either a canonical numeric string or `""`.
-_Raised by: Vesper_
+`isFinite(parsedGas) && parsedGas > 0 && parsedGas <= MAX_GAS_PRICE_USD` is now applied
+inside `readUrlParams`, returning a canonical numeric string or `""`. Validation is no
+longer split across ingestion and calculation boundary.
+_Raised by: Vesper — Resolved (confirmed by Vesper in PR #78 review)_
 
-**[S-2] No upper bound on `dist` URL param**
+**[S-2] ~~No upper bound on `dist` URL param~~** ✅ RESOLVED
 `src/app/page.tsx` → `readUrlParams()`, `dist` param block.
-`distance` accepts any `val >= 0` with no maximum. A value like `?dist=999999999` produces
-a nonsensical but non-crashing UI. Recommend capping at a domain-appropriate maximum
-(e.g. 10 000 miles / 16 000 km).
-_Raised by: Vesper_
+`val <= MAX_DISTANCE_MILES` (10 000 miles) is now enforced at ingestion. Values like
+`?dist=999999999` are rejected and fall back to `0`.
+_Raised by: Vesper — Resolved (confirmed by Vesper in PR #78 review)_
 
 **[S-3] Silent copy failure UX risk if app is served over HTTP**
 `src/app/page.tsx` → `copyLink`. _(Partially addressed: error message now shown.)_
@@ -36,28 +33,22 @@ _Raised by: Vesper_
 
 ### Accessibility / UX
 
-**[A-1] `aria-label` on FuelGauge slider embeds the current value, making the accessible name unstable**
-`src/components/FuelGauge.tsx` → slider `div`, `aria-label` prop.
-`aria-label={`${label}: ${GAUGE_LEVEL_LABELS[value]}`}` changes on every interaction.
-AT users who navigate by form control name will see an inconsistently named control.
-The accessible name should be stable ("At Pickup" / "Right Now"); current value is
-already communicated via `aria-valuetext`. Remove the value fragment from `aria-label`.
-_Raised by: Dex_
+**[A-1] ~~`aria-label` on FuelGauge slider embeds the current value, making the accessible name unstable~~** ✅ RESOLVED
+`src/components/FuelGauge.tsx` — `aria-label={label}` is now stable (label prop only).
+Value is communicated exclusively via `aria-valuetext`. Covered by test:
+`"aria-label on slider is stable (does not embed the current value)"`.
+_Raised by: Dex — Resolved_
 
-**[A-2] `aria-disabled` without matching keyboard guard on `onKeyDown`**
-`src/components/FuelGauge.tsx` → slider `div`.
-`aria-disabled` signals the disabled state to AT, and `tabIndex={disabled ? -1 : 0}`
-prevents focus. However, `onKeyDown` only early-returns when `disabled` inside
-`handleKeyDown` — if focus somehow lands on the slider when disabled (e.g. via AT
-virtual cursor), key events can still fire. Add `if (disabled) return;` as the first
-line of the `onKeyDown` handler on the div itself.
-_Raised by: Dex_
+**[A-2] ~~`aria-disabled` without matching keyboard guard on `onKeyDown`~~** ✅ RESOLVED
+`src/components/FuelGauge.tsx` — `handleKeyDown` early-returns on `disabled` as its
+first line, preventing key events from reaching `onChange` regardless of how focus
+arrived. Covered by test: `"keyboard events do not fire when the slider is disabled"`.
+_Raised by: Dex — Resolved_
 
-**[A-3] "✓" checkmark in "✓ Link copied!" is read aloud by some screen readers**
-`src/app/page.tsx` → share button inner text.
-Wrap the character in `<span aria-hidden="true">✓</span>` so only "Link copied!" is
-announced, not "check mark Link copied!".
-_Raised by: Dex_
+**[A-3] ~~"✓" checkmark in "✓ Link copied!" is read aloud by some screen readers~~** ✅ RESOLVED
+`src/app/page.tsx` — checkmark is wrapped in `<span aria-hidden="true">✓ </span>`.
+Covered by test: `"checkmark in 'Link copied!' is wrapped in aria-hidden…"`.
+_Raised by: Dex — Resolved_
 
 **[A-4] VoiceOver + Safari may be slow to announce `aria-valuetext` changes on custom sliders**
 `src/components/FuelGauge.tsx`.
