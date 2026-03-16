@@ -1,11 +1,17 @@
 import Link from "next/link";
 
+const FOUNDING_YEAR = 2026;
+
 export function Footer() {
+  const currentYear = new Date().getFullYear();
+  const copyrightRange =
+    currentYear > FOUNDING_YEAR ? `${FOUNDING_YEAR}–${currentYear}` : `${FOUNDING_YEAR}`;
+
   return (
     <footer className="w-full border-t border-zinc-200 bg-zinc-50 px-4 py-6">
       <div className="mx-auto max-w-lg flex flex-col items-center gap-2 text-center">
         <p className="text-sm text-zinc-600">
-          © 2025–present FillRight. All rights reserved.
+          © {copyrightRange} FillRight. All rights reserved.
         </p>
         <nav aria-label="Legal" className="flex items-center gap-4">
           <Link

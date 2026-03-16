@@ -109,7 +109,7 @@ export const PENSKE_TRUCKS: TruckType[] = [
     id: "penske-22ft",
     name: "22 ft Truck",
     company: "penske",
-    tankCapacity: 50,
+    tankCapacity: 70, // verified: Penske 22–26 ft box trucks use a 70-gal diesel tank (pensketruckrental.com, 2026-03-15)
     mpg: 8,
     fuelType: "diesel",
     loadSize: "3–4 bedrooms",
@@ -118,7 +118,7 @@ export const PENSKE_TRUCKS: TruckType[] = [
     id: "penske-26ft",
     name: "26 ft Truck",
     company: "penske",
-    tankCapacity: 50,
+    tankCapacity: 70, // same 70-gal diesel tank as 22 ft — both listed on Penske's 22–26 ft spec page
     mpg: 7,
     fuelType: "diesel",
     loadSize: "5+ bedrooms",

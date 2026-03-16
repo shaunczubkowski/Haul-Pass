@@ -63,7 +63,10 @@ function readUrlParams() {
 }
 
 export default function Home() {
-  // Parse URL params once; the lazy initializer runs only on first render.
+  // Lazy initializer form: passing `readUrlParams` (not `readUrlParams()`) tells
+  // React to call it once on mount and never again. Subsequent useState(initialParams.x)
+  // calls use the initial-value form, which React also ignores after the first render,
+  // so URL params seed each piece of state exactly once without re-running on updates.
   const [initialParams] = useState(readUrlParams);
   const [truck, setTruck] = useState<TruckType | null>(initialParams.truck);
   const [pickupLevel, setPickupLevel] = useState<GaugeLevel>(initialParams.pickupLevel);
@@ -73,7 +76,9 @@ export default function Home() {
   const [gaugeVariant, setGaugeVariant] = useState<"arc" | "horizontal">(initialParams.gaugeVariant);
   const [copied, setCopied] = useState(false);
   const [copyError, setCopyError] = useState(false);
+  const [fallbackUrl, setFallbackUrl] = useState<string>("");
   const resultRef = useRef<HTMLElement | null>(null);
+  const fallbackInputRef = useRef<HTMLInputElement | null>(null);
 
   // Sync state to URL (replaceState — no browser history spam)
   useEffect(() => {
@@ -94,14 +99,26 @@ export default function Home() {
       await navigator.clipboard.writeText(window.location.href);
       setCopied(true);
       setCopyError(false);
+      setFallbackUrl("");
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      // Clipboard API unavailable (non-secure context, browser permission denied)
+      // Clipboard API unavailable (non-secure context, permission denied).
+      // Capture the URL here (client-only event handler — window is always defined)
+      // and surface a persistent field the user can manually select and copy.
       setCopyError(true);
       setCopied(false);
+      setFallbackUrl(window.location.href);
       setTimeout(() => setCopyError(false), 4000);
     }
   }
+
+  // When the fallback URL field appears, auto-select its text so the user
+  // can copy immediately with Ctrl+C / Cmd+C.
+  useEffect(() => {
+    if (fallbackUrl && fallbackInputRef.current) {
+      fallbackInputRef.current.select();
+    }
+  }, [fallbackUrl]);
 
   const result =
     truck != null
@@ -315,7 +332,7 @@ export default function Home() {
                   <button
                     onClick={copyLink}
                     className={[
-                      "flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors",
+                      "flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500",
                       copied
                         ? "bg-green-100 text-green-700"
                         : "bg-white/70 text-zinc-600 hover:bg-white hover:text-zinc-900",
@@ -326,14 +343,26 @@ export default function Home() {
                   </button>
                   {copyError && (
                     <p className="text-sm text-red-600 text-center">
-                      Could not copy link — please copy the URL from your address bar.
+                      Could not copy — use the link below:
                     </p>
+                  )}
+                  {fallbackUrl && (
+                    <input
+                      ref={fallbackInputRef}
+                      type="text"
+                      readOnly
+                      value={fallbackUrl}
+                      aria-label="Shareable link — select all and copy"
+                      className="w-full rounded border border-zinc-300 bg-white px-2 py-1 text-sm text-zinc-700 select-all"
+                      onFocus={(e) => e.currentTarget.select()}
+                      onClick={(e) => e.currentTarget.select()}
+                    />
                   )}
                   {/* Polite live region: announces copy success/failure to screen readers
                       without the AT cross-browser quirk of dynamic button label changes. */}
                   <span aria-live="polite" className="sr-only">
                     {copied ? "Link copied to clipboard." : ""}
-                    {copyError ? "Could not copy link." : ""}
+                    {copyError ? "Could not copy link. A shareable link field is now available below — select all and copy." : ""}
                   </span>
                 </div>
               </>

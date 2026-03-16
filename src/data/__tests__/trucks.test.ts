@@ -113,6 +113,11 @@ describe("Truck fleet data", () => {
         expect(truck.tankCapacity).toBeLessThanOrEqual(80);
       });
     });
+
+    it("Penske 22 ft and 26 ft have a 70-gallon diesel tank (verified against pensketruckrental.com 2026-03-15)", () => {
+      expect(getTruckById("penske-22ft")!.tankCapacity).toBe(70);
+      expect(getTruckById("penske-26ft")!.tankCapacity).toBe(70);
+    });
   });
 
   describe("BUDGET_TRUCKS", () => {

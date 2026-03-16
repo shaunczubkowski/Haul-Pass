@@ -182,8 +182,19 @@ describe("Home page", () => {
       render(<Home />);
       await selectTruck(user, "8 ft Pickup");
       await user.click(screen.getByRole("button", { name: /copy shareable link/i }));
-      // Visible error instructs user to copy from address bar
-      expect(screen.getByText(/please copy the URL from your address bar/i)).toBeInTheDocument();
+      expect(screen.getByText(/could not copy — use the link below/i)).toBeInTheDocument();
+    });
+
+    it("shows a persistent fallback URL input when the clipboard API fails", async () => {
+      const user = userEvent.setup();
+      const rejectedWriteText = vi.fn().mockRejectedValueOnce(new Error("NotAllowedError"));
+      Object.assign(navigator.clipboard, { writeText: rejectedWriteText });
+      render(<Home />);
+      await selectTruck(user, "8 ft Pickup");
+      await user.click(screen.getByRole("button", { name: /copy shareable link/i }));
+      const fallback = screen.getByRole("textbox", { name: /shareable link/i });
+      expect(fallback).toBeInTheDocument();
+      expect(fallback).toHaveAttribute("readOnly");
     });
 
     it("live region announces success after copy", async () => {
@@ -222,7 +233,7 @@ describe("Home page", () => {
       const shareSection = screen.getByRole("button", { name: /copy shareable link/i }).closest("div")!;
       const liveSpan = shareSection.querySelector("[aria-live='polite']")!;
       await user.click(screen.getByRole("button", { name: /copy shareable link/i }));
-      expect(liveSpan).toHaveTextContent("Could not copy link.");
+      expect(liveSpan).toHaveTextContent("Could not copy link. A shareable link field is now available below — select all and copy.");
     });
   });
 
