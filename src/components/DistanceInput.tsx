@@ -45,13 +45,13 @@ export function DistanceInput({ value, onChange, onBlur, disabled = false }: Dis
       <div>
         <label
           htmlFor="distance-input"
-          className="text-sm font-medium text-gray-600 uppercase tracking-wide"
+          className="text-sm font-medium text-text-secondary uppercase tracking-wide"
         >
           {unit === "miles" ? "Miles" : "km"} to Drop-off
         </label>
-        <p className="text-xs text-gray-400 mt-0.5">From this pump to the U-Haul location</p>
+        <p className="text-xs text-text-muted mt-0.5">From this pump to the U-Haul location</p>
       </div>
-      <div className="flex rounded-lg border-2 border-gray-200 overflow-hidden focus-within:border-orange-400 transition-colors">
+      <div className="flex rounded-lg border-2 border-border overflow-hidden focus-within:border-accent transition-colors">
         <input
           id="distance-input"
           type="number"
@@ -65,7 +65,7 @@ export function DistanceInput({ value, onChange, onBlur, disabled = false }: Dis
           placeholder="e.g. 12"
           aria-label={`${unit === "miles" ? "Miles" : "km"} to drop-off in ${unit}`}
           className={[
-            "flex-1 px-4 py-3 text-lg font-semibold text-gray-900 bg-white",
+            "flex-1 px-4 py-3 text-lg font-semibold text-text-primary bg-surface",
             "outline-none appearance-none",
             "[&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none",
             disabled ? "opacity-50 cursor-not-allowed" : "",
@@ -78,8 +78,8 @@ export function DistanceInput({ value, onChange, onBlur, disabled = false }: Dis
           disabled={disabled}
           aria-label={`Distance unit: ${unit}. Switch to ${unit === "miles" ? "kilometers" : "miles"}`}
           className={[
-            "px-4 border-l-2 border-gray-200 bg-gray-50 text-sm font-semibold text-gray-600",
-            "hover:bg-orange-50 hover:text-orange-600 transition-colors min-w-[64px]",
+            "px-4 border-l-2 border-border bg-surface-raised text-sm font-semibold text-text-secondary",
+            "hover:bg-accent-subtle hover:text-accent transition-colors min-w-[64px]",
             disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer",
           ].join(" ")}
         >
@@ -87,7 +87,7 @@ export function DistanceInput({ value, onChange, onBlur, disabled = false }: Dis
         </button>
       </div>
       {unit === "km" && value > 0 && (
-        <p className="text-xs text-gray-400">≈ {value} miles</p>
+        <p className="text-xs text-text-muted">≈ {value} miles</p>
       )}
     </div>
   );

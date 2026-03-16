@@ -63,16 +63,16 @@ describe("FuelGauge — horizontal variant", () => {
       xPositions.forEach((x, i) => expect(x).toBeCloseTo(expectedXs[i], 1));
     });
 
-    it("tick lines at or below current value are orange", () => {
+    it("tick lines at or below current value use the active gauge token", () => {
       const { container } = render(
         <FuelGauge value={GAUGE_LEVELS.HALF} onChange={noop} label="Test" variant="horizontal" />
       );
       const lines = container.querySelectorAll("svg line");
-      // HALF = 0.5 — levels 0, 1/8, 1/4, 3/8, 1/2 are all <= 0.5 → 5 orange
-      const orangeCount = Array.from(lines).filter(
-        (l) => l.getAttribute("stroke") === "#f97316"
+      // HALF = 0.5 — levels 0, 1/8, 1/4, 3/8, 1/2 are all <= 0.5 → 5 active
+      const activeCount = Array.from(lines).filter(
+        (l) => l.getAttribute("stroke") === "var(--gauge-tick-active)"
       ).length;
-      expect(orangeCount).toBe(5);
+      expect(activeCount).toBe(5);
     });
 
     it("needle polygon x-center is at 20 + value * 260", () => {
@@ -276,7 +276,7 @@ describe("FuelGauge", () => {
 
       const paths = container.querySelectorAll("svg path");
       const filledPath = Array.from(paths).find(
-        (p) => p.getAttribute("stroke") === "#f97316"
+        (p) => p.getAttribute("stroke") === "var(--gauge-fill)"
       );
 
       expect(filledPath).toBeTruthy();
@@ -294,7 +294,7 @@ describe("FuelGauge", () => {
 
       const paths = container.querySelectorAll("svg path");
       const bgPath = Array.from(paths).find(
-        (p) => p.getAttribute("stroke") === "#e5e7eb"
+        (p) => p.getAttribute("stroke") === "var(--gauge-track)"
       );
 
       expect(bgPath).toBeTruthy();

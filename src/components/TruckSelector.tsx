@@ -77,7 +77,7 @@ export function TruckSelector({ value, onChange }: TruckSelectorProps) {
     <div className="flex flex-col gap-3">
       {/* Company selector */}
       <div>
-        <span className="text-sm font-medium text-gray-600 uppercase tracking-wide">
+        <span className="text-sm font-medium text-text-secondary uppercase tracking-wide">
           Rental Company
         </span>
         <div
@@ -98,10 +98,10 @@ export function TruckSelector({ value, onChange }: TruckSelectorProps) {
                 onKeyDown={(e) => handleCompanyKeyDown(e, index)}
                 className={[
                   "rounded-lg border-2 px-3 py-1.5 text-sm font-semibold transition-colors",
-                  "focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-400",
+                  "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                   isSelected
-                    ? "border-orange-500 bg-orange-50 text-orange-700"
-                    : "border-gray-200 bg-white text-gray-700 hover:border-orange-300",
+                    ? "border-accent bg-accent-subtle text-accent"
+                    : "border-border bg-surface text-text-primary hover:border-accent",
                 ].join(" ")}
               >
                 {label}
@@ -130,12 +130,12 @@ export function TruckSelector({ value, onChange }: TruckSelectorProps) {
 
       {/* Truck size selector */}
       <div>
-        <span className="text-sm font-medium text-gray-600 uppercase tracking-wide">
+        <span className="text-sm font-medium text-text-secondary uppercase tracking-wide">
           Truck Size
         </span>
         {/* Outer wrapper adds a fade-out on the right edge to signal more trucks off-screen */}
         <div className="relative mt-2">
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-white to-transparent z-10 sm:hidden" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-surface to-transparent z-10 sm:hidden" />
           <div
             role="radiogroup"
             aria-label="Select truck size"
@@ -156,10 +156,10 @@ export function TruckSelector({ value, onChange }: TruckSelectorProps) {
                   className={[
                     "flex-shrink-0 snap-start flex flex-col items-center gap-1",
                     "rounded-xl border-2 px-4 py-3 w-[110px] transition-colors",
-                    "focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-400",
+                    "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                     isSelected
-                      ? "border-orange-500 bg-orange-50"
-                      : "border-gray-200 bg-white hover:border-orange-300",
+                      ? "border-accent bg-accent-subtle"
+                      : "border-border bg-surface hover:border-accent",
                   ].join(" ")}
                 >
                   {/* Truck silhouette icon */}
@@ -167,15 +167,15 @@ export function TruckSelector({ value, onChange }: TruckSelectorProps) {
                   <span
                     className={[
                       "text-sm font-semibold text-center leading-tight",
-                      isSelected ? "text-orange-600" : "text-gray-800",
+                      isSelected ? "text-accent" : "text-text-primary",
                     ].join(" ")}
                   >
                     {truck.name}
                   </span>
                   {truck.loadSize && (
-                    <span className="text-xs text-gray-500 text-center leading-tight">{truck.loadSize}</span>
+                    <span className="text-xs text-text-secondary text-center leading-tight">{truck.loadSize}</span>
                   )}
-                  <span className="text-xs text-gray-400">
+                  <span className="text-xs text-text-muted">
                     {truck.tankCapacity} gal · {truck.mpg} MPG
                   </span>
                   {truck.fuelType === "diesel" && (
@@ -210,7 +210,7 @@ function TruckIcon({ size }: { size: TruckType }) {
       width={56}
       height={30}
       aria-hidden="true"
-      className="text-gray-400"
+      className="text-text-muted"
     >
       {/* Cargo box */}
       <rect
