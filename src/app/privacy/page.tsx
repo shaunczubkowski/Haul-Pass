@@ -20,7 +20,7 @@ export default function PrivacyPolicy() {
         </Link>
 
         <h1 className="text-2xl font-bold text-text-primary mb-1">Privacy Policy</h1>
-        <p className="text-sm text-text-secondary mb-8">Effective date: March 11, 2026 · Last updated: March 13, 2026</p>
+        <p className="text-sm text-text-secondary mb-8">Effective date: March 11, 2026 · Last updated: March 16, 2026</p>
 
         <div className="space-y-8 text-text-secondary">
 
@@ -56,14 +56,17 @@ export default function PrivacyPolicy() {
             <ul className="text-sm text-text-secondary list-disc list-inside space-y-1 leading-relaxed">
               <li>No advertising or tracking pixels</li>
               <li>No cookies (Vercel Analytics is cookie-free — see §3)</li>
-              <li>No localStorage or sessionStorage</li>
+              <li>No sessionStorage</li>
               <li>No device fingerprinting</li>
               <li>No email addresses or contact information</li>
               <li>No payment information</li>
             </ul>
             <p className="mt-2 text-sm leading-relaxed text-text-secondary">
               Note: FillRight&apos;s service worker caches app files (HTML, JS, CSS) in your browser&apos;s
-              Cache Storage for offline support — see §5 for details.
+              Cache Storage for offline support — see §5 for details. FillRight also stores your light/dark
+              theme preference in <code className="text-xs bg-surface-raised px-1 py-0.5 rounded">localStorage</code> under
+              the key <code className="text-xs bg-surface-raised px-1 py-0.5 rounded">theme</code> — this contains
+              only the string &quot;light&quot;, &quot;dark&quot;, or &quot;system&quot; and no personal data.
             </p>
           </section>
 
