@@ -49,22 +49,17 @@ _22 ft and 26 ft tank updated from 50 → 70 gal on 2026-03-15. Penske lists bot
 
 ## Budget
 
-All Budget trucks use **regular unleaded gasoline**.
+10 ft and 16 ft use **regular unleaded gasoline**. 26 ft uses **diesel**.
+Budget does not offer a consumer 24 ft truck.
 
-| Truck | Tank (gal) | MPG est. | Source |
-|---|---|---|---|
-| 10 ft | 31 | 12 | [budgettruck.com/…/truckdetails12foot](https://www.budgettruck.com/moving-trucks-accessories/truckdetails12foot) |
-| 16 ft | 40 | 10 | [budgettruck.com/…/truckdetails16foot](https://www.budgettruck.com/moving-trucks-accessories/truckdetails16foot) |
-| 24 ft | 60 | 7 | [budgettruck.com (size guide)](https://www.budgettruck.com/faq/q/sizes) |
-| 26 ft | 60 | 7 | [budgettruck.com/…/truckdetails26foot](https://www.budgettruck.com/moving-trucks-accessories/truckdetails26foot) |
+| Truck | Tank (gal) | MPG est. | Fuel | Source |
+|---|---|---|---|---|
+| 10 ft | 31 | 12 | **regular** | [budgettruck.com/…/truckdetails12foot](https://www.budgettruck.com/moving-trucks-accessories/truckdetails12foot) |
+| 16 ft | 40 | 10 | **regular** | [budgettruck.com/…/truckdetails16foot](https://www.budgettruck.com/moving-trucks-accessories/truckdetails16foot) |
+| 26 ft | **50** | 7 | **diesel** | [budgettruck.com/…/truckdetails26foot](https://www.budgettruck.com/moving-trucks-accessories/truckdetails26foot) |
 
-> **Note:** Budget does not publish exact tank capacities on all truck detail pages.
-> Tank sizes for the 24 ft and 26 ft remain derived from community comparisons with
-> equivalent U-Haul sizes and the [HireAHelper rental truck guide](https://blog.hireahelper.com/how-to-save-money-on-your-rental-trucks-gas/)
-> (retrieved 2026-03-10). One third-party source (miramarspeedcircuit.com) suggests
-> the Budget 26 ft tank may be **50 gal** rather than 60 gal. Official Budget spec
-> pages don't publish this figure directly. Keeping 60 gal until a primary source
-> confirms otherwise. See issue #64.
+_26 ft fuel type corrected from regular → diesel, tank corrected from 60 → 50 gal, and
+24 ft entry removed on 2026-03-17. All three verified directly on budgettruck.com. Closes issue #64._
 
 ---
 

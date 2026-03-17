@@ -70,7 +70,15 @@ describe("TruckSelector", () => {
       render(<TruckSelector value={null} onChange={noop} />);
       await user.click(screen.getByRole("radio", { name: "Penske" }));
       expect(screen.getByRole("note")).toBeInTheDocument();
-      expect(screen.getByText(/penske fuel type varies by truck size/i)).toBeInTheDocument();
+      expect(screen.getByText(/fuel type varies by truck size/i)).toBeInTheDocument();
+    });
+
+    it("shows fuel-type note when Budget is selected", async () => {
+      const user = userEvent.setup();
+      render(<TruckSelector value={null} onChange={noop} />);
+      await user.click(screen.getByRole("radio", { name: "Budget" }));
+      expect(screen.getByRole("note")).toBeInTheDocument();
+      expect(screen.getByText(/fuel type varies by truck size/i)).toBeInTheDocument();
     });
 
     it("does not show diesel warning for U-Haul", () => {

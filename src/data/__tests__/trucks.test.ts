@@ -121,14 +121,27 @@ describe("Truck fleet data", () => {
   });
 
   describe("BUDGET_TRUCKS", () => {
-    it("contains Budget truck sizes", () => {
-      expect(BUDGET_TRUCKS.length).toBeGreaterThanOrEqual(3);
+    it("contains exactly 3 Budget truck sizes (10 ft, 16 ft, 26 ft)", () => {
+      expect(BUDGET_TRUCKS).toHaveLength(3);
     });
 
-    it("all Budget trucks use regular unleaded fuel", () => {
-      BUDGET_TRUCKS.forEach((truck) => {
-        expect(truck.fuelType).toBe("regular");
+    it("Budget 10 ft and 16 ft use regular unleaded fuel", () => {
+      ["budget-10ft", "budget-16ft"].forEach((id) => {
+        expect(getTruckById(id)!.fuelType).toBe("regular");
       });
+    });
+
+    it("Budget 26 ft uses diesel (verified budgettruck.com 2026-03-17)", () => {
+      expect(getTruckById("budget-26ft")!.fuelType).toBe("diesel");
+    });
+
+    it("Budget 26 ft has a 50-gallon tank (verified budgettruck.com 2026-03-17)", () => {
+      expect(getTruckById("budget-26ft")!.tankCapacity).toBe(50);
+    });
+
+    it("does not include a 24 ft truck (not a standard Budget SKU)", () => {
+      expect(getTruckById("budget-24ft")).toBeUndefined();
+      expect(BUDGET_TRUCKS.find((t) => t.id === "budget-24ft")).toBeUndefined();
     });
 
     it("all Budget trucks belong to the budget company", () => {
