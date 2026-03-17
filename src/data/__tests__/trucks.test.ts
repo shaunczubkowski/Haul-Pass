@@ -125,10 +125,14 @@ describe("Truck fleet data", () => {
       expect(BUDGET_TRUCKS.length).toBeGreaterThanOrEqual(3);
     });
 
-    it("all Budget trucks use regular unleaded fuel", () => {
-      BUDGET_TRUCKS.forEach((truck) => {
-        expect(truck.fuelType).toBe("regular");
+    it("Budget 10 ft, 16 ft, and 24 ft use regular unleaded fuel", () => {
+      ["budget-10ft", "budget-16ft", "budget-24ft"].forEach((id) => {
+        expect(getTruckById(id)!.fuelType).toBe("regular");
       });
+    });
+
+    it("Budget 26 ft uses diesel (verified budgettruck.com 2026-03-17)", () => {
+      expect(getTruckById("budget-26ft")!.fuelType).toBe("diesel");
     });
 
     it("all Budget trucks belong to the budget company", () => {
