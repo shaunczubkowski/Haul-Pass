@@ -91,17 +91,17 @@ function ArcGaugeSvg({ value }: { value: GaugeLevel }) {
       <path
         d={arcPath}
         fill="none"
-        stroke="#e5e7eb"
+        stroke="var(--gauge-track)"
         strokeWidth="12"
         strokeLinecap="round"
       />
 
-      {/* Filled arc (orange, up to current value) */}
+      {/* Filled arc (up to current value) */}
       {filledPath && (
         <path
           d={filledPath}
           fill="none"
-          stroke="#f97316"
+          stroke="var(--gauge-fill)"
           strokeWidth="12"
           strokeLinecap="round"
         />
@@ -122,7 +122,7 @@ function ArcGaugeSvg({ value }: { value: GaugeLevel }) {
             y1={innerPt.y}
             x2={outerPt.x}
             y2={outerPt.y}
-            stroke={level <= value ? "#f97316" : "#d1d5db"}
+            stroke={level <= value ? "var(--gauge-tick-active)" : "var(--gauge-tick-inactive)"}
             strokeWidth={MAJOR_LEVELS.has(level) ? 2.5 : 1.5}
           />
         );
@@ -131,14 +131,14 @@ function ArcGaugeSvg({ value }: { value: GaugeLevel }) {
       {/* Needle */}
       <polygon
         points={`${needleTip.x},${needleTip.y} ${needleBase1.x},${needleBase1.y} ${needleBase2.x},${needleBase2.y}`}
-        fill="#111827"
+        fill="var(--gauge-needle)"
       />
       {/* Needle pivot */}
-      <circle cx={CX} cy={CY} r={5} fill="#111827" />
+      <circle cx={CX} cy={CY} r={5} fill="var(--gauge-needle)" />
 
       {/* E and F labels */}
-      <text x={arcStart.x - 8} y={arcStart.y + 4} fontSize="11" fill="#6b7280" fontWeight="600">E</text>
-      <text x={arcEnd.x + 2} y={arcEnd.y + 4} fontSize="11" fill="#6b7280" fontWeight="600">F</text>
+      <text x={arcStart.x - 8} y={arcStart.y + 4} fontSize="11" fill="var(--text-muted)" fontWeight="600">E</text>
+      <text x={arcEnd.x + 2} y={arcEnd.y + 4} fontSize="11" fill="var(--text-muted)" fontWeight="600">F</text>
     </>
   );
 }
@@ -156,17 +156,17 @@ function HorizontalGaugeSvg({ value }: { value: GaugeLevel }) {
         width={H_TRACK_WIDTH}
         height={H_BAR_HEIGHT}
         rx="8"
-        fill="#e5e7eb"
+        fill="var(--gauge-track)"
       />
 
-      {/* Filled portion (orange, up to current value) */}
+      {/* Filled portion (up to current value) */}
       <rect
         x={H_TRACK_X}
         y={H_BAR_Y}
         width={filledWidth}
         height={H_BAR_HEIGHT}
         rx="8"
-        fill="#f97316"
+        fill="var(--gauge-fill)"
       />
 
       {/* Tick marks */}
@@ -179,7 +179,7 @@ function HorizontalGaugeSvg({ value }: { value: GaugeLevel }) {
             y1={24}
             x2={tickX}
             y2={56}
-            stroke={level <= value ? "#f97316" : "#d1d5db"}
+            stroke={level <= value ? "var(--gauge-tick-active)" : "var(--gauge-tick-inactive)"}
             strokeWidth={MAJOR_LEVELS.has(level) ? 2.5 : 1.5}
           />
         );
@@ -188,12 +188,12 @@ function HorizontalGaugeSvg({ value }: { value: GaugeLevel }) {
       {/* Needle — downward-pointing triangle at current fill position */}
       <polygon
         points={`${needleX},20 ${needleX - 5},30 ${needleX + 5},30`}
-        fill="#111827"
+        fill="var(--gauge-needle)"
       />
 
       {/* E and F labels */}
-      <text x={H_TRACK_X} y={70} fontSize="11" fill="#6b7280" fontWeight="600" textAnchor="middle">E</text>
-      <text x={H_TRACK_X + H_TRACK_WIDTH} y={70} fontSize="11" fill="#6b7280" fontWeight="600" textAnchor="middle">F</text>
+      <text x={H_TRACK_X} y={70} fontSize="11" fill="var(--text-muted)" fontWeight="600" textAnchor="middle">E</text>
+      <text x={H_TRACK_X + H_TRACK_WIDTH} y={70} fontSize="11" fill="var(--text-muted)" fontWeight="600" textAnchor="middle">F</text>
     </>
   );
 }
@@ -227,7 +227,7 @@ export function FuelGauge({ value, onChange, label, disabled = false, variant = 
 
   return (
     <div className="flex flex-col items-center gap-2">
-      <span className="text-sm font-medium text-gray-600 uppercase tracking-wide">
+      <span className="text-sm font-medium text-text-secondary uppercase tracking-wide">
         {label}
       </span>
 
@@ -275,8 +275,8 @@ export function FuelGauge({ value, onChange, label, disabled = false, variant = 
                 "border-2 px-2",
                 isMajor ? "text-sm font-semibold" : "text-xs font-medium",
                 isSelected
-                  ? "bg-orange-500 border-orange-500 text-white"
-                  : "bg-white border-gray-200 text-gray-700 hover:border-orange-300",
+                  ? "bg-accent border-accent text-text-on-accent"
+                  : "bg-surface border-border text-text-primary hover:border-accent",
                 disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer",
               ].join(" ")}
             >

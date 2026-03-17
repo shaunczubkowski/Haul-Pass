@@ -1,26 +1,114 @@
 @import "tailwindcss";
 
+/* ─── Dark mode variant — class-based (next-themes sets .dark on <html>) ─── */
+@variant dark (&:where(.dark, .dark *));
+
+/* ─── Light mode design tokens ─────────────────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Surfaces */
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --surface: #ffffff;
+  --surface-raised: #f1f5f9;
+  --surface-overlay: #e2e8f0;
+
+  /* Accent — violet */
+  --accent: #7c3aed;          /* violet-600: white text contrast ~5.6:1 (WCAG AA) */
+  --accent-hover: #6d28d9;    /* violet-700 */
+  --accent-muted: #ede9fe;    /* violet-100 */
+  --accent-subtle: #f5f3ff;   /* violet-50 */
+
+  /* Borders */
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
+  --border-accent: #7c3aed;
+
+  /* Text */
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --text-on-accent: #ffffff;
+
+  /* Focus ring */
+  --ring: #7c3aed;
+
+  /* SVG gauge tokens */
+  --gauge-fill: #7c3aed;
+  --gauge-track: #e2e8f0;
+  --gauge-tick-active: #7c3aed;
+  --gauge-tick-inactive: #cbd5e1;
+  --gauge-needle: #0f172a;
 }
 
+/* ─── Dark mode overrides ───────────────────────────────────────────────────── */
+.dark {
+  --background: #0f172a;
+  --foreground: #f1f5f9;
+  --surface: #1e293b;
+  --surface-raised: #334155;
+  --surface-overlay: #475569;
+
+  --accent: #a78bfa;          /* violet-400: contrast ~6.6:1 on dark bg (WCAG AA) */
+  --accent-hover: #c4b5fd;    /* violet-300 */
+  --accent-muted: #4c1d95;    /* violet-900 */
+  --accent-subtle: #2e1065;   /* violet-950 */
+
+  --border: #334155;
+  --border-strong: #475569;
+  --border-accent: #a78bfa;
+
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #8899b0;
+  --text-on-accent: #1e1b4b;  /* indigo-950: contrast ~6.2:1 on violet-400 */
+
+  --ring: #a78bfa;
+
+  --gauge-fill: #a78bfa;
+  --gauge-track: #334155;
+  --gauge-tick-active: #a78bfa;
+  --gauge-tick-inactive: #475569;
+  --gauge-needle: #f1f5f9;
+}
+
+/* ─── Tailwind token registration ───────────────────────────────────────────── */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-overlay: var(--surface-overlay);
+
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-muted: var(--accent-muted);
+  --color-accent-subtle: var(--accent-subtle);
+
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-border-accent: var(--border-accent);
+
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-text-on-accent: var(--text-on-accent);
+
+  --color-ring: var(--ring);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }

@@ -9,24 +9,24 @@ export const metadata: Metadata = {
 
 export default function PrivacyPolicy() {
   return (
-    <main id="main-content" className="flex flex-1 flex-col items-center bg-zinc-50 px-4 py-12">
+    <main id="main-content" className="flex flex-1 flex-col items-center bg-background px-4 py-12">
       <div className="w-full max-w-lg">
         <Link
           href="/"
           aria-label="Back to FillRight"
-          className="mb-8 inline-flex items-center gap-1 text-sm text-zinc-600 hover:text-zinc-800 transition-colors"
+          className="mb-8 inline-flex items-center gap-1 text-sm text-text-secondary hover:text-text-primary transition-colors"
         >
           <span aria-hidden="true">←</span> Back to FillRight
         </Link>
 
-        <h1 className="text-2xl font-bold text-zinc-900 mb-1">Privacy Policy</h1>
-        <p className="text-sm text-zinc-600 mb-8">Effective date: March 11, 2026 · Last updated: March 13, 2026</p>
+        <h1 className="text-2xl font-bold text-text-primary mb-1">Privacy Policy</h1>
+        <p className="text-sm text-text-secondary mb-8">Effective date: March 11, 2026 · Last updated: March 16, 2026</p>
 
-        <div className="space-y-8 text-zinc-700">
+        <div className="space-y-8 text-text-secondary">
 
           <section aria-labelledby="section-short-version">
-            <h2 id="section-short-version" className="text-lg font-semibold text-zinc-900 mb-2">The short version</h2>
-            <div className="rounded-xl border border-zinc-200 bg-white p-4">
+            <h2 id="section-short-version" className="text-lg font-semibold text-text-primary mb-2">The short version</h2>
+            <div className="rounded-xl border border-border bg-surface p-4">
               <ul className="text-sm space-y-1">
                 <li><span aria-hidden="true">✓</span> Cookie-free, privacy-friendly analytics (no personal data)</li>
                 <li><span aria-hidden="true">✓</span> No cookies, ever</li>
@@ -38,7 +38,7 @@ export default function PrivacyPolicy() {
           </section>
 
           <section aria-labelledby="section-what-we-collect">
-            <h2 id="section-what-we-collect" className="text-lg font-semibold text-zinc-900 mb-2">1. What We Collect</h2>
+            <h2 id="section-what-we-collect" className="text-lg font-semibold text-text-primary mb-2">1. What We Collect</h2>
             <p className="text-sm leading-relaxed">
               FillRight does <strong>not collect personal information</strong>. The calculator inputs you enter
               (truck type, fuel levels, distance, gas price) are used only to perform the calculation in your
@@ -46,36 +46,39 @@ export default function PrivacyPolicy() {
             </p>
             <p className="mt-2 text-sm leading-relaxed">
               If you use the &quot;Share this calculation&quot; feature, your inputs are encoded in the URL as query
-              parameters (e.g., <code className="text-xs bg-zinc-100 px-1 py-0.5 rounded">?truck=uhaul-15&amp;pickup=1&amp;current=0.5</code>).
+              parameters (e.g., <code className="text-xs bg-surface-raised px-1 py-0.5 rounded">?truck=uhaul-15&amp;pickup=1&amp;current=0.5</code>).
               This URL exists only in your browser — nothing is stored on our servers.
             </p>
           </section>
 
           <section aria-labelledby="section-what-we-dont-collect">
-            <h2 id="section-what-we-dont-collect" className="text-lg font-semibold text-zinc-900 mb-2">2. What We Don&apos;t Collect</h2>
-            <ul className="text-sm text-zinc-600 list-disc list-inside space-y-1 leading-relaxed">
+            <h2 id="section-what-we-dont-collect" className="text-lg font-semibold text-text-primary mb-2">2. What We Don&apos;t Collect</h2>
+            <ul className="text-sm text-text-secondary list-disc list-inside space-y-1 leading-relaxed">
               <li>No advertising or tracking pixels</li>
               <li>No cookies (Vercel Analytics is cookie-free — see §3)</li>
-              <li>No localStorage or sessionStorage</li>
+              <li>No sessionStorage</li>
               <li>No device fingerprinting</li>
               <li>No email addresses or contact information</li>
               <li>No payment information</li>
             </ul>
-            <p className="mt-2 text-sm leading-relaxed text-zinc-600">
+            <p className="mt-2 text-sm leading-relaxed text-text-secondary">
               Note: FillRight&apos;s service worker caches app files (HTML, JS, CSS) in your browser&apos;s
-              Cache Storage for offline support — see §5 for details.
+              Cache Storage for offline support — see §5 for details. FillRight also stores your light/dark
+              theme preference in <code className="text-xs bg-surface-raised px-1 py-0.5 rounded">localStorage</code> under
+              the key <code className="text-xs bg-surface-raised px-1 py-0.5 rounded">theme</code> — this contains
+              only the string &quot;light&quot;, &quot;dark&quot;, or &quot;system&quot; and no personal data.
             </p>
           </section>
 
           <section aria-labelledby="section-hosting">
-            <h2 id="section-hosting" className="text-lg font-semibold text-zinc-900 mb-2">3. Hosting &amp; Analytics — Vercel</h2>
+            <h2 id="section-hosting" className="text-lg font-semibold text-text-primary mb-2">3. Hosting &amp; Analytics — Vercel</h2>
             <p className="text-sm leading-relaxed">
               FillRight is hosted on{" "}
               <a
                 href="https://vercel.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-zinc-900 underline underline-offset-2 hover:text-orange-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 rounded"
+                className="text-text-primary underline underline-offset-2 hover:text-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
               >
                 Vercel<span className="sr-only"> (opens in new tab)</span>
               </a>
@@ -86,7 +89,7 @@ export default function PrivacyPolicy() {
                 href="https://vercel.com/legal/privacy-policy"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-zinc-900 underline underline-offset-2 hover:text-orange-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 rounded"
+                className="text-text-primary underline underline-offset-2 hover:text-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
               >
                 Vercel&apos;s Privacy Policy<span className="sr-only"> (opens in new tab)</span>
               </a>
@@ -104,9 +107,9 @@ export default function PrivacyPolicy() {
           </section>
 
           <section aria-labelledby="section-fonts">
-            <h2 id="section-fonts" className="text-lg font-semibold text-zinc-900 mb-2">4. Fonts</h2>
+            <h2 id="section-fonts" className="text-lg font-semibold text-text-primary mb-2">4. Fonts</h2>
             <p className="text-sm leading-relaxed">
-              FillRight uses the Geist typeface. Via Next.js&apos;s <code className="text-xs bg-zinc-100 px-1 py-0.5 rounded">next/font</code> system,
+              FillRight uses the Geist typeface. Via Next.js&apos;s <code className="text-xs bg-surface-raised px-1 py-0.5 rounded">next/font</code> system,
               font files are downloaded at build time and self-hosted on FillRight&apos;s own servers —
               <strong> no request is ever made to Google&apos;s servers or any third-party font CDN</strong> from
               your browser at runtime.
@@ -114,7 +117,7 @@ export default function PrivacyPolicy() {
           </section>
 
           <section aria-labelledby="section-service-worker">
-            <h2 id="section-service-worker" className="text-lg font-semibold text-zinc-900 mb-2">5. Service Worker &amp; Offline Caching</h2>
+            <h2 id="section-service-worker" className="text-lg font-semibold text-text-primary mb-2">5. Service Worker &amp; Offline Caching</h2>
             <p className="text-sm leading-relaxed">
               FillRight is a Progressive Web App (PWA) and registers a service worker that caches the app&apos;s
               static files (HTML, JavaScript, CSS, and fonts) in your browser&apos;s <strong>Cache Storage</strong>.
@@ -128,7 +131,7 @@ export default function PrivacyPolicy() {
           </section>
 
           <section aria-labelledby="section-data-sharing">
-            <h2 id="section-data-sharing" className="text-lg font-semibold text-zinc-900 mb-2">6. Data Sharing</h2>
+            <h2 id="section-data-sharing" className="text-lg font-semibold text-text-primary mb-2">6. Data Sharing</h2>
             <p className="text-sm leading-relaxed">
               We do not sell, rent, trade, or otherwise share any data with third parties. We do not sell
               personal information as defined under the California Consumer Privacy Act (CCPA) or any
@@ -137,7 +140,7 @@ export default function PrivacyPolicy() {
           </section>
 
           <section aria-labelledby="section-children">
-            <h2 id="section-children" className="text-lg font-semibold text-zinc-900 mb-2">7. Children</h2>
+            <h2 id="section-children" className="text-lg font-semibold text-text-primary mb-2">7. Children</h2>
             <p className="text-sm leading-relaxed">
               FillRight is not directed at children under the age of 13 and does not knowingly collect
               information from children.
@@ -145,7 +148,7 @@ export default function PrivacyPolicy() {
           </section>
 
           <section aria-labelledby="section-policy-changes">
-            <h2 id="section-policy-changes" className="text-lg font-semibold text-zinc-900 mb-2">8. Changes to This Policy</h2>
+            <h2 id="section-policy-changes" className="text-lg font-semibold text-text-primary mb-2">8. Changes to This Policy</h2>
             <p className="text-sm leading-relaxed">
               If this policy changes materially, we will update the &quot;Last Updated&quot; date at the top of this
               page and note the update on the FillRight homepage where practicable. Continued use of FillRight
@@ -154,19 +157,19 @@ export default function PrivacyPolicy() {
           </section>
 
           <section aria-labelledby="section-privacy-contact">
-            <h2 id="section-privacy-contact" className="text-lg font-semibold text-zinc-900 mb-2">9. Contact</h2>
+            <h2 id="section-privacy-contact" className="text-lg font-semibold text-text-primary mb-2">9. Contact</h2>
             <p className="text-sm leading-relaxed">
               For privacy questions, please contact:{" "}
-              <a href="mailto:getfillright@gmail.com" className="text-zinc-700 underline underline-offset-2 hover:text-orange-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 rounded">getfillright@gmail.com</a>
+              <a href="mailto:getfillright@gmail.com" className="text-text-secondary underline underline-offset-2 hover:text-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded">getfillright@gmail.com</a>
             </p>
           </section>
 
         </div>
 
-        <div className="mt-12 pt-6 border-t border-zinc-200">
+        <div className="mt-12 pt-6 border-t border-border">
           <Link
             href="/terms"
-            className="text-sm text-zinc-600 hover:text-zinc-800 transition-colors"
+            className="text-sm text-text-secondary hover:text-text-primary transition-colors"
           >
             Terms of Service <span aria-hidden="true">→</span>
           </Link>
