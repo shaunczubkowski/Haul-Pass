@@ -423,7 +423,7 @@ export default function Home() {
         </section>
 
         {/* Why This Matters */}
-        <section aria-labelledby="why-it-matters-heading" className="rounded-xl border border-amber-200 bg-amber-50 p-5">
+        <section aria-labelledby="why-it-matters-heading" className="rounded-xl border border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950 p-5">
           <h2 id="why-it-matters-heading" className="text-lg font-bold text-text-primary mb-2">Why the fuel level matters</h2>
           <p className="text-sm text-text-secondary leading-relaxed">
             U-Haul, Penske, Budget, and Enterprise all charge a <strong>$30+ fuel service fee</strong> if you return a truck below the level shown on your contract — plus above-market per-gallon rates to top up the difference. FillRight gives you the exact number so you fill up at a regular gas station, not theirs.
