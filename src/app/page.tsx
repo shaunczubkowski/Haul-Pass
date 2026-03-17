@@ -399,21 +399,21 @@ export default function Home() {
           <h2 id="how-it-works-heading" className="text-xl font-bold text-text-primary mb-5">How FillRight Works</h2>
           <ol className="space-y-5 list-none">
             <li className="flex gap-4">
-              <span className="flex-shrink-0 w-7 h-7 rounded-full bg-accent-muted text-accent font-bold text-sm flex items-center justify-center" aria-hidden="true">1</span>
+              <span className="flex-shrink-0 w-7 h-7 rounded-full bg-accent-muted text-text-primary font-bold text-sm flex items-center justify-center" aria-hidden="true">1</span>
               <div>
                 <p className="font-semibold text-text-primary">Select your truck</p>
                 <p className="text-sm text-text-secondary mt-0.5">Choose your rental company and truck size. FillRight knows the exact tank capacity for every U-Haul, Penske, Budget, and Enterprise model.</p>
               </div>
             </li>
             <li className="flex gap-4">
-              <span className="flex-shrink-0 w-7 h-7 rounded-full bg-accent-muted text-accent font-bold text-sm flex items-center justify-center" aria-hidden="true">2</span>
+              <span className="flex-shrink-0 w-7 h-7 rounded-full bg-accent-muted text-text-primary font-bold text-sm flex items-center justify-center" aria-hidden="true">2</span>
               <div>
                 <p className="font-semibold text-text-primary">Set your fuel levels</p>
                 <p className="text-sm text-text-secondary mt-0.5">Enter the gauge level shown on your rental contract at pickup, then set your current level. FillRight calculates the gap.</p>
               </div>
             </li>
             <li className="flex gap-4">
-              <span className="flex-shrink-0 w-7 h-7 rounded-full bg-accent-muted text-accent font-bold text-sm flex items-center justify-center" aria-hidden="true">3</span>
+              <span className="flex-shrink-0 w-7 h-7 rounded-full bg-accent-muted text-text-primary font-bold text-sm flex items-center justify-center" aria-hidden="true">3</span>
               <div>
                 <p className="font-semibold text-text-primary">Get your answer</p>
                 <p className="text-sm text-text-secondary mt-0.5">See the exact gallons to add, adjusted for any miles still left to drive. Add your gas price for a cost estimate.</p>

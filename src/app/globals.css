@@ -10,15 +10,15 @@
   --surface-overlay: #e2e8f0;
 
   /* Accent — teal */
-  --accent: #0d9488;
-  --accent-hover: #0f766e;
+  --accent: #0f766e;          /* teal-700: white text contrast ~5.0:1 (WCAG AA) */
+  --accent-hover: #115e59;    /* teal-800 */
   --accent-muted: #ccfbf1;
   --accent-subtle: #f0fdfa;
 
   /* Borders */
   --border: #e2e8f0;
   --border-strong: #cbd5e1;
-  --border-accent: #0d9488;
+  --border-accent: #0f766e;
 
   /* Text */
   --text-primary: #0f172a;
@@ -27,12 +27,12 @@
   --text-on-accent: #ffffff;
 
   /* Focus ring */
-  --ring: #0d9488;
+  --ring: #0f766e;
 
   /* SVG gauge tokens */
-  --gauge-fill: #0d9488;
+  --gauge-fill: #0f766e;
   --gauge-track: #e2e8f0;
-  --gauge-tick-active: #0d9488;
+  --gauge-tick-active: #0f766e;
   --gauge-tick-inactive: #cbd5e1;
   --gauge-needle: #0f172a;
 }
