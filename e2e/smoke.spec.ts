@@ -124,7 +124,31 @@ test.describe("calculator flow", () => {
 
     const result = page.locator("[data-result='true']");
     await expect(result).toBeVisible();
+    // Verify both the text and the alert role (WCAG 2.1 AA live region)
+    await expect(result.getByRole("alert")).toBeVisible();
     await expect(result.getByText("$30 Service Fee Risk")).toBeVisible();
+  });
+
+  test("Penske company shows diesel fuel type warning note", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    await page.getByRole("radio", { name: "Penske" }).click();
+    await expect(page.getByRole("note")).toBeVisible();
+    await expect(
+      page.getByText("Penske fuel type varies by truck size")
+    ).toBeVisible();
+  });
+
+  test("copy link button shows feedback after click", async ({ page }) => {
+    await page.goto("/");
+    await selectUhaul10ft(page);
+    await page.getByRole("button", { name: "Right Now 1/4" }).click();
+
+    await page.context().grantPermissions(["clipboard-read", "clipboard-write"]);
+    await page.getByRole("button", { name: "Copy shareable link to clipboard" }).click();
+    // Button label should change to "Link copied!" confirmation
+    await expect(page.getByText("Link copied!")).toBeVisible();
   });
 
   test("share button is visible when result is showing", async ({ page }) => {

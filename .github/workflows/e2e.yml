@@ -11,6 +11,11 @@ on:
         description: "Base URL to run smoke tests against"
         required: false
         default: "https://www.getfillright.com"
+        type: string
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   smoke:
