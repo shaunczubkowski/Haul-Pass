@@ -45,7 +45,7 @@ export interface CalculatorInput {
   currentLevel: GaugeLevel; // fuel level right now
   distanceToDropoff: number; // miles
   safetyBuffer?: number; // extra gallons to add for gauge imprecision (default: 0.5)
-  gasPricePerGallon?: number; // optional, for cost estimate
+  gasPricePerGallon?: number; // optional, for cost estimate; must be >= 0.01 if provided — sub-cent values are treated as unset
 }
 
 export interface CalculatorResult {
