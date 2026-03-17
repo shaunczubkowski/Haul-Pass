@@ -129,7 +129,7 @@ export const PENSKE_TRUCKS: TruckType[] = [
  * Budget truck fleet data.
  * Sources: see SOURCES.md — Budget section.
  * Note: 10 ft and 16 ft use regular unleaded gasoline. 26 ft uses diesel.
- * 24 ft fuel type is unverified — treated as regular pending a primary source.
+ * Budget does not offer a consumer 24 ft truck.
  */
 export const BUDGET_TRUCKS: TruckType[] = [
   {
@@ -151,19 +151,10 @@ export const BUDGET_TRUCKS: TruckType[] = [
     loadSize: "2–3 bedrooms",
   },
   {
-    id: "budget-24ft",
-    name: "24 ft Truck",
-    company: "budget",
-    tankCapacity: 60,
-    mpg: 7,
-    fuelType: "regular",
-    loadSize: "4–5 bedrooms",
-  },
-  {
     id: "budget-26ft",
     name: "26 ft Truck",
     company: "budget",
-    tankCapacity: 60, // ⚠️ unconfirmed — community-derived, see issue #64
+    tankCapacity: 50, // verified: budgettruck.com/moving-trucks-accessories/truckdetails26foot (2026-03-17)
     mpg: 7,
     fuelType: "diesel", // verified: budgettruck.com/moving-trucks-accessories/truckdetails26foot (2026-03-17)
     loadSize: "5+ bedrooms",
