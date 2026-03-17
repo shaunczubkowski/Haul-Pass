@@ -101,7 +101,7 @@ export const PENSKE_TRUCKS: TruckType[] = [
     name: "16 ft Truck",
     company: "penske",
     tankCapacity: 33,
-    mpg: 10,
+    mpg: 12, // verified: pensketruckrental.com/trucks-and-vans/16-foot-truck/ (2026-03-17)
     fuelType: "regular",
     loadSize: "2 bedrooms",
   },
