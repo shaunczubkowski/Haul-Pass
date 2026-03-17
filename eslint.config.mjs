@@ -15,6 +15,8 @@ const eslintConfig = defineConfig([
     // Claude Code agent runtime artifacts:
     ".claude/worktrees/**",
     ".claude/projects/**",
+    // Playwright e2e tests (use their own tsconfig, not Next.js rules)
+    "e2e/**",
   ]),
 ]);
 
