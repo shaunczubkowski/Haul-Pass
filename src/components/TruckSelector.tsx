@@ -22,7 +22,7 @@ export function TruckSelector({ value, onChange }: TruckSelectorProps) {
   );
 
   const trucks = getTrucksByCompany(company);
-  const isDiesel = company === "penske";
+  const hasDieselTrucks = trucks.some((t) => t.fuelType === "diesel");
 
   const companyRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const truckRefs = useRef<(HTMLButtonElement | null)[]>([]);
@@ -112,17 +112,16 @@ export function TruckSelector({ value, onChange }: TruckSelectorProps) {
       </div>
 
       {/* Diesel warning */}
-      {isDiesel && (
+      {hasDieselTrucks && (
         <div
           role="note"
           className="flex items-start gap-2 rounded-lg border-2 border-yellow-400 bg-yellow-50 px-3 py-2.5 text-yellow-800"
         >
           <span aria-hidden="true" className="text-lg leading-none mt-0.5">⛽</span>
           <div>
-            <p className="font-bold text-sm">Penske fuel type varies by truck size</p>
+            <p className="font-bold text-sm">Fuel type varies by truck size</p>
             <p className="text-xs mt-0.5">
-              22 ft and 26 ft use <strong>diesel</strong>. 12 ft and 16 ft use regular unleaded.
-              Check the badge on each card and your rental agreement.
+              Check the <strong>diesel</strong> badge on each card and your rental agreement before fueling.
             </p>
           </div>
         </div>

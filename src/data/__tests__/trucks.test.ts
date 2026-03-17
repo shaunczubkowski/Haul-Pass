@@ -121,8 +121,8 @@ describe("Truck fleet data", () => {
   });
 
   describe("BUDGET_TRUCKS", () => {
-    it("contains Budget truck sizes", () => {
-      expect(BUDGET_TRUCKS.length).toBeGreaterThanOrEqual(3);
+    it("contains exactly 3 Budget truck sizes (10 ft, 16 ft, 26 ft)", () => {
+      expect(BUDGET_TRUCKS).toHaveLength(3);
     });
 
     it("Budget 10 ft and 16 ft use regular unleaded fuel", () => {
