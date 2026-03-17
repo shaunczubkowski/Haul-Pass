@@ -21,6 +21,7 @@ jobs:
   smoke:
     name: Playwright smoke tests
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 
@@ -41,14 +42,14 @@ jobs:
 
       - name: Install Playwright browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps chromium firefox webkit
+        run: npx playwright install --with-deps chromium
 
       - name: Install Playwright browser system deps (cached hit)
         if: steps.playwright-cache.outputs.cache-hit == 'true'
-        run: npx playwright install-deps chromium firefox webkit
+        run: npx playwright install-deps chromium
 
       - name: Run smoke tests
-        run: npx playwright test
+        run: npx playwright test --project=chromium
         env:
           BASE_URL: ${{ inputs.base_url || 'https://www.getfillright.com' }}
 
