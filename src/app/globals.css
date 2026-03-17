@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* ─── Dark mode variant — class-based (next-themes sets .dark on <html>) ─── */
+@variant dark (&:where(.dark, .dark *));
+
 /* ─── Light mode design tokens ─────────────────────────────────────────────── */
 :root {
   /* Surfaces */
