@@ -55,7 +55,7 @@ function readUrlParams() {
   const gas = params.get("gas");
   if (gas !== null && gas !== "") {
     const parsedGas = parseFloat(gas);
-    if (isFinite(parsedGas) && parsedGas > 0 && parsedGas <= MAX_GAS_PRICE_USD) gasPrice = String(parsedGas);
+    if (isFinite(parsedGas) && parsedGas >= 0.01 && parsedGas <= MAX_GAS_PRICE_USD) gasPrice = String(parsedGas);
   }
 
   let gaugeVariant: "arc" | "horizontal" = "arc";
@@ -122,6 +122,10 @@ export default function Home() {
     }
   }, [fallbackUrl]);
 
+  const parsedGasPrice = gasPrice !== "" ? parseFloat(gasPrice) : NaN;
+  const validGasPrice = !isNaN(parsedGasPrice) && parsedGasPrice >= 0.01 ? parsedGasPrice : undefined;
+  const gasPriceTooLow = gasPrice !== "" && !isNaN(parsedGasPrice) && parsedGasPrice < 0.01;
+
   const result =
     truck != null
       ? calculateFuelReturn({
@@ -129,7 +133,7 @@ export default function Home() {
           pickupLevel,
           currentLevel,
           distanceToDropoff: distance,
-          gasPricePerGallon: gasPrice !== "" && !isNaN(parseFloat(gasPrice)) && parseFloat(gasPrice) > 0 ? parseFloat(gasPrice) : undefined,
+          gasPricePerGallon: validGasPrice,
         })
       : null;
 
@@ -233,13 +237,14 @@ export default function Home() {
                   id="gas-price"
                   type="number"
                   inputMode="decimal"
-                  min={0}
+                  min={0.01}
                   step={0.01}
                   placeholder="3.99"
                   value={gasPrice}
                   onChange={(e) => setGasPrice(e.target.value)}
                   onBlur={scrollResultIntoView}
                   aria-label="Gas price per gallon in dollars"
+                  aria-describedby="gas-price-hint"
                   className={[
                     "flex-1 px-3 py-3 text-lg font-semibold text-text-primary bg-surface",
                     "outline-none appearance-none",
@@ -250,6 +255,15 @@ export default function Home() {
                   /gal
                 </span>
               </div>
+              <p
+                id="gas-price-hint"
+                aria-live="polite"
+                className={`text-xs ${gasPriceTooLow ? "text-red-600" : "text-text-muted"}`}
+              >
+                {gasPriceTooLow
+                  ? "Enter at least $0.01 to see a cost estimate"
+                  : "Enter $0.01 or more to see a cost estimate"}
+              </p>
             </div>
           </section>
 

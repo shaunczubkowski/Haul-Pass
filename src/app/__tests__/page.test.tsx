@@ -96,6 +96,24 @@ describe("Home page", () => {
       expect(screen.queryByText(/≈ \$/)).not.toBeInTheDocument();
     });
 
+    it("does not show a cost estimate for a gas price below $0.01", async () => {
+      const user = userEvent.setup();
+      render(<Home />);
+      await selectTruck(user, "8 ft Pickup");
+      const gasPriceInput = screen.getByLabelText(/gas price per gallon/i);
+      fireEvent.change(gasPriceInput, { target: { value: "0.005" } });
+      expect(screen.queryByText(/≈ \$/)).not.toBeInTheDocument();
+    });
+
+    it("does not show a cost estimate for near-boundary sub-cent value 0.009999", async () => {
+      const user = userEvent.setup();
+      render(<Home />);
+      await selectTruck(user, "8 ft Pickup");
+      const gasPriceInput = screen.getByLabelText(/gas price per gallon/i);
+      fireEvent.change(gasPriceInput, { target: { value: "0.009999" } });
+      expect(screen.queryByText(/≈ \$/)).not.toBeInTheDocument();
+    });
+
     it("hides cost estimate when gas price is cleared", async () => {
       const user = userEvent.setup();
       render(<Home />);
@@ -292,6 +310,20 @@ describe("Home page", () => {
       expect(screen.queryByText(/≈ \$/)).not.toBeInTheDocument();
     });
 
+    it("ignores a gas price below $0.01 from URL params (does not show cost estimate)", async () => {
+      window.history.replaceState(null, "", "?truck=uhaul-10ft&pickup=1&current=0.5&gas=0.005");
+      render(<Home />);
+      await waitFor(() => expect(screen.getByText(/add before returning/i)).toBeInTheDocument());
+      expect(screen.queryByText(/≈ \$/)).not.toBeInTheDocument();
+    });
+
+    it("accepts exactly $0.01 as a gas price from URL params", async () => {
+      window.history.replaceState(null, "", "?truck=uhaul-10ft&pickup=1&current=0.5&gas=0.01");
+      render(<Home />);
+      await waitFor(() => expect(screen.getByText(/add before returning/i)).toBeInTheDocument());
+      expect(screen.getByText(/≈ \$/)).toBeInTheDocument();
+    });
+
     it("ignores a non-numeric gasPrice from URL params (does not show cost estimate)", async () => {
       window.history.replaceState(null, "", "?truck=uhaul-10ft&pickup=1&current=0.5&gas=abc");
       render(<Home />);
@@ -360,7 +392,7 @@ describe("Home page", () => {
       const user = userEvent.setup();
       render(<Home />);
       await selectTruck(user, "8 ft Pickup");
-      const resultSection = document.querySelector("[aria-live='polite']");
+      const resultSection = document.querySelector("[aria-live='polite'][aria-atomic='true']");
       expect(resultSection).not.toBeNull();
       expect(resultSection).toHaveAttribute("aria-atomic", "true");
     });
@@ -373,7 +405,7 @@ describe("Home page", () => {
       await selectTruck(user, "8 ft Pickup");
 
       const scrollIntoView = vi.fn();
-      const resultSection = document.querySelector("[aria-live='polite']");
+      const resultSection = document.querySelector("[aria-live='polite'][aria-atomic='true']");
       expect(resultSection).not.toBeNull();
       (resultSection as HTMLElement).scrollIntoView = scrollIntoView;
 
@@ -390,7 +422,7 @@ describe("Home page", () => {
       await selectTruck(user, "8 ft Pickup");
 
       const scrollIntoView = vi.fn();
-      const resultSection = document.querySelector("[aria-live='polite']");
+      const resultSection = document.querySelector("[aria-live='polite'][aria-atomic='true']");
       expect(resultSection).not.toBeNull();
       (resultSection as HTMLElement).scrollIntoView = scrollIntoView;
 
@@ -421,7 +453,7 @@ describe("Home page", () => {
 
       const scrollIntoView = vi.fn();
       // The result section should not be in the DOM
-      const resultSection = document.querySelector("[aria-live='polite']");
+      const resultSection = document.querySelector("[aria-live='polite'][aria-atomic='true']");
       if (resultSection) {
         (resultSection as HTMLElement).scrollIntoView = scrollIntoView;
       }
@@ -439,7 +471,7 @@ describe("Home page", () => {
       await selectTruck(user, "8 ft Pickup");
 
       const scrollIntoView = vi.fn();
-      const resultSection = document.querySelector("[aria-live='polite']");
+      const resultSection = document.querySelector("[aria-live='polite'][aria-atomic='true']");
       if (resultSection) {
         (resultSection as HTMLElement).scrollIntoView = scrollIntoView;
       }
@@ -541,6 +573,53 @@ describe("Home page", () => {
       await user.click(screen.getByRole("button", { name: /^Bar$/i }));
       await user.click(screen.getByRole("button", { name: /^Arc$/i }));
       await waitFor(() => expect(window.location.search).not.toContain("variant="));
+    });
+  });
+
+  describe("gas price input accessibility", () => {
+    it("gas price input has min attribute of 0.01", () => {
+      render(<Home />);
+      const input = screen.getByLabelText(/gas price per gallon/i);
+      expect(input).toHaveAttribute("min", "0.01");
+    });
+
+    it("gas price input has aria-describedby pointing to hint element", () => {
+      render(<Home />);
+      const input = screen.getByLabelText(/gas price per gallon/i);
+      expect(input).toHaveAttribute("aria-describedby", "gas-price-hint");
+      expect(document.getElementById("gas-price-hint")).toBeInTheDocument();
+    });
+
+    it("shows error hint when gas price is below $0.01", async () => {
+      const user = userEvent.setup();
+      render(<Home />);
+      await selectTruck(user, "8 ft Pickup");
+      const gasPriceInput = screen.getByLabelText(/gas price per gallon/i);
+      fireEvent.change(gasPriceInput, { target: { value: "0.005" } });
+      expect(screen.getByText(/enter at least \$0\.01/i)).toBeInTheDocument();
+    });
+
+    it("shows error hint for near-boundary sub-cent value 0.009999", async () => {
+      const user = userEvent.setup();
+      render(<Home />);
+      await selectTruck(user, "8 ft Pickup");
+      const gasPriceInput = screen.getByLabelText(/gas price per gallon/i);
+      fireEvent.change(gasPriceInput, { target: { value: "0.009999" } });
+      expect(screen.getByText(/enter at least \$0\.01/i)).toBeInTheDocument();
+    });
+
+    it("does not show error hint when gas price is valid", async () => {
+      const user = userEvent.setup();
+      render(<Home />);
+      await selectTruck(user, "8 ft Pickup");
+      const gasPriceInput = screen.getByLabelText(/gas price per gallon/i);
+      fireEvent.change(gasPriceInput, { target: { value: "3.99" } });
+      expect(screen.queryByText(/enter at least \$0\.01/i)).not.toBeInTheDocument();
+    });
+
+    it("does not show error hint when gas price field is empty", () => {
+      render(<Home />);
+      expect(screen.queryByText(/enter at least \$0\.01/i)).not.toBeInTheDocument();
     });
   });
 });
