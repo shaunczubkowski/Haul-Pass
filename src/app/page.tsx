@@ -55,7 +55,7 @@ function readUrlParams() {
   const gas = params.get("gas");
   if (gas !== null && gas !== "") {
     const parsedGas = parseFloat(gas);
-    if (isFinite(parsedGas) && parsedGas > 0 && parsedGas <= MAX_GAS_PRICE_USD) gasPrice = String(parsedGas);
+    if (isFinite(parsedGas) && parsedGas >= 0.01 && parsedGas <= MAX_GAS_PRICE_USD) gasPrice = String(parsedGas);
   }
 
   let gaugeVariant: "arc" | "horizontal" = "arc";
@@ -129,7 +129,7 @@ export default function Home() {
           pickupLevel,
           currentLevel,
           distanceToDropoff: distance,
-          gasPricePerGallon: gasPrice !== "" && !isNaN(parseFloat(gasPrice)) && parseFloat(gasPrice) > 0 ? parseFloat(gasPrice) : undefined,
+          gasPricePerGallon: gasPrice !== "" && !isNaN(parseFloat(gasPrice)) && parseFloat(gasPrice) >= 0.01 ? parseFloat(gasPrice) : undefined,
         })
       : null;
 

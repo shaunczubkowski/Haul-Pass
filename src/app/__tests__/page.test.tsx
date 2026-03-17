@@ -96,6 +96,15 @@ describe("Home page", () => {
       expect(screen.queryByText(/≈ \$/)).not.toBeInTheDocument();
     });
 
+    it("does not show a cost estimate for a gas price below $0.01", async () => {
+      const user = userEvent.setup();
+      render(<Home />);
+      await selectTruck(user, "8 ft Pickup");
+      const gasPriceInput = screen.getByLabelText(/gas price per gallon/i);
+      fireEvent.change(gasPriceInput, { target: { value: "0.005" } });
+      expect(screen.queryByText(/≈ \$/)).not.toBeInTheDocument();
+    });
+
     it("hides cost estimate when gas price is cleared", async () => {
       const user = userEvent.setup();
       render(<Home />);
@@ -290,6 +299,20 @@ describe("Home page", () => {
       render(<Home />);
       await waitFor(() => expect(screen.getByText(/add before returning/i)).toBeInTheDocument());
       expect(screen.queryByText(/≈ \$/)).not.toBeInTheDocument();
+    });
+
+    it("ignores a gas price below $0.01 from URL params (does not show cost estimate)", async () => {
+      window.history.replaceState(null, "", "?truck=uhaul-10ft&pickup=1&current=0.5&gas=0.005");
+      render(<Home />);
+      await waitFor(() => expect(screen.getByText(/add before returning/i)).toBeInTheDocument());
+      expect(screen.queryByText(/≈ \$/)).not.toBeInTheDocument();
+    });
+
+    it("accepts exactly $0.01 as a gas price from URL params", async () => {
+      window.history.replaceState(null, "", "?truck=uhaul-10ft&pickup=1&current=0.5&gas=0.01");
+      render(<Home />);
+      await waitFor(() => expect(screen.getByText(/add before returning/i)).toBeInTheDocument());
+      expect(screen.getByText(/≈ \$/)).toBeInTheDocument();
     });
 
     it("ignores a non-numeric gasPrice from URL params (does not show cost estimate)", async () => {
