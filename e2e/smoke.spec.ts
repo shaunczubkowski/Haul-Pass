@@ -92,10 +92,11 @@ test.describe("calculator flow", () => {
     await page.locator("#distance-input").fill("5");
     await page.locator("#distance-input").blur();
 
-    // Result section should appear
+    // Result section should appear with a gallon count
     const result = page.locator("[data-result='true']");
     await expect(result).toBeVisible();
-    await expect(result.getByText("gal", { exact: false })).toBeVisible();
+    // exact: true matches only the standalone "gal" unit label, not breakdown rows
+    await expect(result.getByText("gal", { exact: true })).toBeVisible();
   });
 
   test("shows already-sufficient state when tank is full and pickup was half", async ({
@@ -119,8 +120,10 @@ test.describe("calculator flow", () => {
     await page.goto("/");
     await selectUhaul10ft(page);
 
-    // At Pickup = Full, Right Now = 1/4 — well below pickup level
-    await page.getByRole("button", { name: "Right Now 1/4" }).click();
+    // At Pickup = Full, Right Now = 1/8 — below the 1/4 threshold so isAtRisk is true.
+    // Using 1/8 (not 1/4) because the calculator uses strict less-than: levelAfterDrive < 0.25.
+    // At exactly 1/4 with no remaining drive, levelAfterDrive === 0.25 → isAtRisk = false.
+    await page.getByRole("button", { name: "Right Now 1/8" }).click();
 
     const result = page.locator("[data-result='true']");
     await expect(result).toBeVisible();
