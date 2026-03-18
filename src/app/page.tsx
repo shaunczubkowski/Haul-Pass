@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import Link from "next/link";
 import { FuelGauge } from "@/components/FuelGauge";
 import { TruckSelector } from "@/components/TruckSelector";
 import { DistanceInput } from "@/components/DistanceInput";
@@ -167,12 +168,12 @@ export default function Home() {
               <h2 className="border-l-2 border-accent pl-2 text-xs font-semibold uppercase tracking-widest text-text-muted">
                 Step 1 — Your Truck
               </h2>
-              <a
+              <Link
                 href="/truck-specs"
                 className="text-xs text-text-muted hover:text-text-secondary transition-colors"
               >
-                View specs →
-              </a>
+                View specs<span aria-hidden="true"> →</span>
+              </Link>
             </div>
             <TruckSelector value={truck} onChange={setTruck} />
           </section>

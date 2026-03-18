@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://getfillright.com";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.getfillright.com";
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -68,7 +68,7 @@ function SourceBadge({ source }: { source: "official" | "estimated" }) {
     );
   }
   return (
-    <span className="inline-block rounded px-1.5 py-0.5 text-xs font-medium bg-surface-raised text-text-muted">
+    <span className="inline-block rounded px-1.5 py-0.5 text-xs font-medium bg-surface-raised text-text-secondary">
       Estimated
     </span>
   );
@@ -95,6 +95,7 @@ function CompanySection({
       <div className="rounded-xl border border-border overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
+            <caption className="sr-only">{label} truck specifications</caption>
             <thead>
               <tr className="border-b border-border bg-surface-raised">
                 <th
@@ -163,7 +164,6 @@ function CompanySection({
                         aria-label={`${truck.name} specs — ${truck.mpgSource} source (opens in new tab)`}
                       >
                         <SourceBadge source={truck.mpgSource} />
-                        <span className="sr-only"> (opens in new tab)</span>
                       </a>
                     ) : (
                       <span className="text-text-muted">—</span>
@@ -191,7 +191,7 @@ export default function TruckSpecsPage() {
         <Link
           href="/"
           aria-label="Back to FillRight"
-          className="mb-8 inline-flex items-center gap-1 text-sm text-text-secondary hover:text-text-primary transition-colors"
+          className="mb-8 inline-flex items-center gap-1 py-2 -my-2 text-sm text-text-secondary hover:text-text-primary transition-colors"
         >
           <span aria-hidden="true">←</span> Back to FillRight
         </Link>

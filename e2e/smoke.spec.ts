@@ -299,6 +299,6 @@ test.describe("navigation", () => {
     await page.goto("/");
     await page.getByRole("link", { name: "Truck Specs" }).click();
     await expect(page).toHaveURL(/\/truck-specs/);
-    await expect(page.getByRole("heading", { name: /moving truck specifications/i })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: /moving truck specifications/i })).toBeVisible();
   });
 });
