@@ -1,6 +1,20 @@
 import type { TruckType, RentalCompany } from "@/types";
 
 /**
+ * MPG METHODOLOGY
+ * ---------------
+ * All mpg values are estimates for an EMPTY truck under ideal conditions.
+ * Loaded real-world MPG will be lower — typically 20–40% less on a full move.
+ *
+ * Two tiers of source quality are used:
+ *   - Official: taken directly from the rental company's per-truck spec page.
+ *   - Estimated: derived from industry guides or class averages when the company
+ *     does not publish a per-truck figure. These are marked with a comment.
+ *
+ * See SOURCES.md for full audit trail and methodology notes.
+ */
+
+/**
  * U-Haul truck fleet data.
  * Sources: see SOURCES.md — U-Haul section.
  * Note: All U-Haul trucks use regular unleaded gasoline. Never use diesel.
@@ -74,7 +88,7 @@ export const UHAUL_TRUCKS: TruckType[] = [
     name: "26 ft Truck",
     company: "uhaul",
     tankCapacity: 60,
-    mpg: 7,
+    mpg: 7, // estimated: U-Haul publishes no per-truck figure for 26ft; 7 is the industry consensus and consistent with the 24ft class
     fuelType: "regular",
     loadSize: "5+ bedrooms",
   },
@@ -101,7 +115,7 @@ export const PENSKE_TRUCKS: TruckType[] = [
     name: "16 ft Truck",
     company: "penske",
     tankCapacity: 33,
-    mpg: 10,
+    mpg: 12, // verified: pensketruckrental.com/trucks-and-vans/16-foot-truck/ (2026-03-17)
     fuelType: "regular",
     loadSize: "2 bedrooms",
   },
@@ -110,7 +124,7 @@ export const PENSKE_TRUCKS: TruckType[] = [
     name: "22 ft Truck",
     company: "penske",
     tankCapacity: 70, // verified: Penske 22–26 ft box trucks use a 70-gal diesel tank (pensketruckrental.com, 2026-03-15)
-    mpg: 8,
+    mpg: 8, // estimated: Penske states 8–12 MPG range for this class; using lower bound as conservative estimate
     fuelType: "diesel",
     loadSize: "3–4 bedrooms",
   },
@@ -119,7 +133,7 @@ export const PENSKE_TRUCKS: TruckType[] = [
     name: "26 ft Truck",
     company: "penske",
     tankCapacity: 70, // same 70-gal diesel tank as 22 ft — both listed on Penske's 22–26 ft spec page
-    mpg: 7,
+    mpg: 7, // estimated: class estimate for loaded diesel 26ft; real-world reports 6–7 MPG
     fuelType: "diesel",
     loadSize: "5+ bedrooms",
   },
@@ -130,6 +144,7 @@ export const PENSKE_TRUCKS: TruckType[] = [
  * Sources: see SOURCES.md — Budget section.
  * Note: 10 ft and 16 ft use regular unleaded gasoline. 26 ft uses diesel.
  * Budget does not offer a consumer 24 ft truck.
+ * MPG: Budget does not publish per-truck figures; all mpg values are class estimates.
  */
 export const BUDGET_TRUCKS: TruckType[] = [
   {
@@ -137,7 +152,7 @@ export const BUDGET_TRUCKS: TruckType[] = [
     name: "10 ft Truck",
     company: "budget",
     tankCapacity: 31,
-    mpg: 12,
+    mpg: 12, // estimated: class average; Budget does not publish per-truck MPG
     fuelType: "regular",
     loadSize: "1 bedroom",
   },
@@ -146,7 +161,7 @@ export const BUDGET_TRUCKS: TruckType[] = [
     name: "16 ft Truck",
     company: "budget",
     tankCapacity: 40,
-    mpg: 10,
+    mpg: 10, // estimated: class average; Budget does not publish per-truck MPG
     fuelType: "regular",
     loadSize: "2–3 bedrooms",
   },
@@ -155,7 +170,7 @@ export const BUDGET_TRUCKS: TruckType[] = [
     name: "26 ft Truck",
     company: "budget",
     tankCapacity: 50, // verified: budgettruck.com/moving-trucks-accessories/truckdetails26foot (2026-03-17)
-    mpg: 7,
+    mpg: 7, // estimated: class average for diesel 26ft; Budget does not publish per-truck MPG
     fuelType: "diesel", // verified: budgettruck.com/moving-trucks-accessories/truckdetails26foot (2026-03-17)
     loadSize: "5+ bedrooms",
   },
@@ -165,14 +180,16 @@ export const BUDGET_TRUCKS: TruckType[] = [
  * Enterprise truck fleet data.
  * Sources: see SOURCES.md — Enterprise section.
  * Note: All Enterprise trucks use regular unleaded gasoline.
+ * Enterprise does not publish tank capacities or per-truck MPG figures.
+ * All mpg and tankCapacity values are class estimates — see SOURCES.md.
  */
 export const ENTERPRISE_TRUCKS: TruckType[] = [
   {
     id: "enterprise-10ft",
     name: "10 ft Truck",
     company: "enterprise",
-    tankCapacity: 31,
-    mpg: 12,
+    tankCapacity: 31, // estimated: class average; Enterprise does not publish tank capacity
+    mpg: 12, // estimated: class average; Enterprise does not publish per-truck MPG
     fuelType: "regular",
     loadSize: "1 bedroom",
   },
@@ -180,8 +197,8 @@ export const ENTERPRISE_TRUCKS: TruckType[] = [
     id: "enterprise-16ft",
     name: "16 ft Truck",
     company: "enterprise",
-    tankCapacity: 40,
-    mpg: 10,
+    tankCapacity: 40, // estimated: class average; Enterprise does not publish tank capacity
+    mpg: 10, // estimated: class average; Enterprise does not publish per-truck MPG
     fuelType: "regular",
     loadSize: "2–3 bedrooms",
   },
@@ -189,8 +206,8 @@ export const ENTERPRISE_TRUCKS: TruckType[] = [
     id: "enterprise-24ft",
     name: "24 ft Truck",
     company: "enterprise",
-    tankCapacity: 60,
-    mpg: 7,
+    tankCapacity: 60, // estimated: class average; Enterprise does not publish tank capacity
+    mpg: 7, // estimated: class average; Enterprise does not publish per-truck MPG
     fuelType: "regular",
     loadSize: "4–5 bedrooms",
   },
