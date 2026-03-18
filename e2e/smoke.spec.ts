@@ -139,7 +139,7 @@ test.describe("calculator flow", () => {
     await page.getByRole("radio", { name: "Penske" }).click();
     await expect(page.getByRole("note")).toBeVisible();
     await expect(
-      page.getByText("Penske fuel type varies by truck size")
+      page.getByText("Fuel type varies by truck size")
     ).toBeVisible();
   });
 
