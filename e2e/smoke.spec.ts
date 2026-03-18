@@ -288,4 +288,17 @@ test.describe("navigation", () => {
     expect(response?.status()).toBeLessThan(400);
     await expect(page.getByRole("main")).toBeVisible();
   });
+
+  test("/truck-specs page loads", async ({ page }) => {
+    const response = await page.goto("/truck-specs");
+    expect(response?.status()).toBeLessThan(400);
+    await expect(page.getByRole("main")).toBeVisible();
+  });
+
+  test("footer 'Truck Specs' link navigates to /truck-specs", async ({ page }) => {
+    await page.goto("/");
+    await page.getByRole("link", { name: "Truck Specs" }).click();
+    await expect(page).toHaveURL(/\/truck-specs/);
+    await expect(page.getByRole("heading", { name: /moving truck specifications/i })).toBeVisible();
+  });
 });
