@@ -10,6 +10,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 1,
     },
+    {
+      url: `${siteUrl}/truck-specs`,
+      lastModified: new Date("2026-03-18"),
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
     // /terms and /privacy are intentionally excluded — both pages carry noindex
     // and should not be advertised to crawlers via the sitemap.
   ];

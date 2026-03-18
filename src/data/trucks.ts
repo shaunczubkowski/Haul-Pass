@@ -28,6 +28,8 @@ export const UHAUL_TRUCKS: TruckType[] = [
     mpg: 19,
     fuelType: "regular",
     loadSize: "Small load",
+    sourceUrl: "https://www.uhaul.com/Truck-Rentals/Pickup-Truck/",
+    mpgSource: "official",
   },
   {
     id: "uhaul-cargo-van",
@@ -37,6 +39,8 @@ export const UHAUL_TRUCKS: TruckType[] = [
     mpg: 18,
     fuelType: "regular",
     loadSize: "Studio",
+    sourceUrl: "https://www.uhaul.com/Truck-Rentals/Cargo-Van-Truck/",
+    mpgSource: "official",
   },
   {
     id: "uhaul-10ft",
@@ -46,6 +50,8 @@ export const UHAUL_TRUCKS: TruckType[] = [
     mpg: 12,
     fuelType: "regular",
     loadSize: "1 bedroom",
+    sourceUrl: "https://www.uhaul.com/Truck-Rentals/10ft-Moving-Truck/",
+    mpgSource: "official",
   },
   {
     id: "uhaul-15ft",
@@ -55,6 +61,8 @@ export const UHAUL_TRUCKS: TruckType[] = [
     mpg: 10,
     fuelType: "regular",
     loadSize: "2 bedrooms",
+    sourceUrl: "https://www.uhaul.com/Truck-Rentals/15ft-Moving-Truck/",
+    mpgSource: "official",
   },
   {
     id: "uhaul-17ft",
@@ -64,6 +72,8 @@ export const UHAUL_TRUCKS: TruckType[] = [
     mpg: 10,
     fuelType: "regular",
     loadSize: "2–3 bedrooms",
+    sourceUrl: "https://www.uhaul.com/Truck-Rentals/17ft-Moving-Truck/",
+    mpgSource: "official",
   },
   {
     id: "uhaul-20ft",
@@ -73,6 +83,8 @@ export const UHAUL_TRUCKS: TruckType[] = [
     mpg: 10,
     fuelType: "regular",
     loadSize: "3–4 bedrooms",
+    sourceUrl: "https://www.uhaul.com/Truck-Rentals/20ft-Moving-Truck/",
+    mpgSource: "official",
   },
   {
     id: "uhaul-24ft",
@@ -82,6 +94,8 @@ export const UHAUL_TRUCKS: TruckType[] = [
     mpg: 7,
     fuelType: "regular",
     loadSize: "4–5 bedrooms",
+    sourceUrl: "https://www.uhaul.com/Truck-Rentals/24ft-Moving-Truck/",
+    mpgSource: "official",
   },
   {
     id: "uhaul-26ft",
@@ -91,6 +105,8 @@ export const UHAUL_TRUCKS: TruckType[] = [
     mpg: 7, // estimated: U-Haul publishes no per-truck figure for 26ft; 7 is the industry consensus and consistent with the 24ft class
     fuelType: "regular",
     loadSize: "5+ bedrooms",
+    sourceUrl: "https://www.uhaul.com/Truck-Rentals/26ft-Moving-Truck/",
+    mpgSource: "estimated",
   },
 ];
 
@@ -109,6 +125,8 @@ export const PENSKE_TRUCKS: TruckType[] = [
     mpg: 12,
     fuelType: "regular",
     loadSize: "1 bedroom",
+    sourceUrl: "https://www.pensketruckrental.com/trucks-and-vans/12-foot-truck/",
+    mpgSource: "official",
   },
   {
     id: "penske-16ft",
@@ -118,6 +136,8 @@ export const PENSKE_TRUCKS: TruckType[] = [
     mpg: 12, // verified: pensketruckrental.com/trucks-and-vans/16-foot-truck/ (2026-03-17)
     fuelType: "regular",
     loadSize: "2 bedrooms",
+    sourceUrl: "https://www.pensketruckrental.com/trucks-and-vans/16-foot-truck/",
+    mpgSource: "official",
   },
   {
     id: "penske-22ft",
@@ -127,6 +147,8 @@ export const PENSKE_TRUCKS: TruckType[] = [
     mpg: 8, // estimated: Penske states 8–12 MPG range for this class; using lower bound as conservative estimate
     fuelType: "diesel",
     loadSize: "3–4 bedrooms",
+    sourceUrl: "https://www.pensketruckrental.com/trucks-and-vans/22-foot-truck/",
+    mpgSource: "estimated",
   },
   {
     id: "penske-26ft",
@@ -136,6 +158,8 @@ export const PENSKE_TRUCKS: TruckType[] = [
     mpg: 7, // estimated: class estimate for loaded diesel 26ft; real-world reports 6–7 MPG
     fuelType: "diesel",
     loadSize: "5+ bedrooms",
+    sourceUrl: "https://www.pensketruckrental.com/commercial-truck-rental/commercial-trucks/medium-duty-trucks/22-26-foot-box-truck/",
+    mpgSource: "estimated",
   },
 ];
 
@@ -155,6 +179,8 @@ export const BUDGET_TRUCKS: TruckType[] = [
     mpg: 12, // estimated: class average; Budget does not publish per-truck MPG
     fuelType: "regular",
     loadSize: "1 bedroom",
+    sourceUrl: "https://www.budgettruck.com/moving-trucks-accessories/truckdetails12foot",
+    mpgSource: "estimated",
   },
   {
     id: "budget-16ft",
@@ -164,6 +190,8 @@ export const BUDGET_TRUCKS: TruckType[] = [
     mpg: 10, // estimated: class average; Budget does not publish per-truck MPG
     fuelType: "regular",
     loadSize: "2–3 bedrooms",
+    sourceUrl: "https://www.budgettruck.com/moving-trucks-accessories/truckdetails16foot",
+    mpgSource: "estimated",
   },
   {
     id: "budget-26ft",
@@ -173,6 +201,8 @@ export const BUDGET_TRUCKS: TruckType[] = [
     mpg: 7, // estimated: class average for diesel 26ft; Budget does not publish per-truck MPG
     fuelType: "diesel", // verified: budgettruck.com/moving-trucks-accessories/truckdetails26foot (2026-03-17)
     loadSize: "5+ bedrooms",
+    sourceUrl: "https://www.budgettruck.com/moving-trucks-accessories/truckdetails26foot",
+    mpgSource: "estimated",
   },
 ];
 
@@ -192,6 +222,8 @@ export const ENTERPRISE_TRUCKS: TruckType[] = [
     mpg: 12, // estimated: class average; Enterprise does not publish per-truck MPG
     fuelType: "regular",
     loadSize: "1 bedroom",
+    sourceUrl: "https://www.enterprisetrucks.com/truckrental/en_US/vehicles/commercial-truck-comparison-guide.html",
+    mpgSource: "estimated",
   },
   {
     id: "enterprise-16ft",
@@ -201,6 +233,8 @@ export const ENTERPRISE_TRUCKS: TruckType[] = [
     mpg: 10, // estimated: class average; Enterprise does not publish per-truck MPG
     fuelType: "regular",
     loadSize: "2–3 bedrooms",
+    sourceUrl: "https://www.enterprisetrucks.com/truckrental/en_US/vehicles/commercial-truck-comparison-guide.html",
+    mpgSource: "estimated",
   },
   {
     id: "enterprise-24ft",
@@ -210,6 +244,8 @@ export const ENTERPRISE_TRUCKS: TruckType[] = [
     mpg: 7, // estimated: class average; Enterprise does not publish per-truck MPG
     fuelType: "regular",
     loadSize: "4–5 bedrooms",
+    sourceUrl: "https://www.enterprisetrucks.com/truckrental/en_US/vehicles/straight-trucks/24--straight-personal.html",
+    mpgSource: "estimated",
   },
 ];
 

@@ -163,9 +163,17 @@ export default function Home() {
         <div className="flex flex-col gap-6">
           {/* Step 1: Truck */}
           <section className="rounded-xl border border-border bg-surface p-5 shadow-sm ring-1 ring-border">
-            <h2 className="mb-4 border-l-2 border-accent pl-2 text-xs font-semibold uppercase tracking-widest text-text-muted">
-              Step 1 — Your Truck
-            </h2>
+            <div className="mb-4 flex items-baseline justify-between">
+              <h2 className="border-l-2 border-accent pl-2 text-xs font-semibold uppercase tracking-widest text-text-muted">
+                Step 1 — Your Truck
+              </h2>
+              <a
+                href="/truck-specs"
+                className="text-xs text-text-muted hover:text-text-secondary transition-colors"
+              >
+                View specs →
+              </a>
+            </div>
             <TruckSelector value={truck} onChange={setTruck} />
           </section>
 
