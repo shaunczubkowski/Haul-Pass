@@ -74,15 +74,15 @@ _22 ft and 26 ft MPG updated from estimated 8/7 to official 13 on 2026-03-20. Ca
 
 ## Budget
 
-Cargo van, 10 ft, and 16 ft use **regular unleaded gasoline**. 26 ft uses **diesel**.
-Budget does not offer a consumer 24 ft truck.
+Cargo van, 12 ft, and 16 ft use **regular unleaded gasoline**. 26 ft uses **diesel**.
+Budget does not offer a consumer 10 ft or 24 ft truck.
 
 Budget publishes MPG as a range rather than a single figure; midpoints are used.
 
 | Truck | Tank (gal) | MPG est. | Fuel | Source |
 |---|---|---|---|---|
 | Cargo Van | 25 | 11 ¹ | **regular** | [budgettruck.com/…/truckdetails-cargo-van](https://www.budgettruck.com/moving-trucks-accessories/truckdetails-cargo-van) |
-| 10 ft | 31 | 12 | **regular** | [budgettruck.com/…/truckdetails12foot](https://www.budgettruck.com/moving-trucks-accessories/truckdetails12foot) |
+| 12 ft | 35 | 11 ¹ | **regular** | [budgettruck.com/…/truckdetails12foot](https://www.budgettruck.com/moving-trucks-accessories/truckdetails12foot) |
 | 16 ft | 40 | 10 | **regular** | [budgettruck.com/…/truckdetails16foot](https://www.budgettruck.com/moving-trucks-accessories/truckdetails16foot) |
 | 26 ft | **50** | 7 | **diesel** | [budgettruck.com/…/truckdetails26foot](https://www.budgettruck.com/moving-trucks-accessories/truckdetails26foot) |
 

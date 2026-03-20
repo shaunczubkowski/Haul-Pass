@@ -137,7 +137,7 @@ describe("Truck fleet data", () => {
   });
 
   describe("BUDGET_TRUCKS", () => {
-    it("contains exactly 4 Budget vehicles (cargo van, 10 ft, 16 ft, 26 ft)", () => {
+    it("contains exactly 4 Budget vehicles (cargo van, 12 ft, 16 ft, 26 ft)", () => {
       expect(BUDGET_TRUCKS).toHaveLength(4);
     });
 
@@ -149,8 +149,20 @@ describe("Truck fleet data", () => {
       expect(van!.fuelType).toBe("regular");
     });
 
-    it("Budget 10 ft and 16 ft use regular unleaded fuel", () => {
-      ["budget-10ft", "budget-16ft"].forEach((id) => {
+    it("includes a 12 ft truck with 35-gallon tank (verified budgettruck.com/truckdetails12foot 2026-03-20)", () => {
+      const truck = getTruckById("budget-12ft");
+      expect(truck).toBeDefined();
+      expect(truck!.tankCapacity).toBe(35);
+      expect(truck!.mpg).toBe(11);
+      expect(truck!.fuelType).toBe("regular");
+    });
+
+    it("does not include a 10 ft truck (not a Budget SKU)", () => {
+      expect(getTruckById("budget-10ft")).toBeUndefined();
+    });
+
+    it("Budget 12 ft and 16 ft use regular unleaded fuel", () => {
+      ["budget-12ft", "budget-16ft"].forEach((id) => {
         expect(getTruckById(id)!.fuelType).toBe("regular");
       });
     });
