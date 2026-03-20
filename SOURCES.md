@@ -25,8 +25,8 @@ verified 2026-03-20). This resolves the prior estimate. See issue
 [#86](https://github.com/shaunczubkowski/Haul-Pass/issues/86).
 
 Penske publishes official per-truck MPG for all vehicles including the cargo van,
-12 ft, 16 ft, 22 ft, and 26 ft. Budget and Enterprise do not publish per-truck
-MPG figures for any of their trucks — all their values are class estimates.
+12 ft, 16 ft, 22 ft, and 26 ft. Budget publishes ranges (Official range tier).
+Enterprise does not publish any per-truck figures — all Enterprise values are class estimates.
 
 ---
 
@@ -98,24 +98,22 @@ _26 ft fuel type corrected from regular → diesel, tank corrected from 60 → 5
 
 ## Enterprise
 
-All Enterprise consumer moving trucks use **regular unleaded gasoline**.
+Enterprise offers four consumer moving vehicles. The 15 ft Parcel Van uses **regular
+gasoline**. The 16 ft Cabover, 24 ft, and 26 ft Box Trucks use **diesel**.
 
-| Truck | Tank (gal) | MPG est. | Source |
-|---|---|---|---|
-| 10 ft | 31 | 12 | [enterprisetrucks.com (vehicle comparison)](https://www.enterprisetrucks.com/truckrental/en_US/vehicles/commercial-truck-comparison-guide.html) |
-| 16 ft | 40 | 10 | [enterprisetrucks.com (vehicle comparison)](https://www.enterprisetrucks.com/truckrental/en_US/vehicles/commercial-truck-comparison-guide.html) |
-| 24 ft | 60 | 7 | [enterprisetrucks.com/…/24--straight-personal](https://www.enterprisetrucks.com/truckrental/en_US/vehicles/straight-trucks/24--straight-personal.html) |
+Enterprise does not publish tank capacities or per-truck MPG figures. All values
+are class estimates.
 
-The 24 ft replaces an earlier `enterprise-26ft` entry that could not be confirmed as
-a standard consumer SKU — see [#42](https://github.com/shaunczubkowski/Haul-Pass/issues/42).
-Enterprise does offer a 26 ft for **commercial** use
-([enterprisetrucks.com/…/26--straight-business](https://www.enterprisetrucks.com/truckrental/en_US/vehicles/straight-trucks/26--straight-business.html)),
-but this is not in the standard consumer lineup at all locations.
+| Truck | Tank (gal) | MPG est. | Fuel | Source |
+|---|---|---|---|---|
+| 15 ft Parcel Van | 40 | 12 | **regular** | [enterprisetrucks.com (vehicle comparison)](https://www.enterprisetrucks.com/truckrental/en_US/vehicles/commercial-truck-comparison-guide.html) |
+| 16 ft Cabover Truck | 40 | 10 | diesel | [enterprisetrucks.com (vehicle comparison)](https://www.enterprisetrucks.com/truckrental/en_US/vehicles/commercial-truck-comparison-guide.html) |
+| 24 ft Truck | 60 | 7 | diesel | [enterprisetrucks.com/…/24--straight-personal](https://www.enterprisetrucks.com/truckrental/en_US/vehicles/straight-trucks/24--straight-personal.html) |
+| 26 ft Box Truck | 60 | 7 | diesel | [enterprisetrucks.com (vehicle comparison)](https://www.enterprisetrucks.com/truckrental/en_US/vehicles/commercial-truck-comparison-guide.html) |
 
-MPG and tank estimates for 10 ft and 16 ft are derived from industry averages for
-comparable truck classes, as Enterprise does not publish per-truck fuel specs. Source:
-[HireAHelper rental truck guide](https://blog.hireahelper.com/how-to-save-money-on-your-rental-trucks-gas/)
-(retrieved 2026-03-10).
+_10 ft entry removed 2026-03-20 — Enterprise does not offer a 10 ft consumer moving truck.
+Fleet corrected to 15 ft Parcel Van (regular), 16 ft Cabover (diesel), 24 ft (diesel),
+and 26 ft Box Truck (diesel) per official Enterprise spec table._
 
 ---
 

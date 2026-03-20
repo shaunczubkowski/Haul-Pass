@@ -467,7 +467,7 @@ export default function Home() {
             </div>
             <div>
               <dt className="font-semibold text-text-primary">Does U-Haul use regular gas or diesel?</dt>
-              <dd className="mt-1 text-sm text-text-secondary leading-relaxed">All U-Haul trucks use regular unleaded gasoline — never diesel. Penske 22 ft and 26 ft trucks use diesel; their smaller trucks use regular. Budget&apos;s 26 ft truck uses diesel; the 12 ft and 16 ft use regular. Enterprise trucks use regular unleaded. FillRight shows the correct fuel type for your truck.</dd>
+              <dd className="mt-1 text-sm text-text-secondary leading-relaxed">All U-Haul trucks use regular unleaded gasoline — never diesel. Penske 22 ft and 26 ft trucks use diesel; their smaller trucks use regular. Budget&apos;s 26 ft truck uses diesel; the 12 ft and 16 ft use regular. Enterprise&apos;s 16 ft Cabover, 24 ft, and 26 ft trucks use diesel; the 15 ft Parcel Van uses regular. FillRight shows the correct fuel type for your truck.</dd>
             </div>
             <div>
               <dt className="font-semibold text-text-primary">How accurate is the fuel gauge on a moving truck?</dt>

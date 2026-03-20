@@ -208,10 +208,11 @@ describe("Truck fleet data", () => {
       expect(ENTERPRISE_TRUCKS.length).toBeGreaterThanOrEqual(2);
     });
 
-    it("all Enterprise trucks use regular unleaded fuel", () => {
-      ENTERPRISE_TRUCKS.forEach((truck) => {
-        expect(truck.fuelType).toBe("regular");
-      });
+    it("Enterprise 16ft Cabover, 24ft, and 26ft use diesel; 15ft Parcel Van uses regular", () => {
+      expect(ENTERPRISE_TRUCKS.find((t) => t.id === "enterprise-16ft")!.fuelType).toBe("diesel");
+      expect(ENTERPRISE_TRUCKS.find((t) => t.id === "enterprise-24ft")!.fuelType).toBe("diesel");
+      expect(ENTERPRISE_TRUCKS.find((t) => t.id === "enterprise-26ft")!.fuelType).toBe("diesel");
+      expect(ENTERPRISE_TRUCKS.find((t) => t.id === "enterprise-15ft")!.fuelType).toBe("regular");
     });
 
     it("all Enterprise trucks belong to the enterprise company", () => {
@@ -226,10 +227,13 @@ describe("Truck fleet data", () => {
       });
     });
 
-    it("uses enterprise-24ft (standard SKU) not enterprise-26ft", () => {
+    it("contains enterprise-15ft, enterprise-16ft, enterprise-24ft, and enterprise-26ft", () => {
       const ids = ENTERPRISE_TRUCKS.map((t) => t.id);
+      expect(ids).toContain("enterprise-15ft");
+      expect(ids).toContain("enterprise-16ft");
       expect(ids).toContain("enterprise-24ft");
-      expect(ids).not.toContain("enterprise-26ft");
+      expect(ids).toContain("enterprise-26ft");
+      expect(ids).not.toContain("enterprise-10ft");
     });
   });
 

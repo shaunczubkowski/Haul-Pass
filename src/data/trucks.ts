@@ -220,29 +220,29 @@ export const BUDGET_TRUCKS: TruckType[] = [
 /**
  * Enterprise truck fleet data.
  * Sources: see SOURCES.md — Enterprise section.
- * Note: All Enterprise trucks use regular unleaded gasoline.
+ * Note: 15 ft Parcel Van uses regular gasoline. 16 ft Cabover, 24 ft, and 26 ft use diesel.
  * Enterprise does not publish tank capacities or per-truck MPG figures.
  * All mpg and tankCapacity values are class estimates — see SOURCES.md.
  */
 export const ENTERPRISE_TRUCKS: TruckType[] = [
   {
-    id: "enterprise-10ft",
-    name: "10 ft Truck",
+    id: "enterprise-15ft",
+    name: "15 ft Parcel Van",
     company: "enterprise",
-    tankCapacity: 31, // estimated: class average; Enterprise does not publish tank capacity
+    tankCapacity: 40, // estimated: class average; Enterprise does not publish tank capacity
     mpg: 12, // estimated: class average; Enterprise does not publish per-truck MPG
     fuelType: "regular",
-    loadSize: "1 bedroom",
+    loadSize: "1–2 bedrooms",
     sourceUrl: "https://www.enterprisetrucks.com/truckrental/en_US/vehicles/commercial-truck-comparison-guide.html",
     mpgSource: "estimated",
   },
   {
     id: "enterprise-16ft",
-    name: "16 ft Truck",
+    name: "16 ft Cabover Truck",
     company: "enterprise",
     tankCapacity: 40, // estimated: class average; Enterprise does not publish tank capacity
     mpg: 10, // estimated: class average; Enterprise does not publish per-truck MPG
-    fuelType: "regular",
+    fuelType: "diesel",
     loadSize: "2–3 bedrooms",
     sourceUrl: "https://www.enterprisetrucks.com/truckrental/en_US/vehicles/commercial-truck-comparison-guide.html",
     mpgSource: "estimated",
@@ -253,9 +253,20 @@ export const ENTERPRISE_TRUCKS: TruckType[] = [
     company: "enterprise",
     tankCapacity: 60, // estimated: class average; Enterprise does not publish tank capacity
     mpg: 7, // estimated: class average; Enterprise does not publish per-truck MPG
-    fuelType: "regular",
+    fuelType: "diesel",
     loadSize: "4–5 bedrooms",
     sourceUrl: "https://www.enterprisetrucks.com/truckrental/en_US/vehicles/straight-trucks/24--straight-personal.html",
+    mpgSource: "estimated",
+  },
+  {
+    id: "enterprise-26ft",
+    name: "26 ft Box Truck",
+    company: "enterprise",
+    tankCapacity: 60, // estimated: class average; Enterprise does not publish tank capacity
+    mpg: 7, // estimated: class average; Enterprise does not publish per-truck MPG
+    fuelType: "diesel",
+    loadSize: "5+ bedrooms",
+    sourceUrl: "https://www.enterprisetrucks.com/truckrental/en_US/vehicles/commercial-truck-comparison-guide.html",
     mpgSource: "estimated",
   },
 ];

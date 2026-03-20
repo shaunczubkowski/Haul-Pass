@@ -55,8 +55,8 @@ describe("truck-specs page rendering", () => {
     expect(UHAUL_TRUCKS.length).toBe(7);
     expect(PENSKE_TRUCKS.length).toBe(5);
     expect(BUDGET_TRUCKS.length).toBe(4);
-    expect(ENTERPRISE_TRUCKS.length).toBe(3);
-    expect(ALL_TRUCKS.length).toBe(19);
+    expect(ENTERPRISE_TRUCKS.length).toBe(4);
+    expect(ALL_TRUCKS.length).toBe(20);
   });
 
   it("renders source links for trucks with sourceUrl", () => {
