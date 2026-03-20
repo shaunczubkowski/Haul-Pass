@@ -161,6 +161,12 @@ describe("Truck fleet data", () => {
       expect(getTruckById("budget-10ft")).toBeUndefined();
     });
 
+    it("Budget 16 ft has a 33-gallon tank and 9 MPG (verified budgettruck.com 2026-03-20)", () => {
+      const truck = getTruckById("budget-16ft");
+      expect(truck!.tankCapacity).toBe(33);
+      expect(truck!.mpg).toBe(9);
+    });
+
     it("Budget 12 ft and 16 ft use regular unleaded fuel", () => {
       ["budget-12ft", "budget-16ft"].forEach((id) => {
         expect(getTruckById(id)!.fuelType).toBe("regular");

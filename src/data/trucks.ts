@@ -169,9 +169,9 @@ export const BUDGET_TRUCKS: TruckType[] = [
     id: "budget-16ft",
     name: "16 ft Truck",
     company: "budget",
-    tankCapacity: 40,
-    mpg: 10, // estimated: class average; Budget does not publish per-truck MPG
-    fuelType: "regular",
+    tankCapacity: 33,
+    mpg: 9, // estimated: Budget publishes 6–10 MPG range; customer-specified 9 MPG
+    fuelType: "regular", // most trucks are gasoline; some diesel available by contacting local dealer
     loadSize: "2–3 bedrooms",
   },
   {
