@@ -62,7 +62,7 @@ Penske consumer moving trucks (cargo van, 12 ft, 16 ft) use **regular gasoline**
 | 12 ft | 33 | 12 | **regular** | [pensketruckrental.com/trucks-and-vans/12-foot-truck](https://www.pensketruckrental.com/trucks-and-vans/12-foot-truck/) |
 | 16 ft | 33 | **12** | **regular** | [pensketruckrental.com/trucks-and-vans/16-foot-truck](https://www.pensketruckrental.com/trucks-and-vans/16-foot-truck/) |
 | 22 ft | **70** | 13 | diesel | [pensketruckrental.com/…/22-foot-truck](https://www.pensketruckrental.com/trucks-and-vans/22-foot-truck/) |
-| 26 ft | **70** | 13 | diesel | [pensketruckrental.com/…/22-26-foot-box-truck](https://www.pensketruckrental.com/commercial-truck-rental/commercial-trucks/medium-duty-trucks/22-26-foot-box-truck/) |
+| 26 ft | **70** | 13 | diesel | [pensketruckrental.com/trucks-and-vans/26-foot-truck](https://www.pensketruckrental.com/trucks-and-vans/26-foot-truck) |
 
 _22 ft and 26 ft tank updated from 50 → 70 gal on 2026-03-15. Penske lists both trucks on the same 22–26 ft spec page with a 70-gallon diesel tank. Closes issues #63 and #50._
 
