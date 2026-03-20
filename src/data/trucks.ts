@@ -124,7 +124,7 @@ export const PENSKE_TRUCKS: TruckType[] = [
     name: "22 ft Truck",
     company: "penske",
     tankCapacity: 70, // verified: Penske 22–26 ft box trucks use a 70-gal diesel tank (pensketruckrental.com, 2026-03-15)
-    mpg: 8, // estimated: Penske states 8–12 MPG range for this class; using lower bound as conservative estimate
+    mpg: 13,
     fuelType: "diesel",
     loadSize: "3–4 bedrooms",
   },
