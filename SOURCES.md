@@ -54,11 +54,12 @@ MPG figures cross-referenced with:
 
 ## Penske
 
-Penske consumer moving trucks (12 ft, 16 ft) use **regular gasoline**. The 22 ft and
+Penske consumer moving trucks (cargo van, 12 ft, 16 ft) use **regular gasoline**. The 22 ft and
 26 ft trucks are available in **diesel**.
 
-| Truck | Tank (gal) | MPG est. | Fuel | Source |
+| Truck | Tank (gal) | MPG | Fuel | Source |
 |---|---|---|---|---|
+| Cargo Van | 25 | 12 | **regular** | [pensketruckrental.com/trucks-and-vans/cargo-van](https://www.pensketruckrental.com/trucks-and-vans/cargo-van/) |
 | 12 ft | 26 | 12 | **regular** | [pensketruckrental.com/trucks-and-vans/12-foot-truck](https://www.pensketruckrental.com/trucks-and-vans/12-foot-truck/) |
 | 16 ft | 33 | **12** | **regular** | [pensketruckrental.com/trucks-and-vans/16-foot-truck](https://www.pensketruckrental.com/trucks-and-vans/16-foot-truck/) |
 | 22 ft | **70** | 8 | diesel | [pensketruckrental.com/…/22-foot-truck](https://www.pensketruckrental.com/trucks-and-vans/22-foot-truck/) |

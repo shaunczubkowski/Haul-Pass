@@ -88,10 +88,19 @@ export const UHAUL_TRUCKS: TruckType[] = [
 /**
  * Penske truck fleet data.
  * Sources: see SOURCES.md — Penske section (includes ⚠️ spec-review notes).
- * Note: 12 ft and 16 ft use gasoline; 22 ft and 26 ft use diesel.
+ * Note: Cargo van, 12 ft, and 16 ft use gasoline; 22 ft and 26 ft use diesel.
  * MPG estimates are for empty trucks; loaded MPG will be lower.
  */
 export const PENSKE_TRUCKS: TruckType[] = [
+  {
+    id: "penske-cargo-van",
+    name: "Cargo Van",
+    company: "penske",
+    tankCapacity: 25,
+    mpg: 12,
+    fuelType: "regular",
+    loadSize: "Studio",
+  },
   {
     id: "penske-12ft",
     name: "12 ft Truck",

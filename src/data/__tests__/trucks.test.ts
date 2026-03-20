@@ -84,6 +84,14 @@ describe("Truck fleet data", () => {
       expect(PENSKE_TRUCKS.length).toBeGreaterThanOrEqual(3);
     });
 
+    it("includes a cargo van (verified pensketruckrental.com/trucks-and-vans/cargo-van/ 2026-03-20)", () => {
+      const van = getTruckById("penske-cargo-van");
+      expect(van).toBeDefined();
+      expect(van!.tankCapacity).toBe(25);
+      expect(van!.mpg).toBe(12);
+      expect(van!.fuelType).toBe("regular");
+    });
+
     it("Penske 12 ft and 16 ft use regular gasoline", () => {
       expect(PENSKE_TRUCKS.find((t) => t.id === "penske-12ft")!.fuelType).toBe("regular");
       expect(PENSKE_TRUCKS.find((t) => t.id === "penske-16ft")!.fuelType).toBe("regular");
