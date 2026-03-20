@@ -52,11 +52,11 @@ describe("truck-specs page rendering", () => {
   it("renders correct truck counts per company", () => {
     render(<TruckSpecsPage />);
     // Check row counts via data — all trucks should be present
-    expect(UHAUL_TRUCKS.length).toBe(8);
-    expect(PENSKE_TRUCKS.length).toBe(4);
-    expect(BUDGET_TRUCKS.length).toBe(3);
+    expect(UHAUL_TRUCKS.length).toBe(7);
+    expect(PENSKE_TRUCKS.length).toBe(5);
+    expect(BUDGET_TRUCKS.length).toBe(4);
     expect(ENTERPRISE_TRUCKS.length).toBe(3);
-    expect(ALL_TRUCKS.length).toBe(18);
+    expect(ALL_TRUCKS.length).toBe(19);
   });
 
   it("renders source links for trucks with sourceUrl", () => {
@@ -96,14 +96,8 @@ describe("truck data source fields", () => {
     }
   });
 
-  it("U-Haul 26ft is marked as estimated MPG", () => {
-    const truck = UHAUL_TRUCKS.find((t) => t.id === "uhaul-26ft");
-    expect(truck?.mpgSource).toBe("estimated");
-  });
-
-  it("U-Haul trucks (except 26ft) are marked as official MPG", () => {
-    const officialTrucks = UHAUL_TRUCKS.filter((t) => t.id !== "uhaul-26ft");
-    for (const truck of officialTrucks) {
+  it("all U-Haul trucks are marked as official MPG", () => {
+    for (const truck of UHAUL_TRUCKS) {
       expect(truck.mpgSource, `${truck.id} should be official`).toBe("official");
     }
   });
@@ -120,14 +114,9 @@ describe("truck data source fields", () => {
     }
   });
 
-  it("Penske 12ft and 16ft are official; 22ft and 26ft are estimated", () => {
-    const p12 = PENSKE_TRUCKS.find((t) => t.id === "penske-12ft");
-    const p16 = PENSKE_TRUCKS.find((t) => t.id === "penske-16ft");
-    const p22 = PENSKE_TRUCKS.find((t) => t.id === "penske-22ft");
-    const p26 = PENSKE_TRUCKS.find((t) => t.id === "penske-26ft");
-    expect(p12?.mpgSource).toBe("official");
-    expect(p16?.mpgSource).toBe("official");
-    expect(p22?.mpgSource).toBe("estimated");
-    expect(p26?.mpgSource).toBe("estimated");
+  it("all Penske trucks are marked as official MPG", () => {
+    for (const truck of PENSKE_TRUCKS) {
+      expect(truck.mpgSource, `${truck.id} should be official`).toBe("official");
+    }
   });
 });

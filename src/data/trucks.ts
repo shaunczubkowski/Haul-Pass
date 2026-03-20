@@ -24,7 +24,7 @@ export const UHAUL_TRUCKS: TruckType[] = [
     id: "uhaul-pickup",
     name: '8 ft Pickup',
     company: "uhaul",
-    tankCapacity: 34,
+    tankCapacity: 28,
     mpg: 19,
     fuelType: "regular",
     loadSize: "Small load",
@@ -33,9 +33,9 @@ export const UHAUL_TRUCKS: TruckType[] = [
   },
   {
     id: "uhaul-cargo-van",
-    name: "Cargo Van",
+    name: "9 ft Cargo Van",
     company: "uhaul",
-    tankCapacity: 26,
+    tankCapacity: 25,
     mpg: 18,
     fuelType: "regular",
     loadSize: "Studio",
@@ -87,41 +87,41 @@ export const UHAUL_TRUCKS: TruckType[] = [
     mpgSource: "official",
   },
   {
-    id: "uhaul-24ft",
-    name: "24 ft Truck",
-    company: "uhaul",
-    tankCapacity: 60,
-    mpg: 7,
-    fuelType: "regular",
-    loadSize: "4–5 bedrooms",
-    sourceUrl: "https://www.uhaul.com/Truck-Rentals/24ft-Moving-Truck/",
-    mpgSource: "official",
-  },
-  {
     id: "uhaul-26ft",
     name: "26 ft Truck",
     company: "uhaul",
     tankCapacity: 60,
-    mpg: 7, // estimated: U-Haul publishes no per-truck figure for 26ft; 7 is the industry consensus and consistent with the 24ft class
+    mpg: 10,
     fuelType: "regular",
     loadSize: "5+ bedrooms",
     sourceUrl: "https://www.uhaul.com/Truck-Rentals/26ft-Moving-Truck/",
-    mpgSource: "estimated",
+    mpgSource: "official",
   },
 ];
 
 /**
  * Penske truck fleet data.
  * Sources: see SOURCES.md — Penske section (includes ⚠️ spec-review notes).
- * Note: 12 ft and 16 ft use gasoline; 22 ft and 26 ft use diesel.
+ * Note: Cargo van, 12 ft, and 16 ft use gasoline; 22 ft and 26 ft use diesel.
  * MPG estimates are for empty trucks; loaded MPG will be lower.
  */
 export const PENSKE_TRUCKS: TruckType[] = [
   {
+    id: "penske-cargo-van",
+    name: "Cargo Van",
+    company: "penske",
+    tankCapacity: 25,
+    mpg: 12,
+    fuelType: "regular",
+    loadSize: "Studio",
+    sourceUrl: "https://www.pensketruckrental.com/trucks-and-vans/cargo-van/",
+    mpgSource: "official",
+  },
+  {
     id: "penske-12ft",
     name: "12 ft Truck",
     company: "penske",
-    tankCapacity: 26,
+    tankCapacity: 33,
     mpg: 12,
     fuelType: "regular",
     loadSize: "1 bedroom",
@@ -144,39 +144,50 @@ export const PENSKE_TRUCKS: TruckType[] = [
     name: "22 ft Truck",
     company: "penske",
     tankCapacity: 70, // verified: Penske 22–26 ft box trucks use a 70-gal diesel tank (pensketruckrental.com, 2026-03-15)
-    mpg: 8, // estimated: Penske states 8–12 MPG range for this class; using lower bound as conservative estimate
+    mpg: 13,
     fuelType: "diesel",
     loadSize: "3–4 bedrooms",
     sourceUrl: "https://www.pensketruckrental.com/trucks-and-vans/22-foot-truck/",
-    mpgSource: "estimated",
+    mpgSource: "official",
   },
   {
     id: "penske-26ft",
     name: "26 ft Truck",
     company: "penske",
     tankCapacity: 70, // same 70-gal diesel tank as 22 ft — both listed on Penske's 22–26 ft spec page
-    mpg: 7, // estimated: class estimate for loaded diesel 26ft; real-world reports 6–7 MPG
+    mpg: 13,
     fuelType: "diesel",
     loadSize: "5+ bedrooms",
-    sourceUrl: "https://www.pensketruckrental.com/commercial-truck-rental/commercial-trucks/medium-duty-trucks/22-26-foot-box-truck/",
-    mpgSource: "estimated",
+    sourceUrl: "https://www.pensketruckrental.com/trucks-and-vans/26-foot-truck",
+    mpgSource: "official",
   },
 ];
 
 /**
  * Budget truck fleet data.
  * Sources: see SOURCES.md — Budget section.
- * Note: 10 ft and 16 ft use regular unleaded gasoline. 26 ft uses diesel.
- * Budget does not offer a consumer 24 ft truck.
- * MPG: Budget does not publish per-truck figures; all mpg values are class estimates.
+ * Note: Cargo van, 12 ft, and 16 ft use regular unleaded gasoline. 26 ft uses diesel.
+ * Budget does not offer a consumer 10 ft or 24 ft truck.
+ * MPG: Budget publishes ranges rather than single figures; midpoints are used.
  */
 export const BUDGET_TRUCKS: TruckType[] = [
   {
-    id: "budget-10ft",
-    name: "10 ft Truck",
+    id: "budget-cargo-van",
+    name: "Cargo Van",
     company: "budget",
-    tankCapacity: 31,
-    mpg: 12, // estimated: class average; Budget does not publish per-truck MPG
+    tankCapacity: 25,
+    mpg: 11, // estimated: Budget publishes a range of 8–14 MPG; using midpoint
+    fuelType: "regular",
+    loadSize: "Studio",
+    sourceUrl: "https://www.budgettruck.com/moving-trucks-accessories/truckdetails-cargo-van",
+    mpgSource: "estimated",
+  },
+  {
+    id: "budget-12ft",
+    name: "12 ft Truck",
+    company: "budget",
+    tankCapacity: 35,
+    mpg: 11, // estimated: Budget publishes 8–14 MPG range; using midpoint
     fuelType: "regular",
     loadSize: "1 bedroom",
     sourceUrl: "https://www.budgettruck.com/moving-trucks-accessories/truckdetails12foot",
@@ -186,9 +197,9 @@ export const BUDGET_TRUCKS: TruckType[] = [
     id: "budget-16ft",
     name: "16 ft Truck",
     company: "budget",
-    tankCapacity: 40,
-    mpg: 10, // estimated: class average; Budget does not publish per-truck MPG
-    fuelType: "regular",
+    tankCapacity: 33,
+    mpg: 9, // estimated: Budget publishes 6–10 MPG range; customer-specified 9 MPG
+    fuelType: "regular", // most trucks are gasoline; some diesel available by contacting local dealer
     loadSize: "2–3 bedrooms",
     sourceUrl: "https://www.budgettruck.com/moving-trucks-accessories/truckdetails16foot",
     mpgSource: "estimated",
@@ -198,7 +209,7 @@ export const BUDGET_TRUCKS: TruckType[] = [
     name: "26 ft Truck",
     company: "budget",
     tankCapacity: 50, // verified: budgettruck.com/moving-trucks-accessories/truckdetails26foot (2026-03-17)
-    mpg: 7, // estimated: class average for diesel 26ft; Budget does not publish per-truck MPG
+    mpg: 9, // estimated: Budget publishes range for this class; using 9 MPG
     fuelType: "diesel", // verified: budgettruck.com/moving-trucks-accessories/truckdetails26foot (2026-03-17)
     loadSize: "5+ bedrooms",
     sourceUrl: "https://www.budgettruck.com/moving-trucks-accessories/truckdetails26foot",

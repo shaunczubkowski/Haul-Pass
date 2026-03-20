@@ -11,8 +11,8 @@ import {
 
 describe("Truck fleet data", () => {
   describe("UHAUL_TRUCKS", () => {
-    it("contains all 8 U-Haul truck sizes", () => {
-      expect(UHAUL_TRUCKS).toHaveLength(8);
+    it("contains all 7 U-Haul truck sizes", () => {
+      expect(UHAUL_TRUCKS).toHaveLength(7);
     });
 
     it("all U-Haul trucks use regular unleaded fuel", () => {
@@ -47,13 +47,12 @@ describe("Truck fleet data", () => {
 
     it("contains expected U-Haul truck sizes with correct tank capacities", () => {
       const capacities: Record<string, number> = {
-        "uhaul-pickup": 34,
-        "uhaul-cargo-van": 26,
+        "uhaul-pickup": 28,
+        "uhaul-cargo-van": 25,
         "uhaul-10ft": 31,
         "uhaul-15ft": 40,
         "uhaul-17ft": 40,
         "uhaul-20ft": 40,
-        "uhaul-24ft": 60,
         "uhaul-26ft": 60,
       };
 
@@ -70,7 +69,7 @@ describe("Truck fleet data", () => {
         "uhaul-cargo-van": 18,
         "uhaul-10ft": 12,
         "uhaul-15ft": 10,
-        "uhaul-26ft": 7,
+        "uhaul-26ft": 10,
       };
 
       for (const [id, expectedMpg] of Object.entries(mpgValues)) {
@@ -83,6 +82,18 @@ describe("Truck fleet data", () => {
   describe("PENSKE_TRUCKS", () => {
     it("contains Penske truck sizes", () => {
       expect(PENSKE_TRUCKS.length).toBeGreaterThanOrEqual(3);
+    });
+
+    it("includes a cargo van (verified pensketruckrental.com/trucks-and-vans/cargo-van/ 2026-03-20)", () => {
+      const van = getTruckById("penske-cargo-van");
+      expect(van).toBeDefined();
+      expect(van!.tankCapacity).toBe(25);
+      expect(van!.mpg).toBe(12);
+      expect(van!.fuelType).toBe("regular");
+    });
+
+    it("Penske 12 ft has a 33-gallon tank (verified pensketruckrental.com 2026-03-20)", () => {
+      expect(getTruckById("penske-12ft")!.tankCapacity).toBe(33);
     });
 
     it("Penske 12 ft and 16 ft use regular gasoline", () => {
@@ -118,15 +129,46 @@ describe("Truck fleet data", () => {
       expect(getTruckById("penske-22ft")!.tankCapacity).toBe(70);
       expect(getTruckById("penske-26ft")!.tankCapacity).toBe(70);
     });
+
+    it("Penske 22 ft and 26 ft have 13 MPG (verified pensketruckrental.com 2026-03-20)", () => {
+      expect(getTruckById("penske-22ft")!.mpg).toBe(13);
+      expect(getTruckById("penske-26ft")!.mpg).toBe(13);
+    });
   });
 
   describe("BUDGET_TRUCKS", () => {
-    it("contains exactly 3 Budget truck sizes (10 ft, 16 ft, 26 ft)", () => {
-      expect(BUDGET_TRUCKS).toHaveLength(3);
+    it("contains exactly 4 Budget vehicles (cargo van, 12 ft, 16 ft, 26 ft)", () => {
+      expect(BUDGET_TRUCKS).toHaveLength(4);
     });
 
-    it("Budget 10 ft and 16 ft use regular unleaded fuel", () => {
-      ["budget-10ft", "budget-16ft"].forEach((id) => {
+    it("includes a cargo van (verified budgettruck.com/truckdetails-cargo-van 2026-03-20)", () => {
+      const van = getTruckById("budget-cargo-van");
+      expect(van).toBeDefined();
+      expect(van!.tankCapacity).toBe(25);
+      expect(van!.mpg).toBe(11);
+      expect(van!.fuelType).toBe("regular");
+    });
+
+    it("includes a 12 ft truck with 35-gallon tank (verified budgettruck.com/truckdetails12foot 2026-03-20)", () => {
+      const truck = getTruckById("budget-12ft");
+      expect(truck).toBeDefined();
+      expect(truck!.tankCapacity).toBe(35);
+      expect(truck!.mpg).toBe(11);
+      expect(truck!.fuelType).toBe("regular");
+    });
+
+    it("does not include a 10 ft truck (not a Budget SKU)", () => {
+      expect(getTruckById("budget-10ft")).toBeUndefined();
+    });
+
+    it("Budget 16 ft has a 33-gallon tank and 9 MPG (verified budgettruck.com 2026-03-20)", () => {
+      const truck = getTruckById("budget-16ft");
+      expect(truck!.tankCapacity).toBe(33);
+      expect(truck!.mpg).toBe(9);
+    });
+
+    it("Budget 12 ft and 16 ft use regular unleaded fuel", () => {
+      ["budget-12ft", "budget-16ft"].forEach((id) => {
         expect(getTruckById(id)!.fuelType).toBe("regular");
       });
     });
@@ -137,6 +179,10 @@ describe("Truck fleet data", () => {
 
     it("Budget 26 ft has a 50-gallon tank (verified budgettruck.com 2026-03-17)", () => {
       expect(getTruckById("budget-26ft")!.tankCapacity).toBe(50);
+    });
+
+    it("Budget 26 ft has 9 MPG (2026-03-20)", () => {
+      expect(getTruckById("budget-26ft")!.mpg).toBe(9);
     });
 
     it("does not include a 24 ft truck (not a standard Budget SKU)", () => {
