@@ -88,7 +88,7 @@ export const UHAUL_TRUCKS: TruckType[] = [
     name: "26 ft Truck",
     company: "uhaul",
     tankCapacity: 60,
-    mpg: 7, // estimated: U-Haul publishes no per-truck figure for 26ft; 7 is the industry consensus and consistent with the 24ft class
+    mpg: 10,
     fuelType: "regular",
     loadSize: "5+ bedrooms",
   },

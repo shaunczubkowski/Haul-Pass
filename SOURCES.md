@@ -18,10 +18,9 @@ Two tiers of source quality are used across the fleet:
 | **Official** | Taken directly from the rental company's own per-truck spec page | No inline comment |
 | **Estimated** | Derived from industry guides or class averages when the company does not publish a per-truck figure | `// estimated` inline comment |
 
-U-Haul publishes official per-truck MPG for all trucks **except the 26 ft**
-(their website gives only a fleet-wide 10–12 MPG range with no 26ft-specific
-figure). The 26 ft value of 7 MPG is the industry consensus estimate and is
-consistent with the confirmed 24 ft class figure. See issue
+U-Haul publishes official per-truck MPG for all trucks, including the 26 ft
+(10 MPG per the [26ft truck spec page](https://www.uhaul.com/Truck-Rentals/26ft-Moving-Truck/),
+verified 2026-03-20). This resolves the prior estimate. See issue
 [#86](https://github.com/shaunczubkowski/Haul-Pass/issues/86).
 
 Budget and Enterprise do not publish per-truck MPG figures for any of their
@@ -44,12 +43,7 @@ All U-Haul trucks use **regular unleaded gasoline**.
 | 17 ft | 40 | 10 | [uhaul.com/Truck-Rentals/17ft-Moving-Truck](https://www.uhaul.com/Truck-Rentals/17ft-Moving-Truck/) |
 | 20 ft | 40 | 10 | [uhaul.com/Truck-Rentals/20ft-Moving-Truck](https://www.uhaul.com/Truck-Rentals/20ft-Moving-Truck/) |
 | 24 ft | 60 | 7 | [uhaul.com/Truck-Rentals/24ft-Moving-Truck](https://www.uhaul.com/Truck-Rentals/24ft-Moving-Truck/) |
-| 26 ft | 60 | 7 ¹ | [uhaul.com/Truck-Rentals/26ft-Moving-Truck](https://www.uhaul.com/Truck-Rentals/26ft-Moving-Truck/) |
-
-¹ _U-Haul does not publish a per-truck MPG for the 26 ft model — their site
-gives only a fleet-wide 10–12 MPG range. 7 MPG is the industry consensus
-estimate and is consistent with the confirmed 24 ft figure. See issue
-[#86](https://github.com/shaunczubkowski/Haul-Pass/issues/86)._
+| 26 ft | 60 | 10 | [uhaul.com/Truck-Rentals/26ft-Moving-Truck](https://www.uhaul.com/Truck-Rentals/26ft-Moving-Truck/) |
 
 MPG figures cross-referenced with:
 - [U-Pack: U-Haul gas mileage guide](https://www.upack.com/articles/what-is-the-gas-mileage-of-a-u-haul-rental-truck) (retrieved 2026-03-10)

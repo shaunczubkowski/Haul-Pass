@@ -70,7 +70,7 @@ describe("Truck fleet data", () => {
         "uhaul-cargo-van": 18,
         "uhaul-10ft": 12,
         "uhaul-15ft": 10,
-        "uhaul-26ft": 7,
+        "uhaul-26ft": 10,
       };
 
       for (const [id, expectedMpg] of Object.entries(mpgValues)) {
