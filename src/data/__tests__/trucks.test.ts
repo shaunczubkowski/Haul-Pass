@@ -137,8 +137,16 @@ describe("Truck fleet data", () => {
   });
 
   describe("BUDGET_TRUCKS", () => {
-    it("contains exactly 3 Budget truck sizes (10 ft, 16 ft, 26 ft)", () => {
-      expect(BUDGET_TRUCKS).toHaveLength(3);
+    it("contains exactly 4 Budget vehicles (cargo van, 10 ft, 16 ft, 26 ft)", () => {
+      expect(BUDGET_TRUCKS).toHaveLength(4);
+    });
+
+    it("includes a cargo van (verified budgettruck.com/truckdetails-cargo-van 2026-03-20)", () => {
+      const van = getTruckById("budget-cargo-van");
+      expect(van).toBeDefined();
+      expect(van!.tankCapacity).toBe(25);
+      expect(van!.mpg).toBe(11);
+      expect(van!.fuelType).toBe("regular");
     });
 
     it("Budget 10 ft and 16 ft use regular unleaded fuel", () => {

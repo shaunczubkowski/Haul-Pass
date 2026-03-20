@@ -142,11 +142,20 @@ export const PENSKE_TRUCKS: TruckType[] = [
 /**
  * Budget truck fleet data.
  * Sources: see SOURCES.md — Budget section.
- * Note: 10 ft and 16 ft use regular unleaded gasoline. 26 ft uses diesel.
+ * Note: Cargo van, 10 ft, and 16 ft use regular unleaded gasoline. 26 ft uses diesel.
  * Budget does not offer a consumer 24 ft truck.
- * MPG: Budget does not publish per-truck figures; all mpg values are class estimates.
+ * MPG: Budget does not publish single per-truck figures; all mpg values are estimates.
  */
 export const BUDGET_TRUCKS: TruckType[] = [
+  {
+    id: "budget-cargo-van",
+    name: "Cargo Van",
+    company: "budget",
+    tankCapacity: 25,
+    mpg: 11, // estimated: Budget publishes a range of 8–14 MPG; using midpoint
+    fuelType: "regular",
+    loadSize: "Studio",
+  },
   {
     id: "budget-10ft",
     name: "10 ft Truck",
