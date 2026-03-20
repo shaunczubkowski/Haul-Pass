@@ -179,7 +179,7 @@ export const BUDGET_TRUCKS: TruckType[] = [
     name: "26 ft Truck",
     company: "budget",
     tankCapacity: 50, // verified: budgettruck.com/moving-trucks-accessories/truckdetails26foot (2026-03-17)
-    mpg: 7, // estimated: class average for diesel 26ft; Budget does not publish per-truck MPG
+    mpg: 9, // estimated: Budget publishes range for this class; using 9 MPG
     fuelType: "diesel", // verified: budgettruck.com/moving-trucks-accessories/truckdetails26foot (2026-03-17)
     loadSize: "5+ bedrooms",
   },

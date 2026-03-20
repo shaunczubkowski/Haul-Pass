@@ -84,9 +84,9 @@ Budget publishes MPG as a range rather than a single figure; midpoints are used.
 | Cargo Van | 25 | 11 ¹ | **regular** | [budgettruck.com/…/truckdetails-cargo-van](https://www.budgettruck.com/moving-trucks-accessories/truckdetails-cargo-van) |
 | 12 ft | 35 | 11 ¹ | **regular** | [budgettruck.com/…/truckdetails12foot](https://www.budgettruck.com/moving-trucks-accessories/truckdetails12foot) |
 | 16 ft | 33 | 9 ¹ | **regular** ² | [budgettruck.com/…/truckdetails16foot](https://www.budgettruck.com/moving-trucks-accessories/truckdetails16foot) |
-| 26 ft | **50** | 7 | **diesel** | [budgettruck.com/…/truckdetails26foot](https://www.budgettruck.com/moving-trucks-accessories/truckdetails26foot) |
+| 26 ft | **50** | 9 ¹ | **diesel** | [budgettruck.com/…/truckdetails26foot](https://www.budgettruck.com/moving-trucks-accessories/truckdetails26foot) |
 
-¹ _Budget lists MPG as ranges; midpoints or specified values are used (cargo van: 8–14 → 11; 12 ft: 8–14 → 11; 16 ft: 6–10 → 9)._
+¹ _Budget lists MPG as ranges; midpoints or specified values are used (cargo van: 8–14 → 11; 12 ft: 8–14 → 11; 16 ft: 6–10 → 9; 26 ft: → 9)._
 
 ² _Most 16 ft trucks are gasoline; Budget notes some diesel trucks are available — customers should contact their local dealer._
 

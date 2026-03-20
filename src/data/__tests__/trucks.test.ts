@@ -181,6 +181,10 @@ describe("Truck fleet data", () => {
       expect(getTruckById("budget-26ft")!.tankCapacity).toBe(50);
     });
 
+    it("Budget 26 ft has 9 MPG (2026-03-20)", () => {
+      expect(getTruckById("budget-26ft")!.mpg).toBe(9);
+    });
+
     it("does not include a 24 ft truck (not a standard Budget SKU)", () => {
       expect(getTruckById("budget-24ft")).toBeUndefined();
       expect(BUDGET_TRUCKS.find((t) => t.id === "budget-24ft")).toBeUndefined();
