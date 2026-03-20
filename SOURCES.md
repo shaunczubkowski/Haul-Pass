@@ -60,7 +60,7 @@ Penske consumer moving trucks (cargo van, 12 ft, 16 ft) use **regular gasoline**
 | Truck | Tank (gal) | MPG | Fuel | Source |
 |---|---|---|---|---|
 | Cargo Van | 25 | 12 | **regular** | [pensketruckrental.com/trucks-and-vans/cargo-van](https://www.pensketruckrental.com/trucks-and-vans/cargo-van/) |
-| 12 ft | 26 | 12 | **regular** | [pensketruckrental.com/trucks-and-vans/12-foot-truck](https://www.pensketruckrental.com/trucks-and-vans/12-foot-truck/) |
+| 12 ft | 33 | 12 | **regular** | [pensketruckrental.com/trucks-and-vans/12-foot-truck](https://www.pensketruckrental.com/trucks-and-vans/12-foot-truck/) |
 | 16 ft | 33 | **12** | **regular** | [pensketruckrental.com/trucks-and-vans/16-foot-truck](https://www.pensketruckrental.com/trucks-and-vans/16-foot-truck/) |
 | 22 ft | **70** | 8 | diesel | [pensketruckrental.com/…/22-foot-truck](https://www.pensketruckrental.com/trucks-and-vans/22-foot-truck/) |
 | 26 ft | **70** | 7 | diesel | [pensketruckrental.com/…/22-26-foot-box-truck](https://www.pensketruckrental.com/commercial-truck-rental/commercial-trucks/medium-duty-trucks/22-26-foot-box-truck/) |

@@ -92,6 +92,10 @@ describe("Truck fleet data", () => {
       expect(van!.fuelType).toBe("regular");
     });
 
+    it("Penske 12 ft has a 33-gallon tank (verified pensketruckrental.com 2026-03-20)", () => {
+      expect(getTruckById("penske-12ft")!.tankCapacity).toBe(33);
+    });
+
     it("Penske 12 ft and 16 ft use regular gasoline", () => {
       expect(PENSKE_TRUCKS.find((t) => t.id === "penske-12ft")!.fuelType).toBe("regular");
       expect(PENSKE_TRUCKS.find((t) => t.id === "penske-16ft")!.fuelType).toBe("regular");

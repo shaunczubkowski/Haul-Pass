@@ -105,7 +105,7 @@ export const PENSKE_TRUCKS: TruckType[] = [
     id: "penske-12ft",
     name: "12 ft Truck",
     company: "penske",
-    tankCapacity: 26,
+    tankCapacity: 33,
     mpg: 12,
     fuelType: "regular",
     loadSize: "1 bedroom",
