@@ -24,7 +24,7 @@ export const UHAUL_TRUCKS: TruckType[] = [
     id: "uhaul-pickup",
     name: '8 ft Pickup',
     company: "uhaul",
-    tankCapacity: 34,
+    tankCapacity: 28,
     mpg: 19,
     fuelType: "regular",
     loadSize: "Small load",

@@ -47,7 +47,7 @@ describe("Truck fleet data", () => {
 
     it("contains expected U-Haul truck sizes with correct tank capacities", () => {
       const capacities: Record<string, number> = {
-        "uhaul-pickup": 34,
+        "uhaul-pickup": 28,
         "uhaul-cargo-van": 26,
         "uhaul-10ft": 31,
         "uhaul-15ft": 40,
