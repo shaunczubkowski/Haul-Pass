@@ -133,7 +133,7 @@ export const PENSKE_TRUCKS: TruckType[] = [
     name: "26 ft Truck",
     company: "penske",
     tankCapacity: 70, // same 70-gal diesel tank as 22 ft — both listed on Penske's 22–26 ft spec page
-    mpg: 7, // estimated: class estimate for loaded diesel 26ft; real-world reports 6–7 MPG
+    mpg: 13,
     fuelType: "diesel",
     loadSize: "5+ bedrooms",
   },

@@ -130,8 +130,9 @@ describe("Truck fleet data", () => {
       expect(getTruckById("penske-26ft")!.tankCapacity).toBe(70);
     });
 
-    it("Penske 22 ft has 13 MPG (verified pensketruckrental.com/trucks-and-vans/22-foot-truck/ 2026-03-20)", () => {
+    it("Penske 22 ft and 26 ft have 13 MPG (verified pensketruckrental.com 2026-03-20)", () => {
       expect(getTruckById("penske-22ft")!.mpg).toBe(13);
+      expect(getTruckById("penske-26ft")!.mpg).toBe(13);
     });
   });
 

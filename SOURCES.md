@@ -23,10 +23,9 @@ U-Haul publishes official per-truck MPG for all trucks, including the 26 ft
 verified 2026-03-20). This resolves the prior estimate. See issue
 [#86](https://github.com/shaunczubkowski/Haul-Pass/issues/86).
 
-Budget and Enterprise do not publish per-truck MPG figures for any of their
-trucks — all their values are class estimates. Penske publishes per-truck MPG
-for the 12 ft and 16 ft; the 22 ft and 26 ft are listed as a range (8–12 MPG),
-so conservative lower-bound estimates are used.
+Penske publishes official per-truck MPG for all vehicles including the cargo van,
+12 ft, 16 ft, 22 ft, and 26 ft. Budget and Enterprise do not publish per-truck
+MPG figures for any of their trucks — all their values are class estimates.
 
 ---
 
@@ -63,11 +62,13 @@ Penske consumer moving trucks (cargo van, 12 ft, 16 ft) use **regular gasoline**
 | 12 ft | 33 | 12 | **regular** | [pensketruckrental.com/trucks-and-vans/12-foot-truck](https://www.pensketruckrental.com/trucks-and-vans/12-foot-truck/) |
 | 16 ft | 33 | **12** | **regular** | [pensketruckrental.com/trucks-and-vans/16-foot-truck](https://www.pensketruckrental.com/trucks-and-vans/16-foot-truck/) |
 | 22 ft | **70** | 13 | diesel | [pensketruckrental.com/…/22-foot-truck](https://www.pensketruckrental.com/trucks-and-vans/22-foot-truck/) |
-| 26 ft | **70** | 7 | diesel | [pensketruckrental.com/…/22-26-foot-box-truck](https://www.pensketruckrental.com/commercial-truck-rental/commercial-trucks/medium-duty-trucks/22-26-foot-box-truck/) |
+| 26 ft | **70** | 13 | diesel | [pensketruckrental.com/…/22-26-foot-box-truck](https://www.pensketruckrental.com/commercial-truck-rental/commercial-trucks/medium-duty-trucks/22-26-foot-box-truck/) |
 
 _22 ft and 26 ft tank updated from 50 → 70 gal on 2026-03-15. Penske lists both trucks on the same 22–26 ft spec page with a 70-gallon diesel tank. Closes issues #63 and #50._
 
 _16 ft MPG corrected from 10 → 12 on 2026-03-17. Penske's official 16ft page states 12 MPG. Closes issue #85._
+
+_22 ft and 26 ft MPG updated from estimated 8/7 to official 13 on 2026-03-20. Cargo van and 12 ft tank also corrected to official figures._
 
 ---
 
