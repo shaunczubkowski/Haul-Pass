@@ -259,7 +259,7 @@ describe("Home page", () => {
     it("syncs truck selection to the URL", async () => {
       const user = userEvent.setup();
       render(<Home />);
-      await selectTruck(user, "Cargo Van");
+      await selectTruck(user, "9 ft Cargo Van");
       await waitFor(() =>
         expect(window.location.search).toContain("truck=uhaul-cargo-van")
       );

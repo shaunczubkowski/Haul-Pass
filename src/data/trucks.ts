@@ -31,9 +31,9 @@ export const UHAUL_TRUCKS: TruckType[] = [
   },
   {
     id: "uhaul-cargo-van",
-    name: "Cargo Van",
+    name: "9 ft Cargo Van",
     company: "uhaul",
-    tankCapacity: 26,
+    tankCapacity: 25,
     mpg: 18,
     fuelType: "regular",
     loadSize: "Studio",

@@ -41,17 +41,17 @@ describe("TruckSelector", () => {
 
     it("renders tank capacity on each card", () => {
       render(<TruckSelector value={null} onChange={noop} />);
-      // Capacity and MPG are combined in a single element: "26 gal · 18 MPG"
-      expect(screen.getByText(/26 gal/)).toBeInTheDocument(); // cargo van (unique)
+      // Capacity and MPG are combined in a single element: "25 gal · 18 MPG"
+      expect(screen.getByText(/25 gal/)).toBeInTheDocument(); // cargo van (unique)
       expect(screen.getAllByText(/40 gal/).length).toBeGreaterThan(0); // 15ft/17ft/20ft share 40 gal
       expect(screen.getAllByText(/60 gal/).length).toBeGreaterThan(0); // 24ft/26ft share 60 gal
     });
 
     it("renders MPG on each card", () => {
       render(<TruckSelector value={null} onChange={noop} />);
-      // Capacity and MPG are combined in a single element: "34 gal · 19 MPG"
+      // Capacity and MPG are combined in a single element: "28 gal · 19 MPG"
       expect(screen.getByText(/19 MPG/)).toBeInTheDocument(); // pickup (unique)
-      expect(screen.getAllByText(/7 MPG/).length).toBeGreaterThan(0); // 24ft/26ft share 7 MPG
+      expect(screen.getAllByText(/10 MPG/).length).toBeGreaterThan(0); // 15ft/17ft/20ft/26ft share 10 MPG
     });
 
     it("renders load size hint on each card", () => {
@@ -189,7 +189,7 @@ describe("TruckSelector", () => {
       pickupCard.focus();
       await user.keyboard("{ArrowRight}");
       expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ id: cargoVan.id }));
-      expect(screen.getByText("Cargo Van").closest("button")).toHaveFocus();
+      expect(screen.getByText("9 ft Cargo Van").closest("button")).toHaveFocus();
     });
 
     it("ArrowLeft on first truck card wraps to last truck", async () => {
@@ -248,7 +248,7 @@ describe("TruckSelector", () => {
       const user = userEvent.setup();
       const onChange = vi.fn();
       render(<TruckSelector value={null} onChange={onChange} />);
-      const cargoVanCard = screen.getByText("Cargo Van").closest("button")!;
+      const cargoVanCard = screen.getByText("9 ft Cargo Van").closest("button")!;
       await user.click(cargoVanCard);
       expect(onChange).toHaveBeenCalledWith(
         expect.objectContaining({ id: "uhaul-cargo-van" })
