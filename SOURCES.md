@@ -11,12 +11,13 @@ make, model, year, and location.
 
 ### MPG source tiers
 
-Two tiers of source quality are used across the fleet:
+Three tiers of source quality are used across the fleet:
 
 | Tier | Description | Marker in code |
 |---|---|---|
-| **Official** | Taken directly from the rental company's own per-truck spec page | No inline comment |
-| **Estimated** | Derived from industry guides or class averages when the company does not publish a per-truck figure | `// estimated` inline comment |
+| **Official** | Single figure taken directly from the rental company's own per-truck spec page | No inline comment |
+| **Official range** | Company publishes a range on their spec page; value shown is derived from that range | No inline comment |
+| **Estimated** | Derived from industry guides or class averages when the company does not publish any per-truck figure | `// estimated` inline comment |
 
 U-Haul publishes official per-truck MPG for all trucks, including the 26 ft
 (10 MPG per the [26ft truck spec page](https://www.uhaul.com/Truck-Rentals/26ft-Moving-Truck/),

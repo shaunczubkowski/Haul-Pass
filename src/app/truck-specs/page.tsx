@@ -59,11 +59,18 @@ const COMPANY_SECTIONS: {
   },
 ];
 
-function SourceBadge({ source }: { source: "official" | "estimated" }) {
+function SourceBadge({ source }: { source: "official" | "official-range" | "estimated" }) {
   if (source === "official") {
     return (
       <span className="inline-block rounded px-1.5 py-0.5 text-xs font-medium bg-accent-muted text-accent">
         Official
+      </span>
+    );
+  }
+  if (source === "official-range") {
+    return (
+      <span className="inline-block rounded px-1.5 py-0.5 text-xs font-medium bg-accent-muted/50 text-accent">
+        Official range
       </span>
     );
   }

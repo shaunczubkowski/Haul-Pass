@@ -90,9 +90,9 @@ describe("truck data source fields", () => {
     }
   });
 
-  it("all trucks have an mpgSource of 'official' or 'estimated'", () => {
+  it("all trucks have a valid mpgSource", () => {
     for (const truck of ALL_TRUCKS) {
-      expect(["official", "estimated"], `${truck.id} has invalid mpgSource`).toContain(truck.mpgSource);
+      expect(["official", "official-range", "estimated"], `${truck.id} has invalid mpgSource`).toContain(truck.mpgSource);
     }
   });
 
@@ -102,9 +102,9 @@ describe("truck data source fields", () => {
     }
   });
 
-  it("all Budget trucks are marked as estimated MPG", () => {
+  it("all Budget trucks are marked as official-range MPG", () => {
     for (const truck of BUDGET_TRUCKS) {
-      expect(truck.mpgSource).toBe("estimated");
+      expect(truck.mpgSource).toBe("official-range");
     }
   });
 

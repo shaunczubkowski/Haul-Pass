@@ -176,44 +176,44 @@ export const BUDGET_TRUCKS: TruckType[] = [
     name: "Cargo Van",
     company: "budget",
     tankCapacity: 25,
-    mpg: 11, // estimated: Budget publishes a range of 8–14 MPG; using midpoint
+    mpg: 11, // Budget publishes 8–14 MPG range; using midpoint
     fuelType: "regular",
     loadSize: "Studio",
     sourceUrl: "https://www.budgettruck.com/moving-trucks-accessories/truckdetails-cargo-van",
-    mpgSource: "estimated",
+    mpgSource: "official-range",
   },
   {
     id: "budget-12ft",
     name: "12 ft Truck",
     company: "budget",
     tankCapacity: 35,
-    mpg: 11, // estimated: Budget publishes 8–14 MPG range; using midpoint
+    mpg: 11, // Budget publishes 8–14 MPG range; using midpoint
     fuelType: "regular",
     loadSize: "1 bedroom",
     sourceUrl: "https://www.budgettruck.com/moving-trucks-accessories/truckdetails12foot",
-    mpgSource: "estimated",
+    mpgSource: "official-range",
   },
   {
     id: "budget-16ft",
     name: "16 ft Truck",
     company: "budget",
     tankCapacity: 33,
-    mpg: 9, // estimated: Budget publishes 6–10 MPG range; customer-specified 9 MPG
+    mpg: 9, // Budget publishes 6–10 MPG range; using 9 MPG
     fuelType: "regular", // most trucks are gasoline; some diesel available by contacting local dealer
     loadSize: "2–3 bedrooms",
     sourceUrl: "https://www.budgettruck.com/moving-trucks-accessories/truckdetails16foot",
-    mpgSource: "estimated",
+    mpgSource: "official-range",
   },
   {
     id: "budget-26ft",
     name: "26 ft Truck",
     company: "budget",
     tankCapacity: 50, // verified: budgettruck.com/moving-trucks-accessories/truckdetails26foot (2026-03-17)
-    mpg: 9, // estimated: Budget publishes range for this class; using 9 MPG
+    mpg: 9, // Budget publishes range for this class; using 9 MPG
     fuelType: "diesel", // verified: budgettruck.com/moving-trucks-accessories/truckdetails26foot (2026-03-17)
     loadSize: "5+ bedrooms",
     sourceUrl: "https://www.budgettruck.com/moving-trucks-accessories/truckdetails26foot",
-    mpgSource: "estimated",
+    mpgSource: "official-range",
   },
 ];
 
