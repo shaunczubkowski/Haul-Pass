@@ -11,8 +11,8 @@ import {
 
 describe("Truck fleet data", () => {
   describe("UHAUL_TRUCKS", () => {
-    it("contains all 8 U-Haul truck sizes", () => {
-      expect(UHAUL_TRUCKS).toHaveLength(8);
+    it("contains all 7 U-Haul truck sizes", () => {
+      expect(UHAUL_TRUCKS).toHaveLength(7);
     });
 
     it("all U-Haul trucks use regular unleaded fuel", () => {
@@ -53,7 +53,6 @@ describe("Truck fleet data", () => {
         "uhaul-15ft": 40,
         "uhaul-17ft": 40,
         "uhaul-20ft": 40,
-        "uhaul-24ft": 60,
         "uhaul-26ft": 60,
       };
 

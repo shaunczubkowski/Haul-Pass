@@ -75,15 +75,6 @@ export const UHAUL_TRUCKS: TruckType[] = [
     loadSize: "3–4 bedrooms",
   },
   {
-    id: "uhaul-24ft",
-    name: "24 ft Truck",
-    company: "uhaul",
-    tankCapacity: 60,
-    mpg: 7,
-    fuelType: "regular",
-    loadSize: "4–5 bedrooms",
-  },
-  {
     id: "uhaul-26ft",
     name: "26 ft Truck",
     company: "uhaul",

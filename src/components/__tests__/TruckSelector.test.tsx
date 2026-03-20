@@ -44,7 +44,7 @@ describe("TruckSelector", () => {
       // Capacity and MPG are combined in a single element: "25 gal · 18 MPG"
       expect(screen.getByText(/25 gal/)).toBeInTheDocument(); // cargo van (unique)
       expect(screen.getAllByText(/40 gal/).length).toBeGreaterThan(0); // 15ft/17ft/20ft share 40 gal
-      expect(screen.getAllByText(/60 gal/).length).toBeGreaterThan(0); // 24ft/26ft share 60 gal
+      expect(screen.getAllByText(/60 gal/).length).toBeGreaterThan(0); // 26ft
     });
 
     it("renders MPG on each card", () => {
