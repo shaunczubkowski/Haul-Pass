@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { readFileSync } from "fs";
+import { readFileSync, existsSync } from "fs";
 import { join } from "path";
 
 describe("public/manifest.json", () => {
@@ -40,5 +40,46 @@ describe("public/manifest.json", () => {
 
   it("has correct app name", () => {
     expect(manifest.name).toBe("FillRight");
+  });
+
+  it("has a maskable icon entry for 192x192", () => {
+    const icons = manifest.icons as Array<Record<string, string>>;
+    const maskable192 = icons.find(
+      (i) => i.purpose === "maskable" && i.sizes === "192x192"
+    );
+    expect(maskable192).toBeDefined();
+  });
+});
+
+describe("PWA icon assets", () => {
+  const publicDir = join(process.cwd(), "public");
+
+  it("icon-192.png exists", () => {
+    expect(existsSync(join(publicDir, "icon-192.png"))).toBe(true);
+  });
+
+  it("icon-512.png exists", () => {
+    expect(existsSync(join(publicDir, "icon-512.png"))).toBe(true);
+  });
+
+  it("apple-touch-icon.png exists", () => {
+    expect(existsSync(join(publicDir, "apple-touch-icon.png"))).toBe(true);
+  });
+
+  it("icon.svg contains brand orange color", () => {
+    const svg = readFileSync(join(publicDir, "icon.svg"), "utf-8");
+    expect(svg).toContain("#f97316");
+  });
+
+  it("icon-192.png has correct dimensions and is not a blank placeholder", () => {
+    const buf = readFileSync(join(publicDir, "icon-192.png"));
+    // PNG IHDR: bytes 16–23 contain width/height
+    const width = buf.readUInt32BE(16);
+    const height = buf.readUInt32BE(20);
+    expect(width).toBe(192);
+    expect(height).toBe(192);
+    // A fully-blank (solid white) 192×192 PNG compresses to ~200 bytes.
+    // Our branded icon with multiple colour regions is larger.
+    expect(buf.length).toBeGreaterThan(400);
   });
 });

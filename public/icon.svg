@@ -1,4 +1,25 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
-  <circle cx="96" cy="96" r="96" fill="#f97316"/>
-  <text x="96" y="120" font-size="80" font-family="sans-serif" font-weight="bold" text-anchor="middle" fill="#ffffff">FR</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Orange background (full canvas for maskable safe-zone support) -->
+  <rect width="512" height="512" fill="#f97316"/>
+
+  <!-- Pump cabinet (body) — centered at x=256 -->
+  <rect x="156" y="75" width="200" height="260" rx="16" fill="#ffffff"/>
+
+  <!-- Display screen on cabinet face -->
+  <rect x="184" y="112" width="144" height="88" rx="10" fill="#f97316"/>
+
+  <!-- Pump base / stand -->
+  <rect x="126" y="318" width="260" height="76" rx="14" fill="#ffffff"/>
+
+  <!-- Hose arm leaving right side of cabinet -->
+  <rect x="356" y="138" width="65" height="22" rx="11" fill="#ffffff"/>
+
+  <!-- Vertical hose drop -->
+  <rect x="399" y="138" width="22" height="108" rx="11" fill="#ffffff"/>
+
+  <!-- Nozzle handle (horizontal, pointing back left) -->
+  <rect x="308" y="224" width="113" height="22" rx="11" fill="#ffffff"/>
+
+  <!-- Nozzle spout (pointing down at left end of handle) -->
+  <rect x="300" y="214" width="22" height="58" rx="11" fill="#ffffff"/>
 </svg>
