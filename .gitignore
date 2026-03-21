@@ -45,4 +45,3 @@ next-env.d.ts
 # Claude Code agent runtime artifacts (not config)
 .claude/worktrees/
 .claude/projects/
-scripts/__pycache__/
