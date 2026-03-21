@@ -303,7 +303,7 @@ describe("Truck fleet data", () => {
     });
 
     it("can look up a Penske truck by ID", () => {
-      const penskeTruck = PENSKE_TRUCKS[0]; // penske-12ft uses regular gasoline
+      const penskeTruck = PENSKE_TRUCKS[0]; // penske-cargo-van
       const found = getTruckById(penskeTruck.id);
       expect(found).toBeDefined();
       expect(found!.company).toBe("penske");
