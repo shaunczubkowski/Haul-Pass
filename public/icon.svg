@@ -1,12 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
-  <!-- Orange background (full canvas for maskable safe-zone support) -->
-  <rect width="512" height="512" fill="#f97316"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="FillRight fuel pump icon">
+  <title>FillRight</title>
+  <!-- Purple background (full canvas for maskable safe-zone support) -->
+  <rect width="512" height="512" fill="#7c3aed"/>
 
   <!-- Pump cabinet (body) — centered at x=256 -->
   <rect x="156" y="75" width="200" height="260" rx="16" fill="#ffffff"/>
 
   <!-- Display screen on cabinet face -->
-  <rect x="184" y="112" width="144" height="88" rx="10" fill="#f97316"/>
+  <rect x="184" y="112" width="144" height="88" rx="10" fill="#7c3aed"/>
 
   <!-- Pump base / stand -->
   <rect x="126" y="318" width="260" height="76" rx="14" fill="#ffffff"/>

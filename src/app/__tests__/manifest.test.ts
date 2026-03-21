@@ -42,17 +42,35 @@ describe("public/manifest.json", () => {
     expect(manifest.name).toBe("FillRight");
   });
 
-  it("has a maskable icon entry for 192x192", () => {
+  it("theme_color matches brand purple", () => {
+    expect(manifest.theme_color).toBe("#7c3aed");
+  });
+
+  it("has a maskable icon entry for 192x192 pointing to the dedicated maskable file", () => {
     const icons = manifest.icons as Array<Record<string, string>>;
     const maskable192 = icons.find(
       (i) => i.purpose === "maskable" && i.sizes === "192x192"
     );
     expect(maskable192).toBeDefined();
+    expect(maskable192?.src).toBe("/icon-192-maskable.png");
+  });
+
+  it("has a maskable icon entry for 512x512 pointing to the dedicated maskable file", () => {
+    const icons = manifest.icons as Array<Record<string, string>>;
+    const maskable512 = icons.find(
+      (i) => i.purpose === "maskable" && i.sizes === "512x512"
+    );
+    expect(maskable512).toBeDefined();
+    expect(maskable512?.src).toBe("/icon-512-maskable.png");
   });
 });
 
 describe("PWA icon assets", () => {
   const publicDir = join(process.cwd(), "public");
+
+  it("icon.svg exists", () => {
+    expect(existsSync(join(publicDir, "icon.svg"))).toBe(true);
+  });
 
   it("icon-192.png exists", () => {
     expect(existsSync(join(publicDir, "icon-192.png"))).toBe(true);
@@ -62,13 +80,27 @@ describe("PWA icon assets", () => {
     expect(existsSync(join(publicDir, "icon-512.png"))).toBe(true);
   });
 
+  it("icon-192-maskable.png exists", () => {
+    expect(existsSync(join(publicDir, "icon-192-maskable.png"))).toBe(true);
+  });
+
+  it("icon-512-maskable.png exists", () => {
+    expect(existsSync(join(publicDir, "icon-512-maskable.png"))).toBe(true);
+  });
+
   it("apple-touch-icon.png exists", () => {
     expect(existsSync(join(publicDir, "apple-touch-icon.png"))).toBe(true);
   });
 
-  it("icon.svg contains brand orange color", () => {
+  it("icon.svg contains brand purple color", () => {
     const svg = readFileSync(join(publicDir, "icon.svg"), "utf-8");
-    expect(svg).toContain("#f97316");
+    expect(svg).toContain("#7c3aed");
+  });
+
+  it("icon.svg has accessibility attributes", () => {
+    const svg = readFileSync(join(publicDir, "icon.svg"), "utf-8");
+    expect(svg).toContain('role="img"');
+    expect(svg).toContain("<title>");
   });
 
   it("icon-192.png has correct dimensions and is not a blank placeholder", () => {
@@ -81,5 +113,17 @@ describe("PWA icon assets", () => {
     // A fully-blank (solid white) 192×192 PNG compresses to ~200 bytes.
     // Our branded icon with multiple colour regions is larger.
     expect(buf.length).toBeGreaterThan(400);
+  });
+
+  it("icon-512.png has correct dimensions", () => {
+    const buf = readFileSync(join(publicDir, "icon-512.png"));
+    expect(buf.readUInt32BE(16)).toBe(512);
+    expect(buf.readUInt32BE(20)).toBe(512);
+  });
+
+  it("icon-192-maskable.png has correct dimensions", () => {
+    const buf = readFileSync(join(publicDir, "icon-192-maskable.png"));
+    expect(buf.readUInt32BE(16)).toBe(192);
+    expect(buf.readUInt32BE(20)).toBe(192);
   });
 });
