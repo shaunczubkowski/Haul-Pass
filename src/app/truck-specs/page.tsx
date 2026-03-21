@@ -50,12 +50,12 @@ const COMPANY_SECTIONS: {
   {
     label: "Budget",
     trucks: BUDGET_TRUCKS,
-    note: "10 ft and 16 ft use regular gasoline. 26 ft uses diesel.",
+    note: "Cargo van, 12 ft, and 16 ft use regular gasoline. 26 ft uses diesel.",
   },
   {
     label: "Enterprise",
     trucks: ENTERPRISE_TRUCKS,
-    note: "All Enterprise trucks use regular unleaded gasoline.",
+    note: "15 ft Parcel Van uses regular gasoline. 16 ft Cabover, 24 ft, and 26 ft use diesel.",
   },
 ];
 
