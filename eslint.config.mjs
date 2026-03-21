@@ -17,6 +17,8 @@ const eslintConfig = defineConfig([
     ".claude/projects/**",
     // Playwright e2e tests (use their own tsconfig, not Next.js rules)
     "e2e/**",
+    // Node.js utility scripts (CommonJS, not part of the Next.js app)
+    "scripts/**",
   ]),
 ]);
 
