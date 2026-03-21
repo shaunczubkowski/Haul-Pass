@@ -13,18 +13,24 @@ export function Footer() {
         <p className="text-sm text-text-secondary">
           © {copyrightRange} FillRight. All rights reserved.
         </p>
-        <nav aria-label="Legal" className="flex items-center gap-4">
+        <nav aria-label="Site links" className="flex items-center gap-4">
+          <Link
+            href="/truck-specs"
+            className="text-sm text-text-secondary hover:text-text-primary transition-colors underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
+          >
+            Truck Specs
+          </Link>
           <Link
             href="/terms"
-            className="text-sm text-text-secondary hover:text-text-primary transition-colors underline underline-offset-2"
+            className="text-sm text-text-secondary hover:text-text-primary transition-colors underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
           >
-            Terms of Service
+            Terms
           </Link>
           <Link
             href="/privacy"
-            className="text-sm text-text-secondary hover:text-text-primary transition-colors underline underline-offset-2"
+            className="text-sm text-text-secondary hover:text-text-primary transition-colors underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
           >
-            Privacy Policy
+            Privacy
           </Link>
         </nav>
         <p className="text-sm text-text-secondary">

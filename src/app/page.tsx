@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import Link from "next/link";
 import { FuelGauge } from "@/components/FuelGauge";
 import { TruckSelector } from "@/components/TruckSelector";
 import { DistanceInput } from "@/components/DistanceInput";
@@ -163,9 +164,17 @@ export default function Home() {
         <div className="flex flex-col gap-6">
           {/* Step 1: Truck */}
           <section className="rounded-xl border border-border bg-surface p-5 shadow-sm ring-1 ring-border">
-            <h2 className="mb-4 border-l-2 border-accent pl-2 text-xs font-semibold uppercase tracking-widest text-text-muted">
-              Step 1 — Your Truck
-            </h2>
+            <div className="mb-4 flex items-baseline justify-between">
+              <h2 className="border-l-2 border-accent pl-2 text-xs font-semibold uppercase tracking-widest text-text-muted">
+                Step 1 — Your Truck
+              </h2>
+              <Link
+                href="/truck-specs"
+                className="text-xs text-text-muted hover:text-text-secondary transition-colors"
+              >
+                View specs<span aria-hidden="true"> →</span>
+              </Link>
+            </div>
             <TruckSelector value={truck} onChange={setTruck} />
           </section>
 
@@ -458,7 +467,7 @@ export default function Home() {
             </div>
             <div>
               <dt className="font-semibold text-text-primary">Does U-Haul use regular gas or diesel?</dt>
-              <dd className="mt-1 text-sm text-text-secondary leading-relaxed">All U-Haul trucks use regular unleaded gasoline — never diesel. Penske 22 ft and 26 ft trucks use diesel; their smaller trucks use regular. Budget&apos;s 26 ft truck uses diesel; the 10 ft and 16 ft use regular. Enterprise trucks use regular unleaded. FillRight shows the correct fuel type for your truck.</dd>
+              <dd className="mt-1 text-sm text-text-secondary leading-relaxed">All U-Haul trucks use regular unleaded gasoline — never diesel. Penske 22 ft and 26 ft trucks use diesel; their smaller trucks use regular. Budget&apos;s 26 ft truck uses diesel; the 12 ft and 16 ft use regular. Enterprise&apos;s 16 ft Cabover, 24 ft, and 26 ft trucks use diesel; the 15 ft Parcel Van uses regular. FillRight shows the correct fuel type for your truck.</dd>
             </div>
             <div>
               <dt className="font-semibold text-text-primary">How accurate is the fuel gauge on a moving truck?</dt>

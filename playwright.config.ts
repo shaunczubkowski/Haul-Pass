@@ -1,6 +1,6 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const BASE_URL = process.env.BASE_URL ?? "https://www.getfillright.com";
+const BASE_URL = process.env.BASE_URL ?? "http://localhost:3000";
 
 export default defineConfig({
   testDir: "./e2e",
@@ -11,6 +11,12 @@ export default defineConfig({
   use: {
     baseURL: BASE_URL,
     trace: "on-first-retry",
+  },
+  webServer: {
+    command: "npx next dev --port 3000",
+    url: "http://localhost:3000",
+    reuseExistingServer: true,
+    timeout: 120_000,
   },
   projects: [
     { name: "chromium", use: { ...devices["Desktop Chrome"] } },

@@ -10,6 +10,8 @@ export interface TruckType {
   mpg: number; // estimated miles per gallon (empty truck)
   fuelType: FuelType;
   loadSize?: string; // approximate move size, e.g. "1–2 bedrooms"
+  sourceUrl?: string; // primary source for tank/MPG specs
+  mpgSource?: "official" | "official-range" | "estimated"; // official = single figure from spec page; official-range = company publishes a range, value is derived; estimated = class average
 }
 
 // Standard gauge levels (fraction of full tank: 0–1)
