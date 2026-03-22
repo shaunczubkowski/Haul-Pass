@@ -7,9 +7,9 @@ import { TruckSelector } from "@/components/TruckSelector";
 import { DistanceInput } from "@/components/DistanceInput";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { calculateFuelReturn, RISK_TOLERANCE_BUFFERS } from "@/lib/calculator";
-import { GAUGE_LEVELS, RISK_TOLERANCE_CONFIG, LOAD_LEVEL_CONFIG } from "@/types";
+import { GAUGE_LEVELS, RISK_TOLERANCE_CONFIG } from "@/types";
 import { getTruckById } from "@/data/trucks";
-import type { GaugeLevel, RiskTolerance, LoadLevel, TruckType } from "@/types";
+import type { GaugeLevel, RiskTolerance, TruckType } from "@/types";
 import { Fuel, MapPin } from "lucide-react";
 
 // All 9 eighth-step levels selectable via the UI; used for URL param validation
@@ -19,8 +19,6 @@ const MAX_DISTANCE_MILES = 10_000;
 const MAX_GAS_PRICE_USD = 50;
 // Valid risk tolerance values for URL param sanitization
 const VALID_RISK_TOLERANCE = new Set<RiskTolerance>(["conservative", "standard", "lean"]);
-// Valid load level values for URL param sanitization
-const VALID_LOAD_LEVELS = new Set<LoadLevel>(["empty", "partial", "full"]);
 
 type MapsApp = "google" | "apple";
 const MAPS_APP_KEY = "fillright:mapsApp";
@@ -50,7 +48,7 @@ function getDefaultMapsApp(): MapsApp {
 
 function readUrlParams() {
   if (typeof window === "undefined") {
-    return { truck: null, pickupLevel: GAUGE_LEVELS.FULL, currentLevel: GAUGE_LEVELS.HALF, distance: 0, gasPrice: "", gaugeVariant: "arc" as "arc" | "horizontal", riskTolerance: "standard" as RiskTolerance, loadLevel: "empty" as LoadLevel };
+    return { truck: null, pickupLevel: GAUGE_LEVELS.FULL, currentLevel: GAUGE_LEVELS.HALF, distance: 0, gasPrice: "", gaugeVariant: "arc" as "arc" | "horizontal", riskTolerance: "standard" as RiskTolerance };
   }
   const params = new URLSearchParams(window.location.search);
 
@@ -98,13 +96,7 @@ function readUrlParams() {
     riskTolerance = riskParam as RiskTolerance;
   }
 
-  let loadLevel: LoadLevel = "empty";
-  const loadParam = params.get("load");
-  if (loadParam !== null && VALID_LOAD_LEVELS.has(loadParam as LoadLevel)) {
-    loadLevel = loadParam as LoadLevel;
-  }
-
-  return { truck, pickupLevel, currentLevel, distance, gasPrice, gaugeVariant, riskTolerance, loadLevel };
+  return { truck, pickupLevel, currentLevel, distance, gasPrice, gaugeVariant, riskTolerance };
 }
 
 export default function Home() {
@@ -120,7 +112,6 @@ export default function Home() {
   const [gasPrice, setGasPrice] = useState<string>(initialParams.gasPrice);
   const [gaugeVariant, setGaugeVariant] = useState<"arc" | "horizontal">(initialParams.gaugeVariant);
   const [riskTolerance, setRiskTolerance] = useState<RiskTolerance>(initialParams.riskTolerance);
-  const [loadLevel, setLoadLevel] = useState<LoadLevel>(initialParams.loadLevel);
   const [copied, setCopied] = useState(false);
   const [copyError, setCopyError] = useState(false);
   const [fallbackUrl, setFallbackUrl] = useState<string>("");
@@ -140,12 +131,10 @@ export default function Home() {
     if (gaugeVariant === "horizontal") params.set("variant", "horizontal");
     // Omit risk param when it's the default (standard) to keep URLs clean
     if (riskTolerance !== "standard") params.set("risk", riskTolerance);
-    // Omit load param when it's the default (empty) to keep URLs clean
-    if (loadLevel !== "empty") params.set("load", loadLevel);
 
     const qs = params.toString();
     window.history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
-  }, [truck, pickupLevel, currentLevel, distance, gasPrice, gaugeVariant, riskTolerance, loadLevel]);
+  }, [truck, pickupLevel, currentLevel, distance, gasPrice, gaugeVariant, riskTolerance]);
 
   async function copyLink() {
     try {
@@ -201,7 +190,6 @@ export default function Home() {
           distanceToDropoff: distance,
           gasPricePerGallon: validGasPrice,
           safetyBuffer: RISK_TOLERANCE_BUFFERS[riskTolerance],
-          mpgMultiplier: LOAD_LEVEL_CONFIG[loadLevel].mpgMultiplier,
         })
       : null;
 
@@ -358,43 +346,6 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Load level selector */}
-            <div className="mt-6">
-              <fieldset>
-                <legend className="text-sm font-medium text-text-secondary uppercase tracking-wide mb-3">
-                  How loaded is your truck?
-                </legend>
-                <div
-                  className="flex rounded-lg border-2 border-border overflow-hidden"
-                >
-                  {(["empty", "partial", "full"] as const).map((level) => {
-                    const config = LOAD_LEVEL_CONFIG[level];
-                    const isSelected = loadLevel === level;
-                    return (
-                      <button
-                        key={level}
-                        aria-pressed={isSelected}
-                        onClick={() => setLoadLevel(level)}
-                        className={[
-                          "flex-1 px-3 py-2.5 text-sm font-semibold transition-colors text-center",
-                          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
-                          "border-r-2 border-border last:border-r-0",
-                          isSelected
-                            ? "bg-accent text-white"
-                            : "bg-surface text-text-secondary hover:bg-surface-raised hover:text-text-primary",
-                        ].join(" ")}
-                      >
-                        {config.label}
-                      </button>
-                    );
-                  })}
-                </div>
-                <p className="mt-2 text-xs text-text-muted" aria-live="polite">
-                  {LOAD_LEVEL_CONFIG[loadLevel].description}
-                </p>
-              </fieldset>
-            </div>
-
             {/* Optional gas price */}
             <div className="mt-4 flex flex-col gap-2">
               <label
@@ -516,11 +467,6 @@ export default function Home() {
                           <span>Final drive</span>
                           <span className="font-medium">−{result.breakdown.gallonsForFinalDrive} gal</span>
                         </div>
-                      )}
-                      {loadLevel !== "empty" && truck && (
-                        <p className="text-xs text-text-muted italic">
-                          Based on {Math.round(truck.mpg * LOAD_LEVEL_CONFIG[loadLevel].mpgMultiplier * 10) / 10} mpg adjusted for load
-                        </p>
                       )}
                       <div className="flex justify-between border-t border-border pt-1">
                         <span>Safety buffer</span>
