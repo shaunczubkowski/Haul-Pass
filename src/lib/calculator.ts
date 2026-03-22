@@ -50,8 +50,9 @@ export function calculateFuelReturn(input: CalculatorInput): CalculatorResult {
 
   const { tankCapacity, mpg } = truck;
 
-  // Apply load multiplier to get effective MPG (1.0 = empty truck, official MPG; <1.0 = loaded)
-  const effectiveMpg = mpg * mpgMultiplier;
+  // Apply load multiplier to get effective MPG (1.0 = empty truck, official MPG; <1.0 = loaded).
+  // Guard against zero/negative to prevent division by zero — valid multipliers are always > 0.
+  const effectiveMpg = Math.max(mpg * mpgMultiplier, 0.01);
 
   // Gallons the renter had at pickup (the target level to return to)
   const gallonsAtPickup = tankCapacity * pickupLevel;
