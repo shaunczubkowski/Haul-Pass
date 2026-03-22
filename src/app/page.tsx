@@ -265,6 +265,21 @@ export default function Home() {
                 role="radiogroup"
                 aria-labelledby="risk-tolerance-label"
                 className="flex rounded-lg border-2 border-border overflow-hidden"
+                onKeyDown={(e) => {
+                  const levels = ["conservative", "standard", "lean"] as const;
+                  const idx = levels.indexOf(riskTolerance);
+                  if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+                    e.preventDefault();
+                    const next = levels[(idx + 1) % levels.length];
+                    setRiskTolerance(next);
+                    (e.currentTarget.querySelector(`[data-level="${next}"]`) as HTMLElement | null)?.focus();
+                  } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+                    e.preventDefault();
+                    const prev = levels[(idx - 1 + levels.length) % levels.length];
+                    setRiskTolerance(prev);
+                    (e.currentTarget.querySelector(`[data-level="${prev}"]`) as HTMLElement | null)?.focus();
+                  }
+                }}
               >
                 {(["conservative", "standard", "lean"] as const).map((level) => {
                   const config = RISK_TOLERANCE_CONFIG[level];
@@ -274,7 +289,9 @@ export default function Home() {
                       key={level}
                       role="radio"
                       aria-checked={isSelected}
+                      data-level={level}
                       onClick={() => setRiskTolerance(level)}
+                      tabIndex={isSelected ? 0 : -1}
                       className={[
                         "flex-1 px-3 py-2.5 text-sm font-semibold transition-colors text-center",
                         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
