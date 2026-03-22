@@ -576,6 +576,166 @@ describe("Home page", () => {
     });
   });
 
+  describe("risk tolerance selector", () => {
+    it("renders the risk tolerance selector with all three options", async () => {
+      render(<Home />);
+      expect(screen.getByRole("radiogroup", { name: /risk tolerance/i })).toBeInTheDocument();
+      expect(screen.getByRole("radio", { name: /conservative/i })).toBeInTheDocument();
+      expect(screen.getByRole("radio", { name: /standard/i })).toBeInTheDocument();
+      expect(screen.getByRole("radio", { name: /lean/i })).toBeInTheDocument();
+    });
+
+    it("defaults to Standard risk tolerance", () => {
+      render(<Home />);
+      expect(screen.getByRole("radio", { name: /standard/i })).toHaveAttribute("aria-checked", "true");
+    });
+
+    it("selecting Conservative increases gallons needed vs Standard", async () => {
+      const user = userEvent.setup();
+      render(<Home />);
+      await selectTruck(user, "8 ft Pickup");
+
+      // Read standard gallons
+      const standardText = screen.getByText("gal");
+      const standardGallons = parseFloat(standardText.previousSibling?.textContent ?? "0");
+
+      // Switch to Conservative
+      await user.click(screen.getByRole("radio", { name: /conservative/i }));
+
+      const conservativeText = screen.getByText("gal");
+      const conservativeGallons = parseFloat(conservativeText.previousSibling?.textContent ?? "0");
+
+      expect(conservativeGallons).toBeGreaterThan(standardGallons);
+    });
+
+    it("selecting Lean decreases gallons needed vs Standard", async () => {
+      const user = userEvent.setup();
+      render(<Home />);
+      await selectTruck(user, "8 ft Pickup");
+
+      // Read standard gallons
+      const standardText = screen.getByText("gal");
+      const standardGallons = parseFloat(standardText.previousSibling?.textContent ?? "0");
+
+      // Switch to Lean
+      await user.click(screen.getByRole("radio", { name: /lean/i }));
+
+      const leanText = screen.getByText("gal");
+      const leanGallons = parseFloat(leanText.previousSibling?.textContent ?? "0");
+
+      expect(leanGallons).toBeLessThan(standardGallons);
+    });
+
+    it("shows description text for the selected risk tolerance", async () => {
+      render(<Home />);
+      // Standard description should be visible by default
+      expect(screen.getByText(/comfortable buffer above fee threshold/i)).toBeInTheDocument();
+    });
+
+    it("updates description when switching to Conservative", async () => {
+      const user = userEvent.setup();
+      render(<Home />);
+      await user.click(screen.getByRole("radio", { name: /conservative/i }));
+      expect(screen.getByText(/recommended for mountain routes/i)).toBeInTheDocument();
+    });
+
+    it("reads risk param from URL on mount", async () => {
+      window.history.replaceState(null, "", "?risk=conservative");
+      render(<Home />);
+      expect(screen.getByRole("radio", { name: /conservative/i })).toHaveAttribute("aria-checked", "true");
+    });
+
+    it("ignores unknown risk param values and defaults to standard", async () => {
+      window.history.replaceState(null, "", "?risk=bogus");
+      render(<Home />);
+      expect(screen.getByRole("radio", { name: /standard/i })).toHaveAttribute("aria-checked", "true");
+    });
+
+    it("syncs risk tolerance to URL when changed", async () => {
+      const user = userEvent.setup();
+      render(<Home />);
+      await user.click(screen.getByRole("radio", { name: /conservative/i }));
+      await waitFor(() => expect(window.location.search).toContain("risk=conservative"));
+    });
+
+    it("omits risk param from URL when standard (default) is selected", async () => {
+      const user = userEvent.setup();
+      render(<Home />);
+      // Switch away then back to standard
+      await user.click(screen.getByRole("radio", { name: /lean/i }));
+      await user.click(screen.getByRole("radio", { name: /standard/i }));
+      await waitFor(() => expect(window.location.search).not.toContain("risk="));
+    });
+  });
+
+  describe("gas station finder link", () => {
+    it("does not show the gas station link when no truck is selected", () => {
+      render(<Home />);
+      expect(screen.queryByRole("link", { name: /find a nearby gas station/i })).not.toBeInTheDocument();
+    });
+
+    it("shows the gas station link after a truck is selected and result is showing", async () => {
+      const user = userEvent.setup();
+      render(<Home />);
+      await selectTruck(user, "8 ft Pickup");
+      expect(screen.getByRole("link", { name: /find a nearby gas station/i })).toBeInTheDocument();
+    });
+
+    it("shows the gas station link in the alreadySufficient state", async () => {
+      const user = userEvent.setup();
+      render(<Home />);
+      await selectTruck(user, "8 ft Pickup");
+      // Set pickup to 1/4 — current defaults to 1/2, so already sufficient
+      const pickupGauge = screen.getAllByRole("button", { name: /At Pickup 1\/4/ })[0];
+      await user.click(pickupGauge);
+      expect(screen.getByText(/you're good to go/i)).toBeInTheDocument();
+      expect(screen.getByRole("link", { name: /find a nearby gas station/i })).toBeInTheDocument();
+    });
+
+    it("generates a Google Maps gas station URL for a regular-fuel truck", async () => {
+      const user = userEvent.setup();
+      render(<Home />);
+      // 8ft Pickup uses regular fuel
+      await selectTruck(user, "8 ft Pickup");
+      const link = screen.getByRole("link", { name: /find a nearby gas station/i });
+      expect(link).toHaveAttribute("href", "https://www.google.com/maps/search/gas+stations+near+me");
+    });
+
+    it("generates a Google Maps diesel URL for a diesel-fuel truck", async () => {
+      const user = userEvent.setup();
+      render(<Home />);
+      // Switch to Penske to get a diesel truck
+      await user.click(screen.getByRole("radio", { name: "Penske" }));
+      await user.click(screen.getByRole("radio", { name: "22 ft Truck" }));
+      const link = screen.getByRole("link", { name: /find a nearby gas station/i });
+      expect(link).toHaveAttribute("href", "https://www.google.com/maps/search/diesel+gas+stations+near+me");
+    });
+
+    it("has target=_blank to open in a new tab", async () => {
+      const user = userEvent.setup();
+      render(<Home />);
+      await selectTruck(user, "8 ft Pickup");
+      const link = screen.getByRole("link", { name: /find a nearby gas station/i });
+      expect(link).toHaveAttribute("target", "_blank");
+    });
+
+    it("has rel=noopener noreferrer for security", async () => {
+      const user = userEvent.setup();
+      render(<Home />);
+      await selectTruck(user, "8 ft Pickup");
+      const link = screen.getByRole("link", { name: /find a nearby gas station/i });
+      expect(link).toHaveAttribute("rel", "noopener noreferrer");
+    });
+
+    it("has an accessible aria-label", async () => {
+      const user = userEvent.setup();
+      render(<Home />);
+      await selectTruck(user, "8 ft Pickup");
+      const link = screen.getByRole("link", { name: /find a nearby gas station/i });
+      expect(link).toHaveAccessibleName(/find a nearby gas station/i);
+    });
+  });
+
   describe("gas price input accessibility", () => {
     it("gas price input has min attribute of 0.01", () => {
       render(<Home />);
