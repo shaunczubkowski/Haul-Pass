@@ -752,6 +752,75 @@ describe("Home page", () => {
     });
   });
 
+  describe("gas station finder link", () => {
+    it("does not show the gas station link when no truck is selected", () => {
+      render(<Home />);
+      expect(screen.queryByRole("link", { name: /find a nearby gas station/i })).not.toBeInTheDocument();
+    });
+
+    it("shows the gas station link after a truck is selected and result is showing", async () => {
+      const user = userEvent.setup();
+      render(<Home />);
+      await selectTruck(user, "8 ft Pickup");
+      expect(screen.getByRole("link", { name: /find a nearby gas station/i })).toBeInTheDocument();
+    });
+
+    it("shows the gas station link in the alreadySufficient state", async () => {
+      const user = userEvent.setup();
+      render(<Home />);
+      await selectTruck(user, "8 ft Pickup");
+      // Set pickup to 1/4 — current defaults to 1/2, so already sufficient
+      const pickupGauge = screen.getAllByRole("button", { name: /At Pickup 1\/4/ })[0];
+      await user.click(pickupGauge);
+      expect(screen.getByText(/you're good to go/i)).toBeInTheDocument();
+      expect(screen.getByRole("link", { name: /find a nearby gas station/i })).toBeInTheDocument();
+    });
+
+    it("generates a Google Maps gas station URL for a regular-fuel truck", async () => {
+      const user = userEvent.setup();
+      render(<Home />);
+      // 8ft Pickup uses regular fuel
+      await selectTruck(user, "8 ft Pickup");
+      const link = screen.getByRole("link", { name: /find a nearby gas station/i });
+      expect(link).toHaveAttribute("href", "https://www.google.com/maps/search/gas+stations+near+me");
+    });
+
+    it("generates a Google Maps diesel URL for a diesel-fuel truck", async () => {
+      const user = userEvent.setup();
+      render(<Home />);
+      // Switch to Penske, then select the 22 ft diesel truck
+      await user.click(screen.getByRole("radio", { name: "Penske" }));
+      await selectTruck(user, "22 ft Truck");
+      // For diesel, the aria-label is "Find a nearby diesel gas station"
+      const link = screen.getByRole("link", { name: /find a nearby.*gas station/i });
+      expect(link).toHaveAttribute("href", "https://www.google.com/maps/search/diesel+gas+stations+near+me");
+    });
+
+    it("has target=_blank to open in a new tab", async () => {
+      const user = userEvent.setup();
+      render(<Home />);
+      await selectTruck(user, "8 ft Pickup");
+      const link = screen.getByRole("link", { name: /find a nearby gas station/i });
+      expect(link).toHaveAttribute("target", "_blank");
+    });
+
+    it("has rel=noopener noreferrer for security", async () => {
+      const user = userEvent.setup();
+      render(<Home />);
+      await selectTruck(user, "8 ft Pickup");
+      const link = screen.getByRole("link", { name: /find a nearby gas station/i });
+      expect(link).toHaveAttribute("rel", "noopener noreferrer");
+    });
+
+    it("has an accessible aria-label that discloses new tab opening", async () => {
+      const user = userEvent.setup();
+      render(<Home />);
+      await selectTruck(user, "8 ft Pickup");
+      const link = screen.getByRole("link", { name: /find a nearby gas station/i });
+      expect(link).toHaveAccessibleName(/opens in new tab/i);
+    });
+  });
+
   describe("gas price input accessibility", () => {
     it("gas price input has min attribute of 0.01", () => {
       render(<Home />);
