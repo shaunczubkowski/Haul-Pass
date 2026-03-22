@@ -636,12 +636,12 @@ describe("Home page", () => {
       expect(link).toHaveAttribute("rel", "noopener noreferrer");
     });
 
-    it("has an accessible aria-label", async () => {
+    it("has an accessible aria-label that discloses new tab opening", async () => {
       const user = userEvent.setup();
       render(<Home />);
       await selectTruck(user, "8 ft Pickup");
       const link = screen.getByRole("link", { name: /find a nearby gas station/i });
-      expect(link).toHaveAccessibleName(/find a nearby gas station/i);
+      expect(link).toHaveAccessibleName(/opens in new tab/i);
     });
   });
 

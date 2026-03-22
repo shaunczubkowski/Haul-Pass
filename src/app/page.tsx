@@ -422,10 +422,10 @@ export default function Home() {
                 {/* Gas station finder link */}
                 <div className="mt-3 flex justify-center">
                   <a
-                    href={getGasStationUrl(truck!.fuelType, isApplePlatform)}
+                    href={getGasStationUrl(truck?.fuelType ?? "regular", isApplePlatform)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    aria-label={`Find a nearby ${truck!.fuelType === "diesel" ? "diesel " : ""}gas station`}
+                    aria-label={`Find a nearby ${truck?.fuelType === "diesel" ? "diesel " : ""}gas station (opens in new tab)`}
                     className="flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring bg-surface/70 text-text-secondary hover:bg-surface hover:text-text-primary"
                   >
                     <MapPin size={16} aria-hidden="true" />
