@@ -668,71 +668,87 @@ describe("Home page", () => {
     });
   });
 
-  describe("gas station finder link", () => {
-    it("does not show the gas station link when no truck is selected", () => {
+  describe("load level selector", () => {
+    it("renders the load level selector with three options", async () => {
       render(<Home />);
-      expect(screen.queryByRole("link", { name: /find a nearby gas station/i })).not.toBeInTheDocument();
+      expect(screen.getByRole("group", { name: /how loaded is your truck/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /empty \/ light/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /partially loaded/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /fully loaded/i })).toBeInTheDocument();
     });
 
-    it("shows the gas station link after a truck is selected and result is showing", async () => {
+    it("defaults to Empty / Light selected", () => {
+      render(<Home />);
+      const emptyBtn = screen.getByRole("button", { name: /empty \/ light/i });
+      expect(emptyBtn).toHaveAttribute("aria-pressed", "true");
+      expect(screen.getByRole("button", { name: /partially loaded/i })).toHaveAttribute("aria-pressed", "false");
+      expect(screen.getByRole("button", { name: /fully loaded/i })).toHaveAttribute("aria-pressed", "false");
+    });
+
+    it("selecting Fully Loaded increases gallons to add vs Empty when a drive distance is set", async () => {
       const user = userEvent.setup();
       render(<Home />);
       await selectTruck(user, "8 ft Pickup");
-      expect(screen.getByRole("link", { name: /find a nearby gas station/i })).toBeInTheDocument();
+
+      // Set a drive distance so the MPG multiplier has an effect on gallons
+      const distanceInput = screen.getByLabelText(/miles to drop-off in miles/i);
+      fireEvent.change(distanceInput, { target: { value: "50" } });
+
+      // Read gallons with Empty (default)
+      const galText = screen.getByText("gal");
+      const emptyGallons = parseFloat(galText.previousSibling?.textContent ?? "0");
+
+      // Switch to Fully Loaded
+      await user.click(screen.getByRole("button", { name: /fully loaded/i }));
+
+      const galTextAfter = screen.getByText("gal");
+      const fullGallons = parseFloat(galTextAfter.previousSibling?.textContent ?? "0");
+
+      expect(fullGallons).toBeGreaterThan(emptyGallons);
     });
 
-    it("shows the gas station link in the alreadySufficient state", async () => {
+    it("shows adjusted MPG note when not on Empty", async () => {
       const user = userEvent.setup();
       render(<Home />);
       await selectTruck(user, "8 ft Pickup");
-      // Set pickup to 1/4 — current defaults to 1/2, so already sufficient
-      const pickupGauge = screen.getAllByRole("button", { name: /At Pickup 1\/4/ })[0];
-      await user.click(pickupGauge);
-      expect(screen.getByText(/you're good to go/i)).toBeInTheDocument();
-      expect(screen.getByRole("link", { name: /find a nearby gas station/i })).toBeInTheDocument();
+      await user.click(screen.getByRole("button", { name: /partially loaded/i }));
+      expect(screen.getByText(/adjusted for load/i)).toBeInTheDocument();
     });
 
-    it("generates a Google Maps gas station URL for a regular-fuel truck", async () => {
-      const user = userEvent.setup();
-      render(<Home />);
-      // 8ft Pickup uses regular fuel
-      await selectTruck(user, "8 ft Pickup");
-      const link = screen.getByRole("link", { name: /find a nearby gas station/i });
-      expect(link).toHaveAttribute("href", "https://www.google.com/maps/search/gas+stations+near+me");
-    });
-
-    it("generates a Google Maps diesel URL for a diesel-fuel truck", async () => {
-      const user = userEvent.setup();
-      render(<Home />);
-      // Switch to Penske to get a diesel truck
-      await user.click(screen.getByRole("radio", { name: "Penske" }));
-      await user.click(screen.getByRole("radio", { name: "22 ft Truck" }));
-      const link = screen.getByRole("link", { name: /find a nearby gas station/i });
-      expect(link).toHaveAttribute("href", "https://www.google.com/maps/search/diesel+gas+stations+near+me");
-    });
-
-    it("has target=_blank to open in a new tab", async () => {
+    it("does not show adjusted MPG note when on Empty", async () => {
       const user = userEvent.setup();
       render(<Home />);
       await selectTruck(user, "8 ft Pickup");
-      const link = screen.getByRole("link", { name: /find a nearby gas station/i });
-      expect(link).toHaveAttribute("target", "_blank");
+      // Default is Empty — no note
+      expect(screen.queryByText(/adjusted for load/i)).not.toBeInTheDocument();
     });
 
-    it("has rel=noopener noreferrer for security", async () => {
-      const user = userEvent.setup();
+    it("reads load param from URL on mount", async () => {
+      window.history.replaceState(null, "", "?load=full");
       render(<Home />);
-      await selectTruck(user, "8 ft Pickup");
-      const link = screen.getByRole("link", { name: /find a nearby gas station/i });
-      expect(link).toHaveAttribute("rel", "noopener noreferrer");
+      expect(screen.getByRole("button", { name: /fully loaded/i })).toHaveAttribute("aria-pressed", "true");
     });
 
-    it("has an accessible aria-label", async () => {
+    it("ignores unknown load param values and defaults to empty", async () => {
+      window.history.replaceState(null, "", "?load=bogus");
+      render(<Home />);
+      expect(screen.getByRole("button", { name: /empty \/ light/i })).toHaveAttribute("aria-pressed", "true");
+    });
+
+    it("syncs load level to URL when changed", async () => {
       const user = userEvent.setup();
       render(<Home />);
-      await selectTruck(user, "8 ft Pickup");
-      const link = screen.getByRole("link", { name: /find a nearby gas station/i });
-      expect(link).toHaveAccessibleName(/find a nearby gas station/i);
+      await user.click(screen.getByRole("button", { name: /fully loaded/i }));
+      await waitFor(() => expect(window.location.search).toContain("load=full"));
+    });
+
+    it("omits load param from URL when empty (default) is selected", async () => {
+      const user = userEvent.setup();
+      render(<Home />);
+      // Switch away from default then back
+      await user.click(screen.getByRole("button", { name: /partially loaded/i }));
+      await user.click(screen.getByRole("button", { name: /empty \/ light/i }));
+      await waitFor(() => expect(window.location.search).not.toContain("load="));
     });
   });
 

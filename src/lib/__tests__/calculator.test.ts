@@ -251,7 +251,7 @@ describe("calculateFuelReturn", () => {
       expect(result.breakdown.gallonsForFinalDrive).toBe(10);
     });
 
-    it("partial load (mpgMultiplier=0.75) uses 75% MPG — 100 miles / (10 * 0.75) = ~13.3 gallons for drive", () => {
+    it("partial load (mpgMultiplier=0.75) uses 75% MPG — 100 miles / (10 * 0.75) ≈ 13.3 gallons for drive", () => {
       const result = calculateFuelReturn({
         truck: TRUCK_26FT_LOAD,
         pickupLevel: GAUGE_LEVELS.FULL,
@@ -310,7 +310,7 @@ describe("calculateFuelReturn", () => {
       expect(fullResult.gallonsToAdd).toBeGreaterThan(emptyResult.gallonsToAdd);
     });
 
-    it("real-world: 26ft truck, 10 MPG official, full load, 100 miles — drive needs ~16.7 gallons", () => {
+    it("real-world: 26ft truck, 10 MPG official, full load, 100 miles — drive needs 16.7 gallons", () => {
       // A 26ft truck at full load (0.60 multiplier): effectiveMpg = 10 * 0.60 = 6
       // gallonsForFinalDrive = 100 / 6 = 16.666... rounded to 1dp = 16.7
       const result = calculateFuelReturn({
