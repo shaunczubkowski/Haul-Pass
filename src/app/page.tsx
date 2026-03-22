@@ -384,7 +384,7 @@ export default function Home() {
               <p
                 id="gas-price-hint"
                 aria-live="polite"
-                className={`text-xs ${gasPriceTooLow ? "text-red-600" : "text-text-muted"}`}
+                className={`text-xs ${gasPriceTooLow ? "text-red-600 dark:text-red-400" : "text-text-muted"}`}
               >
                 {gasPriceTooLow
                   ? "Enter at least $0.01 to see a cost estimate"
@@ -402,9 +402,9 @@ export default function Home() {
             className={result ? [
               "rounded-xl border-2 p-5 shadow-sm transition-colors",
               result.alreadySufficient
-                ? "border-green-400 bg-green-50"
+                ? "border-green-500 bg-green-50 dark:border-green-700 dark:bg-green-950/40"
                 : result.isAtRisk
-                ? "border-red-400 bg-red-50"
+                ? "border-red-500 bg-red-50 dark:border-red-700 dark:bg-red-950/40"
                 : "border-accent bg-accent-subtle",
             ].join(" ") : ""}
           >
@@ -416,8 +416,8 @@ export default function Home() {
                 {result.alreadySufficient ? (
                   <div className="text-center">
                     <div className="text-3xl mb-1">✅</div>
-                    <p className="text-lg font-bold text-green-800">You&apos;re good to go!</p>
-                    <p className="mt-1 text-sm text-green-700">
+                    <p className="text-lg font-bold text-green-800 dark:text-green-300">You&apos;re good to go!</p>
+                    <p className="mt-1 text-sm text-green-700 dark:text-green-400">
                       Your current fuel level is sufficient for return.
                     </p>
                   </div>
@@ -426,7 +426,7 @@ export default function Home() {
                     {result.isAtRisk && (
                       <div
                         role="alert"
-                        className="mb-4 flex items-start gap-3 rounded-lg border-2 border-red-500 bg-red-100 px-4 py-3 text-red-800"
+                        className="mb-4 flex items-start gap-3 rounded-lg border-2 border-red-500 bg-red-100 px-4 py-3 text-red-800 dark:border-red-700 dark:bg-red-950/60 dark:text-red-300"
                       >
                         <span aria-hidden="true" className="text-2xl leading-none">⚠️</span>
                         <div>
@@ -483,7 +483,7 @@ export default function Home() {
                     className={[
                       "flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                       copied
-                        ? "bg-green-100 text-green-700"
+                        ? "bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300"
                         : "bg-surface/70 text-text-secondary hover:bg-surface hover:text-text-primary",
                     ].join(" ")}
                     aria-label="Copy shareable link to clipboard"
@@ -491,7 +491,7 @@ export default function Home() {
                     {copied ? <><span aria-hidden="true">✓ </span>Link copied!</> : "Share this calculation"}
                   </button>
                   {copyError && (
-                    <p className="text-sm text-red-600 text-center">
+                    <p className="text-sm text-red-600 dark:text-red-400 text-center">
                       Could not copy — use the link below:
                     </p>
                   )}
