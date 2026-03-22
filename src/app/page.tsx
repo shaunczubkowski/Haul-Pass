@@ -18,16 +18,30 @@ const VALID_LEVELS = new Set([0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.
 const MAX_DISTANCE_MILES = 10_000;
 const MAX_GAS_PRICE_USD = 50;
 
+type MapsApp = "google" | "apple";
+const MAPS_APP_KEY = "fillright:mapsApp";
+
 /**
  * Returns the appropriate map search URL for a gas/diesel station finder.
- * Apple Maps is used on iOS/macOS; Google Maps is used everywhere else.
  */
-function getGasStationUrl(fuelType: "regular" | "diesel", isApplePlatform: boolean): string {
+function getGasStationUrl(fuelType: "regular" | "diesel", mapsApp: MapsApp): string {
   const query = fuelType === "diesel" ? "diesel+gas+stations+near+me" : "gas+stations+near+me";
-  if (isApplePlatform) {
+  if (mapsApp === "apple") {
     return `https://maps.apple.com/?q=${query}`;
   }
   return `https://www.google.com/maps/search/${query}`;
+}
+
+/** Reads stored maps preference; falls back to platform detection on first visit. */
+function getDefaultMapsApp(): MapsApp {
+  try {
+    const stored = localStorage.getItem(MAPS_APP_KEY);
+    if (stored === "google" || stored === "apple") return stored;
+  } catch {
+    // localStorage unavailable (private browsing, etc.)
+  }
+  // First visit: default to Apple Maps on Apple platforms, Google Maps elsewhere.
+  return /iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent) ? "apple" : "google";
 }
 
 function readUrlParams() {
@@ -92,9 +106,8 @@ export default function Home() {
   const [copied, setCopied] = useState(false);
   const [copyError, setCopyError] = useState(false);
   const [fallbackUrl, setFallbackUrl] = useState<string>("");
-  // Detect Apple platform client-side only to avoid SSR/hydration mismatch.
-  // iOS/macOS users get Apple Maps; all others get Google Maps.
-  const [isApplePlatform, setIsApplePlatform] = useState(false);
+  // Maps app preference — initialised after mount to avoid SSR/hydration mismatch.
+  const [mapsApp, setMapsApp] = useState<MapsApp>("google");
   const resultRef = useRef<HTMLElement | null>(null);
   const fallbackInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -138,11 +151,20 @@ export default function Home() {
     }
   }, [fallbackUrl]);
 
-  // Detect Apple platform after mount to avoid SSR/hydration mismatch.
-  // navigator.userAgent is only available in the browser.
+  // Initialise maps preference after mount (navigator + localStorage are browser-only).
   useEffect(() => {
-    setIsApplePlatform(/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent));
+    setMapsApp(getDefaultMapsApp());
   }, []);
+
+  function handleMapsAppToggle() {
+    const next: MapsApp = mapsApp === "google" ? "apple" : "google";
+    setMapsApp(next);
+    try {
+      localStorage.setItem(MAPS_APP_KEY, next);
+    } catch {
+      // localStorage unavailable — preference won't persist, but the link still works.
+    }
+  }
 
   const parsedGasPrice = gasPrice !== "" ? parseFloat(gasPrice) : NaN;
   const validGasPrice = !isNaN(parsedGasPrice) && parsedGasPrice >= 0.01 ? parsedGasPrice : undefined;
@@ -420,17 +442,24 @@ export default function Home() {
                 </div>
 
                 {/* Gas station finder link */}
-                <div className="mt-3 flex justify-center">
+                <div className="mt-3 flex flex-col items-center gap-1">
                   <a
-                    href={getGasStationUrl(truck?.fuelType ?? "regular", isApplePlatform)}
+                    href={getGasStationUrl(truck?.fuelType ?? "regular", mapsApp)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    aria-label={`Find a nearby ${truck?.fuelType === "diesel" ? "diesel " : ""}gas station (opens in new tab)`}
+                    aria-label={`Find a nearby ${truck?.fuelType === "diesel" ? "diesel " : ""}gas station in ${mapsApp === "apple" ? "Apple Maps" : "Google Maps"} (opens in new tab)`}
                     className="flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring bg-surface/70 text-text-secondary hover:bg-surface hover:text-text-primary"
                   >
                     <MapPin size={16} aria-hidden="true" />
                     Find a nearby gas station
                   </a>
+                  <button
+                    onClick={handleMapsAppToggle}
+                    className="text-xs text-text-muted hover:text-text-secondary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
+                    aria-label={`Switch to ${mapsApp === "google" ? "Apple Maps" : "Google Maps"}`}
+                  >
+                    {mapsApp === "google" ? "Google Maps" : "Apple Maps"} · switch
+                  </button>
                 </div>
               </>
             )}
