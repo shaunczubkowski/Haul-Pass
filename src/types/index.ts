@@ -48,6 +48,7 @@ export interface CalculatorInput {
   distanceToDropoff: number; // miles
   safetyBuffer?: number; // extra gallons to add for gauge imprecision (default: 0.5)
   gasPricePerGallon?: number; // optional, for cost estimate; must be >= 0.01 if provided — sub-cent values are treated as unset
+  mpgMultiplier?: number; // load adjustment multiplier applied to truck.mpg (default: 1.0 = no adjustment)
 }
 
 export interface CalculatorResult {
@@ -63,6 +64,17 @@ export interface CalculatorResult {
     deficit: number;
   };
 }
+
+export type LoadLevel = "empty" | "partial" | "full";
+
+export const LOAD_LEVEL_CONFIG: Record<
+  LoadLevel,
+  { label: string; description: string; mpgMultiplier: number }
+> = {
+  empty: { label: "Empty / Light", description: "No cargo — using official MPG", mpgMultiplier: 1.0 },
+  partial: { label: "Partially Loaded", description: "Some boxes or furniture", mpgMultiplier: 0.75 },
+  full: { label: "Fully Loaded", description: "Packed to capacity", mpgMultiplier: 0.60 },
+};
 
 export type RiskTolerance = "conservative" | "standard" | "lean";
 

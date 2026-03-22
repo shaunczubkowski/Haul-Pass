@@ -576,6 +576,98 @@ describe("Home page", () => {
     });
   });
 
+  describe("risk tolerance selector", () => {
+    it("renders the risk tolerance selector with all three options", async () => {
+      render(<Home />);
+      expect(screen.getByRole("radiogroup", { name: /risk tolerance/i })).toBeInTheDocument();
+      expect(screen.getByRole("radio", { name: /conservative/i })).toBeInTheDocument();
+      expect(screen.getByRole("radio", { name: /standard/i })).toBeInTheDocument();
+      expect(screen.getByRole("radio", { name: /lean/i })).toBeInTheDocument();
+    });
+
+    it("defaults to Standard risk tolerance", () => {
+      render(<Home />);
+      expect(screen.getByRole("radio", { name: /standard/i })).toHaveAttribute("aria-checked", "true");
+    });
+
+    it("selecting Conservative increases gallons needed vs Standard", async () => {
+      const user = userEvent.setup();
+      render(<Home />);
+      await selectTruck(user, "8 ft Pickup");
+
+      // Read standard gallons
+      const standardText = screen.getByText("gal");
+      const standardGallons = parseFloat(standardText.previousSibling?.textContent ?? "0");
+
+      // Switch to Conservative
+      await user.click(screen.getByRole("radio", { name: /conservative/i }));
+
+      const conservativeText = screen.getByText("gal");
+      const conservativeGallons = parseFloat(conservativeText.previousSibling?.textContent ?? "0");
+
+      expect(conservativeGallons).toBeGreaterThan(standardGallons);
+    });
+
+    it("selecting Lean decreases gallons needed vs Standard", async () => {
+      const user = userEvent.setup();
+      render(<Home />);
+      await selectTruck(user, "8 ft Pickup");
+
+      // Read standard gallons
+      const standardText = screen.getByText("gal");
+      const standardGallons = parseFloat(standardText.previousSibling?.textContent ?? "0");
+
+      // Switch to Lean
+      await user.click(screen.getByRole("radio", { name: /lean/i }));
+
+      const leanText = screen.getByText("gal");
+      const leanGallons = parseFloat(leanText.previousSibling?.textContent ?? "0");
+
+      expect(leanGallons).toBeLessThan(standardGallons);
+    });
+
+    it("shows description text for the selected risk tolerance", async () => {
+      render(<Home />);
+      // Standard description should be visible by default
+      expect(screen.getByText(/comfortable buffer above fee threshold/i)).toBeInTheDocument();
+    });
+
+    it("updates description when switching to Conservative", async () => {
+      const user = userEvent.setup();
+      render(<Home />);
+      await user.click(screen.getByRole("radio", { name: /conservative/i }));
+      expect(screen.getByText(/recommended for mountain routes/i)).toBeInTheDocument();
+    });
+
+    it("reads risk param from URL on mount", async () => {
+      window.history.replaceState(null, "", "?risk=conservative");
+      render(<Home />);
+      expect(screen.getByRole("radio", { name: /conservative/i })).toHaveAttribute("aria-checked", "true");
+    });
+
+    it("ignores unknown risk param values and defaults to standard", async () => {
+      window.history.replaceState(null, "", "?risk=bogus");
+      render(<Home />);
+      expect(screen.getByRole("radio", { name: /standard/i })).toHaveAttribute("aria-checked", "true");
+    });
+
+    it("syncs risk tolerance to URL when changed", async () => {
+      const user = userEvent.setup();
+      render(<Home />);
+      await user.click(screen.getByRole("radio", { name: /conservative/i }));
+      await waitFor(() => expect(window.location.search).toContain("risk=conservative"));
+    });
+
+    it("omits risk param from URL when standard (default) is selected", async () => {
+      const user = userEvent.setup();
+      render(<Home />);
+      // Switch away then back to standard
+      await user.click(screen.getByRole("radio", { name: /lean/i }));
+      await user.click(screen.getByRole("radio", { name: /standard/i }));
+      await waitFor(() => expect(window.location.search).not.toContain("risk="));
+    });
+  });
+
   describe("gas station finder link", () => {
     it("does not show the gas station link when no truck is selected", () => {
       render(<Home />);

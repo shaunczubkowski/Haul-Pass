@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { calculateFuelReturn } from "@/lib/calculator";
 import type { CalculatorInput, TruckType } from "@/types";
-import { GAUGE_LEVELS } from "@/types";
+import { GAUGE_LEVELS, LOAD_LEVEL_CONFIG } from "@/types";
 
 // Canonical test truck: 15ft U-Haul (most common)
 const TRUCK_15FT: TruckType = {
@@ -178,6 +178,150 @@ describe("calculateFuelReturn", () => {
       expect(result.breakdown.gallonsNow).toBe(10); // 40 × 0.25
       expect(result.breakdown.gallonsForFinalDrive).toBe(2); // 20 / 10
       expect(result.breakdown.deficit).toBe(12); // 20 - 10 + 2
+    });
+  });
+
+  describe("risk tolerance safety buffers", () => {
+    it("conservative buffer (2.0) produces more gallons than standard (0.5)", () => {
+      const conservative = calculateFuelReturn(baseInput({ safetyBuffer: 2.0 }));
+      const standard = calculateFuelReturn(baseInput({ safetyBuffer: 0.5 }));
+      expect(conservative.gallonsToAdd).toBeGreaterThan(standard.gallonsToAdd);
+    });
+
+    it("lean buffer (0.0) produces fewer gallons than standard (0.5)", () => {
+      const lean = calculateFuelReturn(baseInput({ safetyBuffer: 0.0 }));
+      const standard = calculateFuelReturn(baseInput({ safetyBuffer: 0.5 }));
+      expect(lean.gallonsToAdd).toBeLessThan(standard.gallonsToAdd);
+    });
+
+    it("conservative buffer adds exactly 1.5 more gallons than standard", () => {
+      const conservative = calculateFuelReturn(baseInput({ safetyBuffer: 2.0 }));
+      const standard = calculateFuelReturn(baseInput({ safetyBuffer: 0.5 }));
+      expect(conservative.gallonsToAdd - standard.gallonsToAdd).toBeCloseTo(1.5, 1);
+    });
+
+    it("lean buffer (0.0) still requires fuel when deficit is positive", () => {
+      // 1/2 pickup (20 gal) - 1/4 current (10 gal) = 10 gal deficit, no buffer
+      const result = calculateFuelReturn(baseInput({ safetyBuffer: 0.0 }));
+      expect(result.gallonsToAdd).toBe(10);
+      expect(result.alreadySufficient).toBe(false);
+      expect(result.bufferApplied).toBe(0);
+    });
+
+    it("lean buffer (0.0) with already sufficient scenario returns alreadySufficient=true", () => {
+      // currentLevel > pickupLevel → already sufficient even with lean buffer
+      const result = calculateFuelReturn(
+        baseInput({
+          pickupLevel: GAUGE_LEVELS.QUARTER,
+          currentLevel: GAUGE_LEVELS.HALF,
+          safetyBuffer: 0.0,
+        })
+      );
+      expect(result.gallonsToAdd).toBe(0);
+      expect(result.alreadySufficient).toBe(true);
+    });
+
+    it("conservative buffer applied correctly in bufferApplied field", () => {
+      const result = calculateFuelReturn(baseInput({ safetyBuffer: 2.0 }));
+      expect(result.bufferApplied).toBe(2.0);
+    });
+  });
+
+  describe("load level MPG adjustment", () => {
+    // Canonical 26ft truck for load tests: 60 gal tank, 10 MPG (official)
+    const TRUCK_26FT_LOAD: TruckType = {
+      id: "uhaul-26ft-load-test",
+      name: "26 ft Truck (load test)",
+      company: "uhaul",
+      tankCapacity: 60,
+      mpg: 10,
+      fuelType: "regular",
+    };
+
+    it("empty truck (mpgMultiplier=1.0) uses full official MPG — 100 miles = 10 gallons for drive", () => {
+      const result = calculateFuelReturn({
+        truck: TRUCK_26FT_LOAD,
+        pickupLevel: GAUGE_LEVELS.FULL,
+        currentLevel: GAUGE_LEVELS.FULL,
+        distanceToDropoff: 100,
+        safetyBuffer: 0,
+        mpgMultiplier: LOAD_LEVEL_CONFIG.empty.mpgMultiplier, // 1.0
+      });
+      // effectiveMpg = 10 * 1.0 = 10; gallonsForFinalDrive = 100 / 10 = 10
+      expect(result.breakdown.gallonsForFinalDrive).toBe(10);
+    });
+
+    it("partial load (mpgMultiplier=0.75) uses 75% MPG — 100 miles / (10 * 0.75) ≈ 13.3 gallons for drive", () => {
+      const result = calculateFuelReturn({
+        truck: TRUCK_26FT_LOAD,
+        pickupLevel: GAUGE_LEVELS.FULL,
+        currentLevel: GAUGE_LEVELS.FULL,
+        distanceToDropoff: 100,
+        safetyBuffer: 0,
+        mpgMultiplier: LOAD_LEVEL_CONFIG.partial.mpgMultiplier, // 0.75
+      });
+      // effectiveMpg = 10 * 0.75 = 7.5; gallonsForFinalDrive = 100 / 7.5 ≈ 13.3
+      expect(result.breakdown.gallonsForFinalDrive).toBeCloseTo(13.3, 1);
+    });
+
+    it("full load (mpgMultiplier=0.60) uses 60% MPG — 100 miles / (10 * 0.60) ≈ 16.7 gallons for drive", () => {
+      const result = calculateFuelReturn({
+        truck: TRUCK_26FT_LOAD,
+        pickupLevel: GAUGE_LEVELS.FULL,
+        currentLevel: GAUGE_LEVELS.FULL,
+        distanceToDropoff: 100,
+        safetyBuffer: 0,
+        mpgMultiplier: LOAD_LEVEL_CONFIG.full.mpgMultiplier, // 0.60
+      });
+      // effectiveMpg = 10 * 0.60 = 6; gallonsForFinalDrive = 100 / 6 ≈ 16.7
+      expect(result.breakdown.gallonsForFinalDrive).toBeCloseTo(16.7, 1);
+    });
+
+    it("mpgMultiplier=1.0 produces identical result to no multiplier provided", () => {
+      const withMultiplier = calculateFuelReturn(
+        baseInput({ distanceToDropoff: 50, mpgMultiplier: 1.0 })
+      );
+      const withoutMultiplier = calculateFuelReturn(
+        baseInput({ distanceToDropoff: 50 })
+      );
+      expect(withMultiplier.gallonsToAdd).toBe(withoutMultiplier.gallonsToAdd);
+      expect(withMultiplier.breakdown.gallonsForFinalDrive).toBe(
+        withoutMultiplier.breakdown.gallonsForFinalDrive
+      );
+    });
+
+    it("full load produces more gallons to add than empty load over the same distance", () => {
+      const emptyResult = calculateFuelReturn({
+        truck: TRUCK_26FT_LOAD,
+        pickupLevel: GAUGE_LEVELS.FULL,
+        currentLevel: GAUGE_LEVELS.HALF,
+        distanceToDropoff: 100,
+        safetyBuffer: 0,
+        mpgMultiplier: LOAD_LEVEL_CONFIG.empty.mpgMultiplier,
+      });
+      const fullResult = calculateFuelReturn({
+        truck: TRUCK_26FT_LOAD,
+        pickupLevel: GAUGE_LEVELS.FULL,
+        currentLevel: GAUGE_LEVELS.HALF,
+        distanceToDropoff: 100,
+        safetyBuffer: 0,
+        mpgMultiplier: LOAD_LEVEL_CONFIG.full.mpgMultiplier,
+      });
+      expect(fullResult.gallonsToAdd).toBeGreaterThan(emptyResult.gallonsToAdd);
+    });
+
+    it("real-world: 26ft truck, 10 MPG official, full load, 100 miles — drive needs 16.7 gallons", () => {
+      // A 26ft truck at full load (0.60 multiplier): effectiveMpg = 10 * 0.60 = 6
+      // gallonsForFinalDrive = 100 / 6 = 16.666... rounded to 1dp = 16.7
+      const result = calculateFuelReturn({
+        truck: TRUCK_26FT_LOAD,
+        pickupLevel: GAUGE_LEVELS.FULL,
+        currentLevel: GAUGE_LEVELS.FULL,
+        distanceToDropoff: 100,
+        safetyBuffer: 0,
+        mpgMultiplier: 0.60,
+      });
+      expect(result.breakdown.gallonsForFinalDrive).toBe(16.7);
     });
   });
 

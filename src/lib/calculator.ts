@@ -1,5 +1,18 @@
-import type { CalculatorInput, CalculatorResult } from "@/types";
+import type { CalculatorInput, CalculatorResult, RiskTolerance } from "@/types";
 import { GAUGE_LEVELS } from "@/types";
+
+/**
+ * Maps each risk tolerance level to a safetyBuffer value in gallons.
+ *
+ * - Conservative: 2.0 gal — extra cushion for mountain routes, first-time movers
+ * - Standard: 0.5 gal — default; comfortable buffer above the fee threshold
+ * - Lean: 0.0 gal — no extra buffer; for experienced movers on short urban returns
+ */
+export const RISK_TOLERANCE_BUFFERS: Record<RiskTolerance, number> = {
+  conservative: 2.0,
+  standard: 0.5,
+  lean: 0.0,
+};
 
 /**
  * The fuel level fraction below which U-Haul charges a $30 service fee.
@@ -20,10 +33,12 @@ const DEFAULT_SAFETY_BUFFER = 0.5;
  *
  * Formula:
  *   gallonsToAdd =
- *     (tankCapacity × pickupLevel)     // gallons needed at return
- *     - (tankCapacity × currentLevel)  // gallons currently in tank
- *     + (distanceToDropoff / mpg)      // gallons consumed on final drive
- *     + safetyBuffer                   // buffer for gauge imprecision
+ *     (tankCapacity × pickupLevel)              // gallons needed at return
+ *     - (tankCapacity × currentLevel)           // gallons currently in tank
+ *     + (distanceToDropoff / effectiveMpg)      // gallons consumed on final drive
+ *     + safetyBuffer                            // buffer for gauge imprecision
+ *
+ *   effectiveMpg = truck.mpg × mpgMultiplier    // load adjustment (1.0 = empty)
  *
  * @param input - Calculator inputs
  * @returns Result with gallons to add, cost estimate, and risk flags
@@ -31,8 +46,13 @@ const DEFAULT_SAFETY_BUFFER = 0.5;
 export function calculateFuelReturn(input: CalculatorInput): CalculatorResult {
   const { truck, pickupLevel, currentLevel, distanceToDropoff, gasPricePerGallon } = input;
   const safetyBuffer = input.safetyBuffer ?? DEFAULT_SAFETY_BUFFER;
+  const mpgMultiplier = input.mpgMultiplier ?? 1.0;
 
   const { tankCapacity, mpg } = truck;
+
+  // Apply load multiplier to get effective MPG (1.0 = empty truck, official MPG; <1.0 = loaded).
+  // Guard against zero/negative to prevent division by zero — valid multipliers are always > 0.
+  const effectiveMpg = Math.max(mpg * mpgMultiplier, 0.01);
 
   // Gallons the renter had at pickup (the target level to return to)
   const gallonsAtPickup = tankCapacity * pickupLevel;
@@ -41,7 +61,7 @@ export function calculateFuelReturn(input: CalculatorInput): CalculatorResult {
   const gallonsNow = tankCapacity * currentLevel;
 
   // Gallons that will be consumed on the final drive to the drop-off
-  const gallonsForFinalDrive = distanceToDropoff > 0 ? distanceToDropoff / mpg : 0;
+  const gallonsForFinalDrive = distanceToDropoff > 0 ? distanceToDropoff / effectiveMpg : 0;
 
   // Deficit = how much is needed minus what's already there
   const deficit = gallonsAtPickup - gallonsNow + gallonsForFinalDrive;

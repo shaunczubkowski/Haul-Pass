@@ -6,10 +6,10 @@ import { FuelGauge } from "@/components/FuelGauge";
 import { TruckSelector } from "@/components/TruckSelector";
 import { DistanceInput } from "@/components/DistanceInput";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { calculateFuelReturn } from "@/lib/calculator";
-import { GAUGE_LEVELS } from "@/types";
+import { calculateFuelReturn, RISK_TOLERANCE_BUFFERS } from "@/lib/calculator";
+import { GAUGE_LEVELS, RISK_TOLERANCE_CONFIG } from "@/types";
 import { getTruckById } from "@/data/trucks";
-import type { GaugeLevel, TruckType } from "@/types";
+import type { GaugeLevel, RiskTolerance, TruckType } from "@/types";
 import { Fuel, MapPin } from "lucide-react";
 
 // All 9 eighth-step levels selectable via the UI; used for URL param validation
@@ -17,6 +17,8 @@ const VALID_LEVELS = new Set([0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.
 // Domain upper bounds for URL param sanitization
 const MAX_DISTANCE_MILES = 10_000;
 const MAX_GAS_PRICE_USD = 50;
+// Valid risk tolerance values for URL param sanitization
+const VALID_RISK_TOLERANCE = new Set<RiskTolerance>(["conservative", "standard", "lean"]);
 
 type MapsApp = "google" | "apple";
 const MAPS_APP_KEY = "fillright:mapsApp";
@@ -46,7 +48,7 @@ function getDefaultMapsApp(): MapsApp {
 
 function readUrlParams() {
   if (typeof window === "undefined") {
-    return { truck: null, pickupLevel: GAUGE_LEVELS.FULL, currentLevel: GAUGE_LEVELS.HALF, distance: 0, gasPrice: "", gaugeVariant: "arc" as "arc" | "horizontal" };
+    return { truck: null, pickupLevel: GAUGE_LEVELS.FULL, currentLevel: GAUGE_LEVELS.HALF, distance: 0, gasPrice: "", gaugeVariant: "arc" as "arc" | "horizontal", riskTolerance: "standard" as RiskTolerance };
   }
   const params = new URLSearchParams(window.location.search);
 
@@ -88,7 +90,13 @@ function readUrlParams() {
   let gaugeVariant: "arc" | "horizontal" = "arc";
   if (params.get("variant") === "horizontal") gaugeVariant = "horizontal";
 
-  return { truck, pickupLevel, currentLevel, distance, gasPrice, gaugeVariant };
+  let riskTolerance: RiskTolerance = "standard";
+  const riskParam = params.get("risk");
+  if (riskParam !== null && VALID_RISK_TOLERANCE.has(riskParam as RiskTolerance)) {
+    riskTolerance = riskParam as RiskTolerance;
+  }
+
+  return { truck, pickupLevel, currentLevel, distance, gasPrice, gaugeVariant, riskTolerance };
 }
 
 export default function Home() {
@@ -103,6 +111,7 @@ export default function Home() {
   const [distance, setDistance] = useState<number>(initialParams.distance);
   const [gasPrice, setGasPrice] = useState<string>(initialParams.gasPrice);
   const [gaugeVariant, setGaugeVariant] = useState<"arc" | "horizontal">(initialParams.gaugeVariant);
+  const [riskTolerance, setRiskTolerance] = useState<RiskTolerance>(initialParams.riskTolerance);
   const [copied, setCopied] = useState(false);
   const [copyError, setCopyError] = useState(false);
   const [fallbackUrl, setFallbackUrl] = useState<string>("");
@@ -120,10 +129,12 @@ export default function Home() {
     if (distance > 0) params.set("dist", String(distance));
     if (gasPrice !== "") params.set("gas", gasPrice);
     if (gaugeVariant === "horizontal") params.set("variant", "horizontal");
+    // Omit risk param when it's the default (standard) to keep URLs clean
+    if (riskTolerance !== "standard") params.set("risk", riskTolerance);
 
     const qs = params.toString();
     window.history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
-  }, [truck, pickupLevel, currentLevel, distance, gasPrice, gaugeVariant]);
+  }, [truck, pickupLevel, currentLevel, distance, gasPrice, gaugeVariant, riskTolerance]);
 
   async function copyLink() {
     try {
@@ -178,6 +189,7 @@ export default function Home() {
           currentLevel,
           distanceToDropoff: distance,
           gasPricePerGallon: validGasPrice,
+          safetyBuffer: RISK_TOLERANCE_BUFFERS[riskTolerance],
         })
       : null;
 
@@ -272,6 +284,68 @@ export default function Home() {
             </h2>
             <DistanceInput value={distance} onChange={setDistance} onBlur={scrollResultIntoView} />
 
+            {/* Risk Tolerance selector */}
+            <div className="mt-6">
+              <p
+                id="risk-tolerance-label"
+                className="text-sm font-medium text-text-secondary uppercase tracking-wide mb-3"
+              >
+                Risk Tolerance
+              </p>
+              <div
+                role="radiogroup"
+                aria-labelledby="risk-tolerance-label"
+                className="flex rounded-lg border-2 border-border overflow-hidden"
+                onKeyDown={(e) => {
+                  const levels = ["conservative", "standard", "lean"] as const;
+                  const idx = levels.indexOf(riskTolerance);
+                  if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+                    e.preventDefault();
+                    const next = levels[(idx + 1) % levels.length];
+                    setRiskTolerance(next);
+                    (e.currentTarget.querySelector(`[data-level="${next}"]`) as HTMLElement | null)?.focus();
+                  } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+                    e.preventDefault();
+                    const prev = levels[(idx - 1 + levels.length) % levels.length];
+                    setRiskTolerance(prev);
+                    (e.currentTarget.querySelector(`[data-level="${prev}"]`) as HTMLElement | null)?.focus();
+                  }
+                }}
+              >
+                {(["conservative", "standard", "lean"] as const).map((level) => {
+                  const config = RISK_TOLERANCE_CONFIG[level];
+                  const isSelected = riskTolerance === level;
+                  return (
+                    <button
+                      key={level}
+                      role="radio"
+                      aria-checked={isSelected}
+                      data-level={level}
+                      onClick={() => setRiskTolerance(level)}
+                      tabIndex={isSelected ? 0 : -1}
+                      className={[
+                        "flex-1 px-3 py-2.5 text-sm font-semibold transition-colors text-center",
+                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
+                        "border-r-2 border-border last:border-r-0",
+                        isSelected
+                          ? "bg-accent text-white"
+                          : "bg-surface text-text-secondary hover:bg-surface-raised hover:text-text-primary",
+                      ].join(" ")}
+                    >
+                      {config.label}
+                    </button>
+                  );
+                })}
+              </div>
+              <p
+                id="risk-tolerance-description"
+                className="mt-2 text-xs text-text-muted"
+                aria-live="polite"
+              >
+                {RISK_TOLERANCE_CONFIG[riskTolerance].description}
+              </p>
+            </div>
+
             {/* Optional gas price */}
             <div className="mt-4 flex flex-col gap-2">
               <label
@@ -310,7 +384,7 @@ export default function Home() {
               <p
                 id="gas-price-hint"
                 aria-live="polite"
-                className={`text-xs ${gasPriceTooLow ? "text-red-600" : "text-text-muted"}`}
+                className={`text-xs ${gasPriceTooLow ? "text-red-600 dark:text-red-400" : "text-text-muted"}`}
               >
                 {gasPriceTooLow
                   ? "Enter at least $0.01 to see a cost estimate"
@@ -328,9 +402,9 @@ export default function Home() {
             className={result ? [
               "rounded-xl border-2 p-5 shadow-sm transition-colors",
               result.alreadySufficient
-                ? "border-green-400 bg-green-50"
+                ? "border-green-500 bg-green-50 dark:border-green-700 dark:bg-green-950/40"
                 : result.isAtRisk
-                ? "border-red-400 bg-red-50"
+                ? "border-red-500 bg-red-50 dark:border-red-700 dark:bg-red-950/40"
                 : "border-accent bg-accent-subtle",
             ].join(" ") : ""}
           >
@@ -342,8 +416,8 @@ export default function Home() {
                 {result.alreadySufficient ? (
                   <div className="text-center">
                     <div className="text-3xl mb-1">✅</div>
-                    <p className="text-lg font-bold text-green-800">You&apos;re good to go!</p>
-                    <p className="mt-1 text-sm text-green-700">
+                    <p className="text-lg font-bold text-green-800 dark:text-green-300">You&apos;re good to go!</p>
+                    <p className="mt-1 text-sm text-green-700 dark:text-green-400">
                       Your current fuel level is sufficient for return.
                     </p>
                   </div>
@@ -352,7 +426,7 @@ export default function Home() {
                     {result.isAtRisk && (
                       <div
                         role="alert"
-                        className="mb-4 flex items-start gap-3 rounded-lg border-2 border-red-500 bg-red-100 px-4 py-3 text-red-800"
+                        className="mb-4 flex items-start gap-3 rounded-lg border-2 border-red-500 bg-red-100 px-4 py-3 text-red-800 dark:border-red-700 dark:bg-red-950/60 dark:text-red-300"
                       >
                         <span aria-hidden="true" className="text-2xl leading-none">⚠️</span>
                         <div>
@@ -409,7 +483,7 @@ export default function Home() {
                     className={[
                       "flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                       copied
-                        ? "bg-green-100 text-green-700"
+                        ? "bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300"
                         : "bg-surface/70 text-text-secondary hover:bg-surface hover:text-text-primary",
                     ].join(" ")}
                     aria-label="Copy shareable link to clipboard"
@@ -417,7 +491,7 @@ export default function Home() {
                     {copied ? <><span aria-hidden="true">✓ </span>Link copied!</> : "Share this calculation"}
                   </button>
                   {copyError && (
-                    <p className="text-sm text-red-600 text-center">
+                    <p className="text-sm text-red-600 dark:text-red-400 text-center">
                       Could not copy — use the link below:
                     </p>
                   )}
