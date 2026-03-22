@@ -10,13 +10,25 @@ import { calculateFuelReturn } from "@/lib/calculator";
 import { GAUGE_LEVELS } from "@/types";
 import { getTruckById } from "@/data/trucks";
 import type { GaugeLevel, TruckType } from "@/types";
-import { Fuel } from "lucide-react";
+import { Fuel, MapPin } from "lucide-react";
 
 // All 9 eighth-step levels selectable via the UI; used for URL param validation
 const VALID_LEVELS = new Set([0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0]);
 // Domain upper bounds for URL param sanitization
 const MAX_DISTANCE_MILES = 10_000;
 const MAX_GAS_PRICE_USD = 50;
+
+/**
+ * Returns the appropriate map search URL for a gas/diesel station finder.
+ * Apple Maps is used on iOS/macOS; Google Maps is used everywhere else.
+ */
+function getGasStationUrl(fuelType: "regular" | "diesel", isApplePlatform: boolean): string {
+  const query = fuelType === "diesel" ? "diesel+gas+stations+near+me" : "gas+stations+near+me";
+  if (isApplePlatform) {
+    return `https://maps.apple.com/?q=${query}`;
+  }
+  return `https://www.google.com/maps/search/${query}`;
+}
 
 function readUrlParams() {
   if (typeof window === "undefined") {
@@ -80,6 +92,9 @@ export default function Home() {
   const [copied, setCopied] = useState(false);
   const [copyError, setCopyError] = useState(false);
   const [fallbackUrl, setFallbackUrl] = useState<string>("");
+  // Detect Apple platform client-side only to avoid SSR/hydration mismatch.
+  // iOS/macOS users get Apple Maps; all others get Google Maps.
+  const [isApplePlatform, setIsApplePlatform] = useState(false);
   const resultRef = useRef<HTMLElement | null>(null);
   const fallbackInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -122,6 +137,12 @@ export default function Home() {
       fallbackInputRef.current.select();
     }
   }, [fallbackUrl]);
+
+  // Detect Apple platform after mount to avoid SSR/hydration mismatch.
+  // navigator.userAgent is only available in the browser.
+  useEffect(() => {
+    setIsApplePlatform(/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent));
+  }, []);
 
   const parsedGasPrice = gasPrice !== "" ? parseFloat(gasPrice) : NaN;
   const validGasPrice = !isNaN(parsedGasPrice) && parsedGasPrice >= 0.01 ? parsedGasPrice : undefined;
@@ -396,6 +417,20 @@ export default function Home() {
                     {copied ? "Link copied to clipboard." : ""}
                     {copyError ? "Could not copy link. A shareable link field is now available below — select all and copy." : ""}
                   </span>
+                </div>
+
+                {/* Gas station finder link */}
+                <div className="mt-3 flex justify-center">
+                  <a
+                    href={getGasStationUrl(truck!.fuelType, isApplePlatform)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`Find a nearby ${truck!.fuelType === "diesel" ? "diesel " : ""}gas station`}
+                    className="flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring bg-surface/70 text-text-secondary hover:bg-surface hover:text-text-primary"
+                  >
+                    <MapPin size={16} aria-hidden="true" />
+                    Find a nearby gas station
+                  </a>
                 </div>
               </>
             )}
