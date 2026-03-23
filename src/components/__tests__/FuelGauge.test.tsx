@@ -274,10 +274,7 @@ describe("FuelGauge", () => {
         <FuelGauge value={GAUGE_LEVELS.HALF} onChange={noop} label="Test" />
       );
 
-      const paths = container.querySelectorAll("svg path");
-      const filledPath = Array.from(paths).find(
-        (p) => p.getAttribute("stroke") === "var(--gauge-fill)"
-      );
+      const filledPath = container.querySelector("[data-testid='arc-fill']");
 
       expect(filledPath).toBeTruthy();
       // The arc command must use sweep-flag=1 (the "1" after large-arc-flag in "A rx ry rot large sweep x y")
@@ -299,6 +296,14 @@ describe("FuelGauge", () => {
 
       expect(bgPath).toBeTruthy();
       expect(bgPath!.getAttribute("d")).toMatch(/A 80 80 0 0 1/);
+    });
+
+    it("fill arc is always present in the DOM (visible via stroke-dashoffset, not conditional render)", () => {
+      const { container } = render(
+        <FuelGauge value={GAUGE_LEVELS.EMPTY} onChange={noop} label="Test" />
+      );
+      const filledPath = container.querySelector("[data-testid='arc-fill']");
+      expect(filledPath).toBeTruthy();
     });
   });
 
