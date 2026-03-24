@@ -312,7 +312,7 @@ export default function Home() {
                           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
                           "border-r-2 border-border last:border-r-0",
                           isSelected
-                            ? "bg-accent text-white"
+                            ? "bg-accent text-text-on-accent"
                             : "bg-surface text-text-secondary hover:bg-surface-raised hover:text-text-primary",
                         ].join(" ")}
                       >
@@ -322,6 +322,9 @@ export default function Home() {
                   })}
                 </div>
               </fieldset>
+              <p className="mt-2 text-xs text-text-muted" aria-live="polite">
+                {LOAD_LEVEL_CONFIG[loadLevel].description}
+              </p>
             </div>
 
             {/* Risk Tolerance selector */}
@@ -368,7 +371,7 @@ export default function Home() {
                         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
                         "border-r-2 border-border last:border-r-0",
                         isSelected
-                          ? "bg-accent text-white"
+                          ? "bg-accent text-text-on-accent"
                           : "bg-surface text-text-secondary hover:bg-surface-raised hover:text-text-primary",
                       ].join(" ")}
                     >
