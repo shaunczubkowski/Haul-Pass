@@ -1,4 +1,4 @@
-import type { CalculatorInput, CalculatorResult, RiskTolerance } from "@/types";
+import type { CalculatorInput, CalculatorResult, RiskTolerance, RouteLegInput, RouteLegResult } from "@/types";
 import { GAUGE_LEVELS } from "@/types";
 
 /**
@@ -13,6 +13,46 @@ export const RISK_TOLERANCE_BUFFERS: Record<RiskTolerance, number> = {
   standard: 0.5,
   lean: 0.0,
 };
+
+/**
+ * Calculate fuel needed for a single leg of a multi-stop route plan.
+ *
+ * Formula:
+ *   gallonsConsumed    = legDistanceMiles / effectiveMpg
+ *   gallonsAtArrival   = max(0, startingFuelFraction × tankCapacity − gallonsConsumed)
+ *   gallonsToAdd       = max(0, targetFuelFraction × tankCapacity − gallonsAtArrival + safetyBuffer)
+ *   isAtRisk           = fuelFractionAtArrival < 1/4
+ */
+export function calculateRouteLeg(input: RouteLegInput): RouteLegResult {
+  const { truck, mpgMultiplier, safetyBuffer, legDistanceMiles, startingFuelFraction, targetFuelFraction, gasPricePerGallon } = input;
+  const { tankCapacity, mpg } = truck;
+
+  const effectiveMpg = Math.max(mpg * mpgMultiplier, 0.01);
+  const gallonsConsumed = legDistanceMiles > 0 ? legDistanceMiles / effectiveMpg : 0;
+
+  const startingGallons = startingFuelFraction * tankCapacity;
+  const gallonsAtArrival = Math.max(0, startingGallons - gallonsConsumed);
+  const fuelFractionAtArrival = gallonsAtArrival / tankCapacity;
+
+  const targetGallons = targetFuelFraction * tankCapacity;
+  const rawGallonsToAdd = targetGallons - gallonsAtArrival + safetyBuffer;
+  const gallonsToAdd = rawGallonsToAdd <= 0 ? 0 : Math.round(rawGallonsToAdd * 10) / 10;
+
+  const isAtRisk = fuelFractionAtArrival < GAUGE_LEVELS.QUARTER;
+
+  const estimatedCost =
+    gasPricePerGallon != null && gallonsToAdd > 0
+      ? Math.round(gallonsToAdd * gasPricePerGallon * 100) / 100
+      : null;
+
+  return {
+    gallonsConsumed: Math.round(gallonsConsumed * 10) / 10,
+    fuelFractionAtArrival: Math.round(fuelFractionAtArrival * 1000) / 1000,
+    gallonsToAdd,
+    estimatedCost,
+    isAtRisk,
+  };
+}
 
 /**
  * The fuel level fraction below which U-Haul charges a $30 service fee.

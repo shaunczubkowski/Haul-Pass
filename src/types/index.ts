@@ -78,6 +78,88 @@ export const LOAD_LEVEL_CONFIG: Record<
 
 export type RiskTolerance = "conservative" | "standard" | "lean";
 
+// ---------------------------------------------------------------------------
+// Route Leg Calculator types
+// ---------------------------------------------------------------------------
+
+export interface RouteLegInput {
+  truck: TruckType;
+  mpgMultiplier: number;      // load adjustment (1.0 = empty)
+  safetyBuffer: number;       // extra gallons for gauge imprecision
+  legDistanceMiles: number;   // miles to drive on this leg
+  startingFuelFraction: number; // tank level at start of leg (0–1)
+  targetFuelFraction: number;   // level to fill to at end of leg (0–1); FULL for intermediate, contractLevel for final
+  gasPricePerGallon?: number;
+}
+
+export interface RouteLegResult {
+  gallonsConsumed: number;        // burned during this leg
+  fuelFractionAtArrival: number;  // tank fraction when arriving at end of leg (before fill)
+  gallonsToAdd: number;           // add at this stop to reach targetFuelFraction
+  estimatedCost: number | null;
+  isAtRisk: boolean;              // true if arrival level is below 1/4 tank
+}
+
+// ---------------------------------------------------------------------------
+// Route Fuel Planner types
+// ---------------------------------------------------------------------------
+
+export interface AddressSuggestion {
+  id: string;
+  displayName: string;
+  fullAddress: string;
+  coordinates: {
+    lat: number;
+    lng: number;
+  };
+}
+
+export interface RouteWaypoint {
+  lat: number;
+  lng: number;
+  milesFromOrigin: number;
+  locationLabel: string; // "near Salina, KS"
+}
+
+export interface GasStation {
+  name: string | null;       // null in Phase 1
+  address: string | null;    // null in Phase 1
+  coordinates: {
+    lat: number;
+    lng: number;
+  };
+  mapsUrl: string;           // always present: Google or Apple Maps deep-link
+}
+
+export interface RouteStop {
+  stopNumber: number;
+  waypoint: RouteWaypoint;
+  milesFromPreviousStop: number;
+  station: GasStation;
+  fuelCalculation: {
+    gallonsToAdd: number;
+    estimatedCost: number | null;
+    isAtRisk: boolean;
+    fuelType: FuelType;
+  };
+}
+
+export interface PlannedRoute {
+  origin: AddressSuggestion;
+  destination: AddressSuggestion;
+  totalMiles: number;
+  totalStops: number;
+  estimatedTotalGallons: number;
+  estimatedTotalCost: number | null;
+  stops: RouteStop[];
+  truck: TruckType;
+  riskTolerance: RiskTolerance;
+  loadLevel: LoadLevel;
+  generatedAt: string; // ISO timestamp
+}
+
+// ---------------------------------------------------------------------------
+
 export const RISK_TOLERANCE_CONFIG: Record<
   RiskTolerance,
   { threshold: GaugeLevel; label: string; description: string }
