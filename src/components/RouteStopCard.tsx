@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import type { RouteStop } from "@/types";
 
 interface RouteStopCardProps {
@@ -5,8 +8,23 @@ interface RouteStopCardProps {
   isLast?: boolean;
 }
 
+function buildGoogleMapsUrl(lat: number, lng: number, fuelType: "regular" | "diesel"): string {
+  const query = fuelType === "diesel" ? "diesel+gas+stations" : "gas+stations";
+  return `https://www.google.com/maps/search/${query}/@${lat},${lng},14z`;
+}
+
+function buildAppleMapsUrl(lat: number, lng: number, fuelType: "regular" | "diesel"): string {
+  const query = fuelType === "diesel" ? "diesel+gas+stations" : "gas+stations";
+  return `https://maps.apple.com/?q=${query}&sll=${lat},${lng}&z=14`;
+}
+
 export function RouteStopCard({ stop, isLast = false }: RouteStopCardProps) {
   const { stopNumber, waypoint, milesFromPreviousStop, station, fuelCalculation } = stop;
+  const [pickerOpen, setPickerOpen] = useState(false);
+
+  const { lat, lng } = station.coordinates;
+  const googleMapsUrl = buildGoogleMapsUrl(lat, lng, fuelCalculation.fuelType);
+  const appleMapsUrl = buildAppleMapsUrl(lat, lng, fuelCalculation.fuelType);
 
   return (
     <article
@@ -78,20 +96,52 @@ export function RouteStopCard({ stop, isLast = false }: RouteStopCardProps) {
         </div>
       </div>
 
-      <a
-        href={station.mapsUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={[
-          "mt-3 flex items-center justify-center gap-2 w-full rounded-lg py-2.5 px-4",
-          "text-sm font-semibold transition-colors",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-          "border-2 border-accent text-accent hover:bg-accent hover:text-text-on-accent",
-        ].join(" ")}
-      >
-        Open in Maps
-        <span aria-hidden="true">↗</span>
-      </a>
+      {pickerOpen ? (
+        <div className="mt-3 flex gap-2">
+          <a
+            href={googleMapsUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={[
+              "flex-1 flex items-center justify-center gap-1.5 rounded-lg py-2.5 px-3",
+              "text-sm font-semibold transition-colors",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              "border-2 border-accent text-accent hover:bg-accent hover:text-text-on-accent",
+            ].join(" ")}
+          >
+            Google Maps
+            <span aria-hidden="true">↗</span>
+          </a>
+          <a
+            href={appleMapsUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={[
+              "flex-1 flex items-center justify-center gap-1.5 rounded-lg py-2.5 px-3",
+              "text-sm font-semibold transition-colors",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              "border-2 border-accent text-accent hover:bg-accent hover:text-text-on-accent",
+            ].join(" ")}
+          >
+            Apple Maps
+            <span aria-hidden="true">↗</span>
+          </a>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setPickerOpen(true)}
+          className={[
+            "mt-3 flex items-center justify-center gap-2 w-full rounded-lg py-2.5 px-4",
+            "text-sm font-semibold transition-colors",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+            "border-2 border-accent text-accent hover:bg-accent hover:text-text-on-accent",
+          ].join(" ")}
+        >
+          Open in Maps
+          <span aria-hidden="true">↗</span>
+        </button>
+      )}
     </article>
   );
 }
