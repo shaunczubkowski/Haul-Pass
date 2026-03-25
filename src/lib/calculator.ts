@@ -1,5 +1,5 @@
-import type { CalculatorInput, CalculatorResult, RiskTolerance, RouteLegInput, RouteLegResult } from "@/types";
-import { GAUGE_LEVELS } from "@/types";
+import type { CalculatorInput, CalculatorResult, RiskTolerance, RouteLegInput, RouteLegResult, TruckType } from "@/types";
+import { GAUGE_LEVELS, RISK_TOLERANCE_CONFIG } from "@/types";
 
 /**
  * Maps each risk tolerance level to a safetyBuffer value in gallons.
@@ -136,4 +136,26 @@ export function calculateFuelReturn(input: CalculatorInput): CalculatorResult {
       deficit: Math.round(deficit * 10) / 10,
     },
   };
+}
+
+/**
+ * Calculate how many miles to drive between fuel stops based on truck specs,
+ * load level, and risk tolerance.
+ *
+ * Formula:
+ *   interval = floor((1 − riskThreshold) × effectiveMpg × tankCapacity × 0.9)
+ *
+ * The 0.9 factor provides a 10% safety margin so the truck arrives at each stop
+ * comfortably above the risk threshold rather than right at it.
+ * Result is clamped to [80, 350] miles.
+ */
+export function calculateStopInterval(
+  truck: TruckType,
+  mpgMultiplier: number,
+  riskTolerance: RiskTolerance
+): number {
+  const riskThreshold = RISK_TOLERANCE_CONFIG[riskTolerance].threshold;
+  const effectiveMpg = truck.mpg * mpgMultiplier;
+  const interval = Math.floor((1 - riskThreshold) * effectiveMpg * truck.tankCapacity * 0.9);
+  return Math.max(80, Math.min(350, interval));
 }

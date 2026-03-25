@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { calculateRouteLeg } from "@/lib/calculator";
+import { calculateRouteLeg, calculateStopInterval } from "@/lib/calculator";
 import { sampleWaypoints, totalRouteMiles, gasStationMapsUrl } from "@/lib/routeSampling";
 import { getTruckById } from "@/data/trucks";
 import { GAUGE_LEVELS, LOAD_LEVEL_CONFIG } from "@/types";
@@ -7,7 +7,6 @@ import { RISK_TOLERANCE_BUFFERS } from "@/lib/calculator";
 import type { PlannedRoute, RouteStop, AddressSuggestion } from "@/types";
 
 const MAPBOX_TOKEN = process.env.MAPBOX_SECRET_TOKEN;
-const TARGET_STOP_INTERVAL = 180; // miles between fuel stops
 
 export async function POST(request: NextRequest) {
   if (!MAPBOX_TOKEN) {
@@ -65,8 +64,16 @@ export async function POST(request: NextRequest) {
   const coordinates = route.geometry.coordinates as [number, number][];
   const totalMiles = totalRouteMiles(coordinates);
 
-  // Sample waypoints along the route
-  const sampledWaypoints = sampleWaypoints(coordinates, TARGET_STOP_INTERVAL);
+  // Resolve settings — needed for both stop placement and per-leg fuel calculations
+  const resolvedRiskTolerance = riskTolerance ?? "standard";
+  const resolvedLoadLevel = loadLevel ?? "empty";
+  const safetyBuffer = RISK_TOLERANCE_BUFFERS[resolvedRiskTolerance];
+  const mpgMultiplier = LOAD_LEVEL_CONFIG[resolvedLoadLevel].mpgMultiplier;
+
+  // Sample waypoints along the route at an interval derived from the truck,
+  // load, and risk tolerance so that conservative/loaded routes get more stops
+  const stopInterval = calculateStopInterval(truck, mpgMultiplier, resolvedRiskTolerance);
+  const sampledWaypoints = sampleWaypoints(coordinates, stopInterval);
 
   // Add location labels (city/state approximation from coordinates)
   // In Phase 2 this will use reverse geocoding; for now use a placeholder
@@ -74,10 +81,6 @@ export async function POST(request: NextRequest) {
     ...wp,
     locationLabel: `${wp.milesFromOrigin} miles from start`,
   }));
-
-  // Calculate fuel for each stop
-  const safetyBuffer = RISK_TOLERANCE_BUFFERS[riskTolerance ?? "standard"];
-  const mpgMultiplier = LOAD_LEVEL_CONFIG[loadLevel ?? "empty"].mpgMultiplier;
   const preferredMapsApp = mapsApp === "apple" ? "apple" : "google";
 
   const stops: RouteStop[] = [];
