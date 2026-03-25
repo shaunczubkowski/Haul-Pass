@@ -3,6 +3,10 @@
 import { useState } from "react";
 import type { RouteStop } from "@/types";
 
+const MAPS_APP_KEY = "fillright:mapsApp";
+
+type MapsApp = "google" | "apple";
+
 interface RouteStopCardProps {
   stop: RouteStop;
   isLast?: boolean;
@@ -18,13 +22,48 @@ function buildAppleMapsUrl(lat: number, lng: number, fuelType: "regular" | "dies
   return `https://maps.apple.com/?q=${query}&sll=${lat},${lng}&z=14`;
 }
 
+function readSavedPref(): MapsApp | null {
+  try {
+    const stored = localStorage.getItem(MAPS_APP_KEY);
+    if (stored === "google" || stored === "apple") return stored;
+  } catch {
+    // localStorage unavailable
+  }
+  return null;
+}
+
+function writePref(pref: MapsApp) {
+  try {
+    localStorage.setItem(MAPS_APP_KEY, pref);
+  } catch {
+    // localStorage unavailable
+  }
+}
+
 export function RouteStopCard({ stop, isLast = false }: RouteStopCardProps) {
   const { stopNumber, waypoint, milesFromPreviousStop, station, fuelCalculation } = stop;
+  const [savedPref, setSavedPref] = useState<MapsApp | null>(() => {
+    if (typeof window === "undefined") return null;
+    return readSavedPref();
+  });
   const [pickerOpen, setPickerOpen] = useState(false);
 
   const { lat, lng } = station.coordinates;
   const googleMapsUrl = buildGoogleMapsUrl(lat, lng, fuelCalculation.fuelType);
   const appleMapsUrl = buildAppleMapsUrl(lat, lng, fuelCalculation.fuelType);
+
+  function handlePickerChoice(pref: MapsApp) {
+    writePref(pref);
+    setSavedPref(pref);
+    setPickerOpen(false);
+  }
+
+  const linkClassName = [
+    "flex-1 flex items-center justify-center gap-1.5 rounded-lg py-2.5 px-3",
+    "text-sm font-semibold transition-colors",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+    "border-2 border-accent text-accent hover:bg-accent hover:text-text-on-accent",
+  ].join(" ");
 
   return (
     <article
@@ -96,18 +135,36 @@ export function RouteStopCard({ stop, isLast = false }: RouteStopCardProps) {
         </div>
       </div>
 
-      {pickerOpen ? (
+      {savedPref && !pickerOpen ? (
+        <div className="mt-3 flex items-center gap-2">
+          <a
+            href={savedPref === "google" ? googleMapsUrl : appleMapsUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={linkClassName}
+          >
+            {savedPref === "google" ? "Google Maps" : "Apple Maps"}
+            <span aria-hidden="true">↗</span>
+          </a>
+          <button
+            type="button"
+            onClick={() => setPickerOpen(true)}
+            className={[
+              "text-xs font-semibold text-text-muted underline-offset-2 hover:underline",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded",
+            ].join(" ")}
+          >
+            Switch app
+          </button>
+        </div>
+      ) : pickerOpen ? (
         <div className="mt-3 flex gap-2">
           <a
             href={googleMapsUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className={[
-              "flex-1 flex items-center justify-center gap-1.5 rounded-lg py-2.5 px-3",
-              "text-sm font-semibold transition-colors",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-              "border-2 border-accent text-accent hover:bg-accent hover:text-text-on-accent",
-            ].join(" ")}
+            onClick={() => handlePickerChoice("google")}
+            className={linkClassName}
           >
             Google Maps
             <span aria-hidden="true">↗</span>
@@ -116,12 +173,8 @@ export function RouteStopCard({ stop, isLast = false }: RouteStopCardProps) {
             href={appleMapsUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className={[
-              "flex-1 flex items-center justify-center gap-1.5 rounded-lg py-2.5 px-3",
-              "text-sm font-semibold transition-colors",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-              "border-2 border-accent text-accent hover:bg-accent hover:text-text-on-accent",
-            ].join(" ")}
+            onClick={() => handlePickerChoice("apple")}
+            className={linkClassName}
           >
             Apple Maps
             <span aria-hidden="true">↗</span>

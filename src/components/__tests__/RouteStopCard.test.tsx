@@ -1,8 +1,10 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { RouteStopCard } from "@/components/RouteStopCard";
 import type { RouteStop } from "@/types";
+
+const MAPS_APP_KEY = "fillright:mapsApp";
 
 const makeStop = (overrides: Partial<RouteStop> = {}): RouteStop => ({
   stopNumber: 1,
@@ -28,13 +30,17 @@ const makeStop = (overrides: Partial<RouteStop> = {}): RouteStop => ({
   ...overrides,
 });
 
-describe("RouteStopCard — maps picker", () => {
+beforeEach(() => {
+  localStorage.clear();
+});
+
+describe("RouteStopCard — no saved preference", () => {
   it("shows 'Open in Maps' button initially", () => {
     render(<RouteStopCard stop={makeStop()} />);
     expect(screen.getByRole("button", { name: /open in maps/i })).toBeInTheDocument();
   });
 
-  it("does not show maps options before the button is clicked", () => {
+  it("does not show app-specific links before the button is clicked", () => {
     render(<RouteStopCard stop={makeStop()} />);
     expect(screen.queryByRole("link", { name: /google maps/i })).not.toBeInTheDocument();
     expect(screen.queryByRole("link", { name: /apple maps/i })).not.toBeInTheDocument();
@@ -81,9 +87,56 @@ describe("RouteStopCard — maps picker", () => {
     const user = userEvent.setup();
     render(<RouteStopCard stop={makeStop()} />);
     await user.click(screen.getByRole("button", { name: /open in maps/i }));
-    const googleLink = screen.getByRole("link", { name: /google maps/i });
-    const appleLink = screen.getByRole("link", { name: /apple maps/i });
-    expect(googleLink).toHaveAttribute("target", "_blank");
-    expect(appleLink).toHaveAttribute("target", "_blank");
+    expect(screen.getByRole("link", { name: /google maps/i })).toHaveAttribute("target", "_blank");
+    expect(screen.getByRole("link", { name: /apple maps/i })).toHaveAttribute("target", "_blank");
+  });
+});
+
+describe("RouteStopCard — preference persistence", () => {
+  it("saves 'google' to localStorage when Google Maps is clicked", async () => {
+    const user = userEvent.setup();
+    render(<RouteStopCard stop={makeStop()} />);
+    await user.click(screen.getByRole("button", { name: /open in maps/i }));
+    await user.click(screen.getByRole("link", { name: /google maps/i }));
+    expect(localStorage.getItem(MAPS_APP_KEY)).toBe("google");
+  });
+
+  it("saves 'apple' to localStorage when Apple Maps is clicked", async () => {
+    const user = userEvent.setup();
+    render(<RouteStopCard stop={makeStop()} />);
+    await user.click(screen.getByRole("button", { name: /open in maps/i }));
+    await user.click(screen.getByRole("link", { name: /apple maps/i }));
+    expect(localStorage.getItem(MAPS_APP_KEY)).toBe("apple");
+  });
+
+  it("shows preferred button directly when google preference is saved", () => {
+    localStorage.setItem(MAPS_APP_KEY, "google");
+    render(<RouteStopCard stop={makeStop()} />);
+    expect(screen.getByRole("link", { name: /google maps/i })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /open in maps/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /apple maps/i })).not.toBeInTheDocument();
+  });
+
+  it("shows preferred button directly when apple preference is saved", () => {
+    localStorage.setItem(MAPS_APP_KEY, "apple");
+    render(<RouteStopCard stop={makeStop()} />);
+    expect(screen.getByRole("link", { name: /apple maps/i })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /open in maps/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /google maps/i })).not.toBeInTheDocument();
+  });
+
+  it("shows picker again after clicking 'Switch app'", async () => {
+    const user = userEvent.setup();
+    localStorage.setItem(MAPS_APP_KEY, "google");
+    render(<RouteStopCard stop={makeStop()} />);
+    await user.click(screen.getByRole("button", { name: /switch app/i }));
+    expect(screen.getByRole("link", { name: /google maps/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /apple maps/i })).toBeInTheDocument();
+  });
+
+  it("preferred link opens in a new tab", () => {
+    localStorage.setItem(MAPS_APP_KEY, "google");
+    render(<RouteStopCard stop={makeStop()} />);
+    expect(screen.getByRole("link", { name: /google maps/i })).toHaveAttribute("target", "_blank");
   });
 });
