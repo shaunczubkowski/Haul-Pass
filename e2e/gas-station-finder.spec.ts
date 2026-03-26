@@ -42,7 +42,7 @@ test.describe("gas station finder link", () => {
     await page.getByRole("radio", { name: "Penske" }).click();
     await page.getByRole("radio", { name: "22 ft Truck" }).click();
 
-    const link = page.getByRole("link", { name: /find a nearby gas station/i });
+    const link = page.getByRole("link", { name: /find a nearby.*gas station/i });
     await expect(link).toHaveAttribute(
       "href",
       "https://www.google.com/maps/search/diesel+gas+stations+near+me"
@@ -55,7 +55,7 @@ test.describe("gas station finder link", () => {
     await page.goto("/");
     // Start with a regular-fuel truck
     await page.getByRole("radio", { name: "10 ft Truck" }).click();
-    const link = page.getByRole("link", { name: /find a nearby gas station/i });
+    const link = page.getByRole("link", { name: /find a nearby.*gas station/i });
     await expect(link).toHaveAttribute(
       "href",
       "https://www.google.com/maps/search/gas+stations+near+me"

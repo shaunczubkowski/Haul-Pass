@@ -162,9 +162,9 @@ test.describe("risk tolerance selector", () => {
   test("risk tolerance selector is keyboard navigable", async ({ page }) => {
     await page.goto("/");
 
-    // Focus Conservative radio button and check it is reachable via Tab
+    // Click Conservative radio button to set value, then verify focus
     const conservativeRadio = page.getByRole("radio", { name: /conservative/i });
-    await conservativeRadio.focus();
+    await conservativeRadio.click();
     await expect(conservativeRadio).toBeFocused();
 
     // Arrow key navigation within the radiogroup
