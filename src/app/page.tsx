@@ -6,8 +6,10 @@ import { FuelGauge } from "@/components/FuelGauge";
 import { TruckSelector } from "@/components/TruckSelector";
 import { DistanceInput } from "@/components/DistanceInput";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { LoadLevelSelector } from "@/components/LoadLevelSelector";
+import { RiskToleranceSelector } from "@/components/RiskToleranceSelector";
 import { calculateFuelReturn, RISK_TOLERANCE_BUFFERS } from "@/lib/calculator";
-import { GAUGE_LEVELS, RISK_TOLERANCE_CONFIG, LOAD_LEVEL_CONFIG } from "@/types";
+import { GAUGE_LEVELS, LOAD_LEVEL_CONFIG } from "@/types";
 import { getTruckById } from "@/data/trucks";
 import type { GaugeLevel, RiskTolerance, TruckType, LoadLevel } from "@/types";
 import { Fuel, MapPin } from "lucide-react";
@@ -221,6 +223,12 @@ export default function Home() {
           <p className="text-3xl font-bold tracking-tight text-text-primary">FillRight</p>
           <h1 className="mt-1 text-xl font-semibold text-text-primary">Moving Truck Fuel Return Calculator</h1>
           <p className="mt-1 text-sm text-text-secondary">Avoid the $30 fuel surcharge — get the exact gallons for U&#8209;Haul, Penske, Budget &amp; Enterprise.</p>
+          <p className="mt-3 text-xs text-text-muted">
+            Planning a long-distance move?{" "}
+            <Link href="/route-planner" className="underline hover:text-text-secondary transition-colors">
+              Plan all your fuel stops →
+            </Link>
+          </p>
         </div>
 
         <div className="flex flex-col gap-6">
@@ -293,100 +301,12 @@ export default function Home() {
 
             {/* Load Level selector */}
             <div className="mt-6">
-              <fieldset>
-                <legend className="text-sm font-medium text-text-secondary uppercase tracking-wide mb-3">
-                  How loaded is your truck?
-                </legend>
-                <div className="flex rounded-lg border-2 border-border overflow-hidden">
-                  {(["empty", "partial", "full"] as const).map((level) => {
-                    const config = LOAD_LEVEL_CONFIG[level];
-                    const isSelected = loadLevel === level;
-                    return (
-                      <button
-                        key={level}
-                        type="button"
-                        aria-pressed={isSelected}
-                        onClick={() => setLoadLevel(level)}
-                        className={[
-                          "flex-1 px-3 py-2.5 text-sm font-semibold transition-colors text-center",
-                          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
-                          "border-r-2 border-border last:border-r-0",
-                          isSelected
-                            ? "bg-accent text-text-on-accent"
-                            : "bg-surface text-text-secondary hover:bg-surface-raised hover:text-text-primary",
-                        ].join(" ")}
-                      >
-                        {config.label}
-                      </button>
-                    );
-                  })}
-                </div>
-              </fieldset>
-              <p className="mt-2 text-xs text-text-muted" aria-live="polite">
-                {LOAD_LEVEL_CONFIG[loadLevel].description}
-              </p>
+              <LoadLevelSelector value={loadLevel} onChange={setLoadLevel} />
             </div>
 
             {/* Risk Tolerance selector */}
             <div className="mt-6">
-              <p
-                id="risk-tolerance-label"
-                className="text-sm font-medium text-text-secondary uppercase tracking-wide mb-3"
-              >
-                Risk Tolerance
-              </p>
-              <div
-                role="radiogroup"
-                aria-labelledby="risk-tolerance-label"
-                className="flex rounded-lg border-2 border-border overflow-hidden"
-                onKeyDown={(e) => {
-                  const levels = ["conservative", "standard", "lean"] as const;
-                  const idx = levels.indexOf(riskTolerance);
-                  if (e.key === "ArrowRight" || e.key === "ArrowDown") {
-                    e.preventDefault();
-                    const next = levels[(idx + 1) % levels.length];
-                    setRiskTolerance(next);
-                    (e.currentTarget.querySelector(`[data-level="${next}"]`) as HTMLElement | null)?.focus();
-                  } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
-                    e.preventDefault();
-                    const prev = levels[(idx - 1 + levels.length) % levels.length];
-                    setRiskTolerance(prev);
-                    (e.currentTarget.querySelector(`[data-level="${prev}"]`) as HTMLElement | null)?.focus();
-                  }
-                }}
-              >
-                {(["conservative", "standard", "lean"] as const).map((level) => {
-                  const config = RISK_TOLERANCE_CONFIG[level];
-                  const isSelected = riskTolerance === level;
-                  return (
-                    <button
-                      key={level}
-                      role="radio"
-                      aria-checked={isSelected}
-                      data-level={level}
-                      onClick={() => setRiskTolerance(level)}
-                      tabIndex={isSelected ? 0 : -1}
-                      className={[
-                        "flex-1 px-3 py-2.5 text-sm font-semibold transition-colors text-center",
-                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
-                        "border-r-2 border-border last:border-r-0",
-                        isSelected
-                          ? "bg-accent text-text-on-accent"
-                          : "bg-surface text-text-secondary hover:bg-surface-raised hover:text-text-primary",
-                      ].join(" ")}
-                    >
-                      {config.label}
-                    </button>
-                  );
-                })}
-              </div>
-              <p
-                id="risk-tolerance-description"
-                className="mt-2 text-xs text-text-muted"
-                aria-live="polite"
-              >
-                {RISK_TOLERANCE_CONFIG[riskTolerance].description}
-              </p>
+              <RiskToleranceSelector value={riskTolerance} onChange={setRiskTolerance} />
             </div>
 
             {/* Optional gas price */}

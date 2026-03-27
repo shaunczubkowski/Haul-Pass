@@ -171,7 +171,7 @@ test.describe("calculator flow", () => {
     await page.getByRole("spinbutton", { name: "Gas price per gallon in dollars" }).blur();
 
     const result = page.locator("[data-result='true']");
-    await expect(result.getByText("$", { exact: false })).toBeVisible();
+    await expect(result.getByText(/≈ \$/)).toBeVisible();
   });
 });
 
@@ -256,6 +256,8 @@ test.describe("theme toggle", () => {
     const darkBtn = page.getByRole("button", { name: "Switch to dark theme" });
     const lightBtn = page.getByRole("button", { name: "Switch to light theme" });
 
+    // Wait for ThemeToggle to mount (it renders nothing until useEffect fires)
+    await expect(darkBtn.or(lightBtn)).toBeVisible();
     const isLight = await darkBtn.isVisible();
 
     if (isLight) {
