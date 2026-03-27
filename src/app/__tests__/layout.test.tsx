@@ -201,7 +201,7 @@ describe("sitemap and robots", () => {
     expect(robotsConfig.rules).toBeDefined();
     const rules = Array.isArray(robotsConfig.rules) ? robotsConfig.rules : [robotsConfig.rules];
     const allowAll = rules.some(
-      (r: { userAgent?: string; allow?: string | string[] }) =>
+      (r: { userAgent?: string | string[]; allow?: string | string[] }) =>
         (r.userAgent === "*" || r.userAgent === "all") &&
         (r.allow === "/" || (Array.isArray(r.allow) && r.allow.includes("/")))
     );

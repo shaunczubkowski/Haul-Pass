@@ -69,8 +69,8 @@ export async function POST(request: NextRequest) {
   }
 
   const directionsData = await directionsResponse.json() as MapboxDirectionsResponse;
-  const routeCount = directionsData.routes?.length ?? 0;
-  if (routeCount === 0) {
+  const routes = directionsData.routes;
+  if (!routes?.length) {
     return NextResponse.json({ error: "No route found between these locations" }, { status: 422 });
   }
 
@@ -78,14 +78,14 @@ export async function POST(request: NextRequest) {
   // An out-of-range index means the alternatives listing diverged from this
   // call (extremely unlikely but worth an explicit error over a silent fallback).
   const resolvedIndex = routeIndex ?? 0;
-  if (resolvedIndex < 0 || resolvedIndex >= routeCount) {
+  if (resolvedIndex < 0 || resolvedIndex >= routes.length) {
     return NextResponse.json(
       { error: "Selected route is no longer available — please re-plan your route" },
       { status: 422 }
     );
   }
 
-  const route = directionsData.routes[resolvedIndex];
+  const route = routes[resolvedIndex];
 
   const coordinates = route.geometry.coordinates as [number, number][];
   const totalMiles = totalRouteMiles(coordinates);
