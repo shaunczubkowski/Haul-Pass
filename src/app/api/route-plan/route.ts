@@ -29,6 +29,18 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
   }
 
+  // Validate coordinate ranges at the boundary before touching Mapbox
+  const coordsInRange = (c: { lat: number; lng: number }) =>
+    typeof c.lat === "number" && typeof c.lng === "number" &&
+    c.lat >= -90 && c.lat <= 90 && c.lng >= -180 && c.lng <= 180;
+
+  if (!coordsInRange(originCoords) || !coordsInRange(destinationCoords)) {
+    return NextResponse.json(
+      { error: "Coordinates out of range (lat: −90–90, lng: −180–180)" },
+      { status: 400 }
+    );
+  }
+
   const truck = getTruckById(truckId);
   if (!truck) {
     return NextResponse.json({ error: "Unknown truck" }, { status: 400 });
@@ -57,11 +69,23 @@ export async function POST(request: NextRequest) {
   }
 
   const directionsData = await directionsResponse.json() as MapboxDirectionsResponse;
-  const selectedIndex = typeof routeIndex === "number" && routeIndex >= 0 ? routeIndex : 0;
-  const route = directionsData.routes?.[selectedIndex] ?? directionsData.routes?.[0];
-  if (!route) {
+  const routeCount = directionsData.routes?.length ?? 0;
+  if (routeCount === 0) {
     return NextResponse.json({ error: "No route found between these locations" }, { status: 422 });
   }
+
+  // If the caller provided a routeIndex, validate it is within bounds.
+  // An out-of-range index means the alternatives listing diverged from this
+  // call (extremely unlikely but worth an explicit error over a silent fallback).
+  const resolvedIndex = routeIndex ?? 0;
+  if (resolvedIndex < 0 || resolvedIndex >= routeCount) {
+    return NextResponse.json(
+      { error: "Selected route is no longer available — please re-plan your route" },
+      { status: 422 }
+    );
+  }
+
+  const route = directionsData.routes[resolvedIndex];
 
   const coordinates = route.geometry.coordinates as [number, number][];
   const totalMiles = totalRouteMiles(coordinates);

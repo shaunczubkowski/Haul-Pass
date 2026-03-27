@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { AddressInput } from "@/components/AddressInput";
 import { TruckSelector } from "@/components/TruckSelector";
 import { LoadLevelSelector } from "@/components/LoadLevelSelector";
@@ -31,12 +31,13 @@ function getDefaultMapsApp(): MapsApp {
 }
 
 function formatDistance(miles: number): string {
-  return `${miles.toLocaleString()} mi`;
+  return `${miles.toLocaleString("en-US")} mi`;
 }
 
 function formatDuration(minutes: number): string {
-  const h = Math.floor(minutes / 60);
-  const m = minutes % 60;
+  const rounded = Math.round(minutes);
+  const h = Math.floor(rounded / 60);
+  const m = rounded % 60;
   if (h === 0) return `${m} min`;
   if (m === 0) return `${h} hr`;
   return `${h} hr ${m} min`;
@@ -56,62 +57,74 @@ export function RoutePlannerForm() {
   const [alternatives, setAlternatives] = useState<RouteAlternative[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // Focus management refs
+  const pickerRef = useRef<HTMLFieldSetElement>(null);
+  const resultsRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     setMapsApp(getDefaultMapsApp());
   }, []);
 
+  // Move focus into the picker when it appears so keyboard/SR users know
+  // new content is available without having to navigate away from the form.
+  useEffect(() => {
+    if (alternatives && pickerRef.current) {
+      pickerRef.current.focus();
+    }
+  }, [alternatives]);
+
+  // Move focus into the results section once the plan is ready.
+  useEffect(() => {
+    if (plan && resultsRef.current) {
+      resultsRef.current.focus();
+    }
+  }, [plan]);
+
   const canSubmit = origin !== null && destination !== null && truck !== null && !isLoading;
 
-  async function fetchPlan(routeIndex: number) {
-    setIsLoading(true);
+  // Core plan-fetching logic. Does not manage isLoading — callers own that
+  // so that every code path has an explicit try/finally reset.
+  async function fetchPlan(routeIndex: number): Promise<void> {
     setError(null);
 
     const parsedGasPrice = gasPrice !== "" ? parseFloat(gasPrice) : NaN;
     const validGasPrice =
       !isNaN(parsedGasPrice) && parsedGasPrice >= 0.01 ? parsedGasPrice : undefined;
 
-    try {
-      const res = await fetch("/api/route-plan", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          originId: origin!.id,
-          destinationId: destination!.id,
-          originCoords: origin!.coordinates,
-          destinationCoords: destination!.coordinates,
-          originName: origin!.fullAddress,
-          destinationName: destination!.fullAddress,
-          truckId: truck!.id,
-          riskTolerance,
-          loadLevel,
-          gasPricePerGallon: validGasPrice,
-          mapsApp,
-          routeIndex,
-        }),
-      });
+    const res = await fetch("/api/route-plan", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        originId: origin!.id,
+        destinationId: destination!.id,
+        originCoords: origin!.coordinates,
+        destinationCoords: destination!.coordinates,
+        originName: origin!.fullAddress,
+        destinationName: destination!.fullAddress,
+        truckId: truck!.id,
+        riskTolerance,
+        loadLevel,
+        gasPricePerGallon: validGasPrice,
+        mapsApp,
+        routeIndex,
+      }),
+    });
 
-      if (!res.ok) {
-        const data = (await res.json().catch(() => ({}))) as { error?: string };
-        if (res.status === 422) {
-          setError(
-            "We couldn't find a route between those locations. Check the addresses and try again."
-          );
-        } else {
-          setError(
-            data.error ?? "Something went wrong fetching your route. Try again in a moment."
-          );
-        }
-        return;
+    if (!res.ok) {
+      const data = (await res.json().catch(() => ({}))) as { error?: string };
+      if (res.status === 422) {
+        throw new Error(
+          data.error ?? "We couldn't find a route between those locations. Check the addresses and try again."
+        );
       }
-
-      const data = (await res.json()) as PlannedRoute;
-      setPlan(data);
-      setAlternatives(null);
-    } catch {
-      setError("Something went wrong fetching your route. Try again in a moment.");
-    } finally {
-      setIsLoading(false);
+      throw new Error(
+        data.error ?? "Something went wrong fetching your route. Try again in a moment."
+      );
     }
+
+    const data = (await res.json()) as PlannedRoute;
+    setPlan(data);
+    setAlternatives(null);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -135,17 +148,11 @@ export function RoutePlannerForm() {
 
       if (!altRes.ok) {
         const data = (await altRes.json().catch(() => ({}))) as { error?: string };
-        if (altRes.status === 422) {
-          setError(
-            "We couldn't find a route between those locations. Check the addresses and try again."
-          );
-        } else {
-          setError(
-            data.error ?? "Something went wrong fetching your route. Try again in a moment."
-          );
-        }
-        setIsLoading(false);
-        return;
+        throw new Error(
+          altRes.status === 422
+            ? "We couldn't find a route between those locations. Check the addresses and try again."
+            : (data.error ?? "Something went wrong fetching your route. Try again in a moment.")
+        );
       }
 
       const altData = (await altRes.json()) as { alternatives: RouteAlternative[] };
@@ -155,19 +162,28 @@ export function RoutePlannerForm() {
         // Single route — skip the picker and plan immediately
         await fetchPlan(0);
       } else {
-        // Multiple routes — let the user choose
+        // Multiple routes — show the picker; isLoading reset in finally below
         setAlternatives(alts);
-        setIsLoading(false);
       }
-    } catch {
-      setError("Something went wrong fetching your route. Try again in a moment.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong fetching your route. Try again in a moment.");
+    } finally {
+      // Always reset loading. If fetchPlan threw, this clears the spinner.
+      // If setAlternatives was called, this also clears it so the picker is interactive.
       setIsLoading(false);
     }
   }
 
   async function handleRouteSelect(index: number) {
     setAlternatives(null);
-    await fetchPlan(index);
+    setIsLoading(true);
+    try {
+      await fetchPlan(index);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong fetching your route. Try again in a moment.");
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   function handleSwap() {
@@ -325,16 +341,17 @@ export function RoutePlannerForm() {
         </div>
       )}
 
-      {/* Route selection step */}
+      {/* Route selection step — rendered as a fieldset so AT understands
+          the buttons are a group of mutually-exclusive route choices. */}
       {alternatives && !isLoading && (
-        <div
-          role="group"
-          aria-label="Choose your route"
-          className="flex flex-col gap-3"
+        <fieldset
+          ref={pickerRef}
+          tabIndex={-1}
+          className="flex flex-col gap-3 border-0 p-0 m-0 min-w-0 outline-none"
         >
-          <h2 className="text-sm font-semibold uppercase tracking-widest text-text-muted border-l-2 border-accent pl-2">
+          <legend className="text-sm font-semibold uppercase tracking-widest text-text-muted border-l-2 border-accent pl-2 float-left w-full mb-1">
             Choose Your Route
-          </h2>
+          </legend>
           <p className="text-xs text-text-muted">
             Mapbox found {alternatives.length} routes. Select the one that matches your planned drive.
           </p>
@@ -343,26 +360,31 @@ export function RoutePlannerForm() {
               key={alt.index}
               type="button"
               onClick={() => handleRouteSelect(alt.index)}
-              aria-label={`${alt.label}, ${formatDistance(alt.distanceMiles)}, ${formatDuration(alt.durationMinutes)}`}
+              disabled={isLoading}
               className={[
                 "w-full rounded-xl border-2 border-border bg-surface p-4 text-left",
                 "hover:border-accent transition-colors",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                "disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:border-border",
               ].join(" ")}
             >
               <p className="font-semibold text-text-primary">{alt.label}</p>
               <p className="mt-1 text-sm text-text-secondary">
                 {formatDistance(alt.distanceMiles)}
-                <span className="mx-2 text-text-muted">·</span>
+                <span aria-hidden="true" className="mx-2 text-text-muted">·</span>
                 {formatDuration(alt.durationMinutes)}
               </p>
             </button>
           ))}
-        </div>
+        </fieldset>
       )}
 
       {/* Results */}
-      {plan && !isLoading && <RoutePlanResults plan={plan} />}
+      {plan && !isLoading && (
+        <div ref={resultsRef} tabIndex={-1} className="outline-none">
+          <RoutePlanResults plan={plan} />
+        </div>
+      )}
     </div>
   );
 }

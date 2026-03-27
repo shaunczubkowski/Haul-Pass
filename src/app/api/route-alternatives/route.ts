@@ -3,6 +3,9 @@ import type { RouteAlternative } from "@/types";
 
 const MAPBOX_TOKEN = process.env.MAPBOX_SECRET_TOKEN;
 
+function isValidLat(v: number) { return v >= -90 && v <= 90; }
+function isValidLng(v: number) { return v >= -180 && v <= 180; }
+
 export async function GET(request: NextRequest) {
   if (!MAPBOX_TOKEN) {
     return NextResponse.json(
@@ -36,14 +39,22 @@ export async function GET(request: NextRequest) {
     );
   }
 
+  if (!isValidLat(lat1) || !isValidLat(lat2) || !isValidLng(lng1) || !isValidLng(lng2)) {
+    return NextResponse.json(
+      { error: "Coordinates out of range (lat: −90–90, lng: −180–180)" },
+      { status: 400 }
+    );
+  }
+
   const directionsUrl = new URL(
     `https://api.mapbox.com/directions/v5/mapbox/driving/${lng1},${lat1};${lng2},${lat2}`
   );
   directionsUrl.searchParams.set("access_token", MAPBOX_TOKEN);
   directionsUrl.searchParams.set("alternatives", "true");
   directionsUrl.searchParams.set("geometries", "geojson");
-  // overview=false: skip full geometry — we only need distance/duration/summary
-  directionsUrl.searchParams.set("overview", "false");
+  // overview=simplified: smaller geometry than "full" but still includes
+  // legs[0].summary (the highway name list). overview=false suppresses summary.
+  directionsUrl.searchParams.set("overview", "simplified");
 
   let directionsResponse: Response;
   try {
@@ -84,7 +95,12 @@ export async function GET(request: NextRequest) {
     };
   });
 
-  return NextResponse.json({ alternatives });
+  // Cache for 2 minutes — alternatives for a given coordinate pair are
+  // deterministic and change only when Mapbox updates routing data.
+  return NextResponse.json(
+    { alternatives },
+    { headers: { "Cache-Control": "public, max-age=120, stale-while-revalidate=60" } }
+  );
 }
 
 interface MapboxDirectionsResponse {
@@ -92,7 +108,7 @@ interface MapboxDirectionsResponse {
     distance: number;   // meters
     duration: number;   // seconds
     legs?: Array<{
-      summary?: string; // e.g. "I-80 E, I-76 E"
+      summary?: string; // e.g. "I-80 E, I-76 E" — present when overview != false
     }>;
   }>;
 }
