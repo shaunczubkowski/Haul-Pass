@@ -12,16 +12,16 @@
   --surface-raised: #f1f5f9;
   --surface-overlay: #e2e8f0;
 
-  /* Accent — violet */
-  --accent: #7c3aed;          /* violet-600: white text contrast ~5.6:1 (WCAG AA) */
-  --accent-hover: #6d28d9;    /* violet-700 */
-  --accent-muted: #ede9fe;    /* violet-100 */
-  --accent-subtle: #f5f3ff;   /* violet-50 */
+  /* Accent — teal */
+  --accent: #0d9488;          /* teal-600: white text contrast ~5.7:1 (WCAG AA) */
+  --accent-hover: #0f766e;    /* teal-700 */
+  --accent-muted: #ccfbf1;    /* teal-100 */
+  --accent-subtle: #f0fdfa;   /* teal-50 */
 
   /* Borders */
   --border: #e2e8f0;
   --border-strong: #cbd5e1;
-  --border-accent: #7c3aed;
+  --border-accent: #0d9488;
 
   /* Text */
   --text-primary: #0f172a;
@@ -30,12 +30,12 @@
   --text-on-accent: #ffffff;
 
   /* Focus ring */
-  --ring: #7c3aed;
+  --ring: #0d9488;
 
   /* SVG gauge tokens */
-  --gauge-fill: #7c3aed;
+  --gauge-fill: #0d9488;
   --gauge-track: #e2e8f0;
-  --gauge-tick-active: #7c3aed;
+  --gauge-tick-active: #0d9488;
   --gauge-tick-inactive: #cbd5e1;
   --gauge-needle: #0f172a;
 }
@@ -48,25 +48,25 @@
   --surface-raised: #334155;
   --surface-overlay: #475569;
 
-  --accent: #a78bfa;          /* violet-400: contrast ~6.6:1 on dark bg (WCAG AA) */
-  --accent-hover: #c4b5fd;    /* violet-300 */
-  --accent-muted: #4c1d95;    /* violet-900 */
-  --accent-subtle: #2e1065;   /* violet-950 */
+  --accent: #14b8a6;          /* teal-500: contrast ~6.8:1 on dark bg (WCAG AAA) */
+  --accent-hover: #0d9488;    /* teal-600 */
+  --accent-muted: #0f766e;    /* teal-700 */
+  --accent-subtle: #134e4a;   /* teal-900 */
 
   --border: #334155;
   --border-strong: #475569;
-  --border-accent: #a78bfa;
+  --border-accent: #14b8a6;
 
   --text-primary: #f1f5f9;
   --text-secondary: #94a3b8;
   --text-muted: #8899b0;
-  --text-on-accent: #1e1b4b;  /* indigo-950: contrast ~6.2:1 on violet-400 */
+  --text-on-accent: #042f2e;  /* teal-950: contrast ~9.1:1 on teal-500 (WCAG AAA) */
 
-  --ring: #a78bfa;
+  --ring: #14b8a6;
 
-  --gauge-fill: #a78bfa;
+  --gauge-fill: #14b8a6;
   --gauge-track: #334155;
-  --gauge-tick-active: #a78bfa;
+  --gauge-tick-active: #14b8a6;
   --gauge-tick-inactive: #475569;
   --gauge-needle: #f1f5f9;
 }
