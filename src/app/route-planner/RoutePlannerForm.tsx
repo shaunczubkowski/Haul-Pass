@@ -6,7 +6,14 @@ import { TruckSelector } from "@/components/TruckSelector";
 import { LoadLevelSelector } from "@/components/LoadLevelSelector";
 import { RiskToleranceSelector } from "@/components/RiskToleranceSelector";
 import { RoutePlanResults } from "@/components/RoutePlanResults";
-import type { AddressSuggestion, TruckType, LoadLevel, RiskTolerance, PlannedRoute } from "@/types";
+import type {
+  AddressSuggestion,
+  TruckType,
+  LoadLevel,
+  RiskTolerance,
+  PlannedRoute,
+  RouteAlternative,
+} from "@/types";
 
 const MAPS_APP_KEY = "fillright:mapsApp";
 
@@ -23,6 +30,18 @@ function getDefaultMapsApp(): MapsApp {
   return /iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent) ? "apple" : "google";
 }
 
+function formatDistance(miles: number): string {
+  return `${miles.toLocaleString()} mi`;
+}
+
+function formatDuration(minutes: number): string {
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  if (h === 0) return `${m} min`;
+  if (m === 0) return `${h} hr`;
+  return `${h} hr ${m} min`;
+}
+
 export function RoutePlannerForm() {
   const [origin, setOrigin] = useState<AddressSuggestion | null>(null);
   const [destination, setDestination] = useState<AddressSuggestion | null>(null);
@@ -34,6 +53,7 @@ export function RoutePlannerForm() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [plan, setPlan] = useState<PlannedRoute | null>(null);
+  const [alternatives, setAlternatives] = useState<RouteAlternative[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -42,16 +62,13 @@ export function RoutePlannerForm() {
 
   const canSubmit = origin !== null && destination !== null && truck !== null && !isLoading;
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!canSubmit) return;
-
+  async function fetchPlan(routeIndex: number) {
     setIsLoading(true);
     setError(null);
-    setPlan(null);
 
     const parsedGasPrice = gasPrice !== "" ? parseFloat(gasPrice) : NaN;
-    const validGasPrice = !isNaN(parsedGasPrice) && parsedGasPrice >= 0.01 ? parsedGasPrice : undefined;
+    const validGasPrice =
+      !isNaN(parsedGasPrice) && parsedGasPrice >= 0.01 ? parsedGasPrice : undefined;
 
     try {
       const res = await fetch("/api/route-plan", {
@@ -69,21 +86,27 @@ export function RoutePlannerForm() {
           loadLevel,
           gasPricePerGallon: validGasPrice,
           mapsApp,
+          routeIndex,
         }),
       });
 
       if (!res.ok) {
-        const data = await res.json().catch(() => ({})) as { error?: string };
+        const data = (await res.json().catch(() => ({}))) as { error?: string };
         if (res.status === 422) {
-          setError("We couldn't find a route between those locations. Check the addresses and try again.");
+          setError(
+            "We couldn't find a route between those locations. Check the addresses and try again."
+          );
         } else {
-          setError(data.error ?? "Something went wrong fetching your route. Try again in a moment.");
+          setError(
+            data.error ?? "Something went wrong fetching your route. Try again in a moment."
+          );
         }
         return;
       }
 
-      const data = await res.json() as PlannedRoute;
+      const data = (await res.json()) as PlannedRoute;
       setPlan(data);
+      setAlternatives(null);
     } catch {
       setError("Something went wrong fetching your route. Try again in a moment.");
     } finally {
@@ -91,11 +114,68 @@ export function RoutePlannerForm() {
     }
   }
 
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!canSubmit) return;
+
+    setIsLoading(true);
+    setError(null);
+    setPlan(null);
+    setAlternatives(null);
+
+    try {
+      const params = new URLSearchParams({
+        originLat: String(origin!.coordinates.lat),
+        originLng: String(origin!.coordinates.lng),
+        destLat: String(destination!.coordinates.lat),
+        destLng: String(destination!.coordinates.lng),
+      });
+
+      const altRes = await fetch(`/api/route-alternatives?${params.toString()}`);
+
+      if (!altRes.ok) {
+        const data = (await altRes.json().catch(() => ({}))) as { error?: string };
+        if (altRes.status === 422) {
+          setError(
+            "We couldn't find a route between those locations. Check the addresses and try again."
+          );
+        } else {
+          setError(
+            data.error ?? "Something went wrong fetching your route. Try again in a moment."
+          );
+        }
+        setIsLoading(false);
+        return;
+      }
+
+      const altData = (await altRes.json()) as { alternatives: RouteAlternative[] };
+      const alts = altData.alternatives;
+
+      if (alts.length <= 1) {
+        // Single route — skip the picker and plan immediately
+        await fetchPlan(0);
+      } else {
+        // Multiple routes — let the user choose
+        setAlternatives(alts);
+        setIsLoading(false);
+      }
+    } catch {
+      setError("Something went wrong fetching your route. Try again in a moment.");
+      setIsLoading(false);
+    }
+  }
+
+  async function handleRouteSelect(index: number) {
+    setAlternatives(null);
+    await fetchPlan(index);
+  }
+
   function handleSwap() {
     const tmp = origin;
     setOrigin(destination);
     setDestination(tmp);
     setPlan(null);
+    setAlternatives(null);
   }
 
   return (
@@ -211,7 +291,10 @@ export function RoutePlannerForm() {
         >
           {isLoading ? (
             <span className="flex items-center justify-center gap-2">
-              <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" aria-hidden="true" />
+              <span
+                className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"
+                aria-hidden="true"
+              />
               Planning your route…
             </span>
           ) : (
@@ -239,6 +322,42 @@ export function RoutePlannerForm() {
           >
             Dismiss
           </button>
+        </div>
+      )}
+
+      {/* Route selection step */}
+      {alternatives && !isLoading && (
+        <div
+          role="group"
+          aria-label="Choose your route"
+          className="flex flex-col gap-3"
+        >
+          <h2 className="text-sm font-semibold uppercase tracking-widest text-text-muted border-l-2 border-accent pl-2">
+            Choose Your Route
+          </h2>
+          <p className="text-xs text-text-muted">
+            Mapbox found {alternatives.length} routes. Select the one that matches your planned drive.
+          </p>
+          {alternatives.map((alt) => (
+            <button
+              key={alt.index}
+              type="button"
+              onClick={() => handleRouteSelect(alt.index)}
+              aria-label={`${alt.label}, ${formatDistance(alt.distanceMiles)}, ${formatDuration(alt.durationMinutes)}`}
+              className={[
+                "w-full rounded-xl border-2 border-border bg-surface p-4 text-left",
+                "hover:border-accent transition-colors",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              ].join(" ")}
+            >
+              <p className="font-semibold text-text-primary">{alt.label}</p>
+              <p className="mt-1 text-sm text-text-secondary">
+                {formatDistance(alt.distanceMiles)}
+                <span className="mx-2 text-text-muted">·</span>
+                {formatDuration(alt.durationMinutes)}
+              </p>
+            </button>
+          ))}
         </div>
       )}
 

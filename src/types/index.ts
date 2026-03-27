@@ -144,6 +144,13 @@ export interface RouteStop {
   };
 }
 
+export interface RouteAlternative {
+  index: number;
+  distanceMiles: number;
+  durationMinutes: number;
+  label: string; // "via I-80 E" or "Route 1"
+}
+
 export interface PlannedRoute {
   origin: AddressSuggestion;
   destination: AddressSuggestion;

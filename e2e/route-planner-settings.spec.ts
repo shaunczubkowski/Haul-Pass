@@ -64,9 +64,21 @@ function makeMockRoute(stopCount = 2) {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
+const SINGLE_ALTERNATIVE = {
+  alternatives: [
+    { index: 0, distanceMiles: 1000, durationMinutes: 900, label: "via I-80 E" },
+  ],
+};
+
 /** Fill and submit the route planner form. The caller is responsible for
- *  setting up the /api/route-plan mock before calling this. */
+ *  setting up the /api/route-plan mock before calling this. The
+ *  /api/route-alternatives mock is set up automatically (single route,
+ *  skips the picker). */
 async function fillAndSubmitForm(page: import("@playwright/test").Page) {
+  await page.route("**/api/route-alternatives**", (route) =>
+    route.fulfill({ json: SINGLE_ALTERNATIVE })
+  );
+
   await page.getByRole("combobox", { name: /starting from/i }).fill("Chicago");
   await expect(page.getByRole("option").first()).toBeVisible();
   await page.getByRole("option").first().click();

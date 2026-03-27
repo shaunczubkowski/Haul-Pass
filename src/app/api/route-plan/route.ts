@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 
-  const { originId, destinationId, originCoords, destinationCoords, originName, destinationName, truckId, riskTolerance, loadLevel, gasPricePerGallon, mapsApp } = body;
+  const { originId, destinationId, originCoords, destinationCoords, originName, destinationName, truckId, riskTolerance, loadLevel, gasPricePerGallon, mapsApp, routeIndex } = body;
 
   if (!originCoords || !destinationCoords || !truckId) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -39,6 +39,7 @@ export async function POST(request: NextRequest) {
     `https://api.mapbox.com/directions/v5/mapbox/driving/${originCoords.lng},${originCoords.lat};${destinationCoords.lng},${destinationCoords.lat}`
   );
   directionsUrl.searchParams.set("access_token", MAPBOX_TOKEN);
+  directionsUrl.searchParams.set("alternatives", "true");
   directionsUrl.searchParams.set("geometries", "geojson");
   directionsUrl.searchParams.set("overview", "full");
 
@@ -56,7 +57,8 @@ export async function POST(request: NextRequest) {
   }
 
   const directionsData = await directionsResponse.json() as MapboxDirectionsResponse;
-  const route = directionsData.routes?.[0];
+  const selectedIndex = typeof routeIndex === "number" && routeIndex >= 0 ? routeIndex : 0;
+  const route = directionsData.routes?.[selectedIndex] ?? directionsData.routes?.[0];
   if (!route) {
     return NextResponse.json({ error: "No route found between these locations" }, { status: 422 });
   }
@@ -179,6 +181,7 @@ interface RoutePlanRequest {
   loadLevel?: "empty" | "partial" | "full";
   gasPricePerGallon?: number;
   mapsApp?: "google" | "apple";
+  routeIndex?: number;
 }
 
 interface MapboxDirectionsResponse {
@@ -186,5 +189,7 @@ interface MapboxDirectionsResponse {
     geometry: {
       coordinates: number[][];
     };
+    distance: number;
+    duration: number;
   }>;
 }

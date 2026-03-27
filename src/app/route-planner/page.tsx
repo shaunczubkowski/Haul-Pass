@@ -6,9 +6,11 @@ import { RoutePlannerForm } from "./RoutePlannerForm";
 export const metadata: Metadata = {
   title: "Route Fuel Planner — FillRight",
   description:
-    "Plan your moving truck fuel stops for long-distance trips. Enter your route and truck to get gallon-by-gallon stop recommendations every 180 miles.",
+    "Plan your moving truck fuel stops for long-distance trips. Enter your route and truck to get gallon-by-gallon stop recommendations.",
   robots: { index: true, follow: true },
 };
+
+const FEATURE_ENABLED = process.env.NEXT_PUBLIC_FEATURE_ROUTE_PLANNER === "true";
 
 export default function RoutePlannerPage() {
   return (
@@ -21,18 +23,37 @@ export default function RoutePlannerPage() {
           </div>
           <p className="text-3xl font-bold tracking-tight text-text-primary">FillRight</p>
           <h1 className="mt-1 text-xl font-semibold text-text-primary">Route Fuel Planner</h1>
-          <p className="mt-1 text-sm text-text-secondary">
-            Long-distance move? Plan your fuel stops every 180 miles — know exactly how many gallons to add at each one.
-          </p>
-          <p className="mt-3 text-xs text-text-muted">
-            Need to calculate your return fill-up?{" "}
-            <Link href="/" className="underline hover:text-text-secondary transition-colors">
-              Use the fuel return calculator →
-            </Link>
-          </p>
+          {FEATURE_ENABLED ? (
+            <>
+              <p className="mt-1 text-sm text-text-secondary">
+                Long-distance move? Plan your fuel stops — know exactly how many gallons to add at each one.
+              </p>
+              <p className="mt-3 text-xs text-text-muted">
+                Need to calculate your return fill-up?{" "}
+                <Link href="/" className="underline hover:text-text-secondary transition-colors">
+                  Use the fuel return calculator →
+                </Link>
+              </p>
+            </>
+          ) : (
+            <p className="mt-1 text-sm text-text-secondary">
+              Coming soon — route-based fuel stop planning for long-distance moves.
+            </p>
+          )}
         </div>
 
-        <RoutePlannerForm />
+        {FEATURE_ENABLED ? (
+          <RoutePlannerForm />
+        ) : (
+          <div className="rounded-xl border border-border bg-surface p-8 text-center shadow-sm">
+            <p className="text-sm text-text-muted">
+              This feature is under active development.{" "}
+              <Link href="/" className="underline hover:text-text-secondary transition-colors">
+                Return to the calculator →
+              </Link>
+            </p>
+          </div>
+        )}
       </div>
     </main>
   );

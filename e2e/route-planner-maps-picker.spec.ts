@@ -73,11 +73,20 @@ function makeMockRoute(
 
 // ─── Helper ───────────────────────────────────────────────────────────────────
 
+const SINGLE_ALTERNATIVE = {
+  alternatives: [
+    { index: 0, distanceMiles: 1000, durationMinutes: 900, label: "via I-80 E" },
+  ],
+};
+
 async function planRoute(
   page: import("@playwright/test").Page,
   stopCount = 2,
   options: { fuelType?: "regular" | "diesel" } = {}
 ) {
+  await page.route("**/api/route-alternatives**", (route) =>
+    route.fulfill({ json: SINGLE_ALTERNATIVE })
+  );
   await page.route("**/api/route-plan", (route) =>
     route.fulfill({ json: makeMockRoute(stopCount, options) })
   );
