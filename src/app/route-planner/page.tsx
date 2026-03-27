@@ -10,7 +10,14 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
-const FEATURE_ENABLED = process.env.NEXT_PUBLIC_FEATURE_ROUTE_PLANNER === "true";
+// force-dynamic ensures the feature flag is read from the server environment
+// at request time rather than being baked in at build time.
+// NEXT_PUBLIC_ variables are inlined by the bundler during the build and cannot
+// be changed after deployment without a rebuild — a plain server-side env var
+// read on a dynamic page gives true runtime control.
+export const dynamic = "force-dynamic";
+
+const FEATURE_ENABLED = process.env.FEATURE_ROUTE_PLANNER === "true";
 
 export default function RoutePlannerPage() {
   return (
