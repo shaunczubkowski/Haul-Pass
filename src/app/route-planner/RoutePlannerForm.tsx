@@ -353,7 +353,7 @@ export function RoutePlannerForm() {
             Choose Your Route
           </legend>
           <p className="text-xs text-text-muted">
-            Mapbox found {alternatives.length} routes. Select the one that matches your planned drive.
+            We found {alternatives.length} routes. Select the one that matches your planned drive.
           </p>
           {alternatives.map((alt) => (
             <button
