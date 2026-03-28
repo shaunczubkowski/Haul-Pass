@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     "getfillright.com",
   ],
   manifest: "/manifest.json",
-  themeColor: "#7c3aed",
+  themeColor: "#0284c7",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",

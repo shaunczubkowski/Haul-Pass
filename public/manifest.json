@@ -4,8 +4,8 @@
   "description": "Calculate exactly how many gallons to add before returning your moving truck.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#7c3aed",
-  "theme_color": "#7c3aed",
+  "background_color": "#0284c7",
+  "theme_color": "#0284c7",
   "icons": [
     {
       "src": "/icon-192.png",
