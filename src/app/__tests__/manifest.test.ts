@@ -42,8 +42,8 @@ describe("public/manifest.json", () => {
     expect(manifest.name).toBe("FillRight");
   });
 
-  it("theme_color matches brand purple", () => {
-    expect(manifest.theme_color).toBe("#7c3aed");
+  it("theme_color matches brand accent", () => {
+    expect(manifest.theme_color).toBe("#0284c7");
   });
 
   it("has a maskable icon entry for 192x192 pointing to the dedicated maskable file", () => {
@@ -92,9 +92,9 @@ describe("PWA icon assets", () => {
     expect(existsSync(join(publicDir, "apple-touch-icon.png"))).toBe(true);
   });
 
-  it("icon.svg contains brand purple color", () => {
+  it("icon.svg contains brand accent color", () => {
     const svg = readFileSync(join(publicDir, "icon.svg"), "utf-8");
-    expect(svg).toContain("#7c3aed");
+    expect(svg).toContain("#0284c7");
   });
 
   it("icon.svg has accessibility attributes", () => {
