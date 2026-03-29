@@ -149,6 +149,8 @@ export interface RouteAlternative {
   distanceMiles: number;
   durationMinutes: number;
   label: string; // "via I-80 E" or "Route 1"
+  /** Full GeoJSON coordinates — passed back to /api/route-plan to avoid a second Mapbox call (#99) */
+  geometry: [number, number][];
 }
 
 export interface PlannedRoute {

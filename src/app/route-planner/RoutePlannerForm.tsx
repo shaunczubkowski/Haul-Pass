@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { ArrowUpDown } from "lucide-react";
 import { AddressInput } from "@/components/AddressInput";
 import { TruckSelector } from "@/components/TruckSelector";
 import { LoadLevelSelector } from "@/components/LoadLevelSelector";
@@ -84,7 +85,9 @@ export function RoutePlannerForm() {
 
   // Core plan-fetching logic. Does not manage isLoading — callers own that
   // so that every code path has an explicit try/finally reset.
-  async function fetchPlan(routeIndex: number): Promise<void> {
+  // routeGeometry is the pre-fetched full geometry from /api/route-alternatives;
+  // passing it avoids a second Mapbox call and ensures route consistency (#99).
+  async function fetchPlan(routeIndex: number, routeGeometry?: [number, number][]): Promise<void> {
     setError(null);
 
     const parsedGasPrice = gasPrice !== "" ? parseFloat(gasPrice) : NaN;
@@ -107,6 +110,7 @@ export function RoutePlannerForm() {
         gasPricePerGallon: validGasPrice,
         mapsApp,
         routeIndex,
+        routeGeometry,
       }),
     });
 
@@ -159,8 +163,8 @@ export function RoutePlannerForm() {
       const alts = altData.alternatives;
 
       if (alts.length <= 1) {
-        // Single route — skip the picker and plan immediately
-        await fetchPlan(0);
+        // Single route — skip the picker and plan immediately, passing geometry directly
+        await fetchPlan(0, alts[0]?.geometry);
       } else {
         // Multiple routes — show the picker; isLoading reset in finally below
         setAlternatives(alts);
@@ -174,11 +178,11 @@ export function RoutePlannerForm() {
     }
   }
 
-  async function handleRouteSelect(index: number) {
+  async function handleRouteSelect(index: number, geometry?: [number, number][]) {
     setAlternatives(null);
     setIsLoading(true);
     try {
-      await fetchPlan(index);
+      await fetchPlan(index, geometry);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong fetching your route. Try again in a moment.");
     } finally {
@@ -224,7 +228,7 @@ export function RoutePlannerForm() {
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                 ].join(" ")}
               >
-                ↕
+                <ArrowUpDown size={18} aria-hidden="true" />
               </button>
               <div className="flex-1 h-px bg-border" aria-hidden="true" />
             </div>
@@ -296,6 +300,7 @@ export function RoutePlannerForm() {
         <button
           type="submit"
           disabled={!canSubmit}
+          aria-busy={isLoading}
           aria-describedby={!truck ? "plan-route-hint" : undefined}
           className={[
             "w-full rounded-xl py-4 text-base font-bold transition-colors",
@@ -359,7 +364,7 @@ export function RoutePlannerForm() {
             <button
               key={alt.index}
               type="button"
-              onClick={() => handleRouteSelect(alt.index)}
+              onClick={() => handleRouteSelect(alt.index, alt.geometry)}
               disabled={isLoading}
               className={[
                 "w-full rounded-xl border-2 border-border bg-surface p-4 text-left",
@@ -377,6 +382,23 @@ export function RoutePlannerForm() {
             </button>
           ))}
         </fieldset>
+      )}
+
+      {/* Loading skeleton — shown while waiting for the plan after route selection */}
+      {isLoading && !alternatives && (
+        <div
+          role="status"
+          aria-label="Planning your route"
+          className="flex flex-col gap-3"
+        >
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="h-20 rounded-xl bg-surface-raised animate-pulse"
+              aria-hidden="true"
+            />
+          ))}
+        </div>
       )}
 
       {/* Results */}
