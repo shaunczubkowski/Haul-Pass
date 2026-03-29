@@ -16,7 +16,7 @@ const DENVER = {
   coordinates: { lat: 39.7392, lng: -104.9903 },
 };
 
-// Minimal 2-point geometry — enough to satisfy the >= 2 check in selectRouteCoordinates
+// Minimal 2-point geometry — enough to satisfy the >= 2 passthrough check in /api/route-plan
 const GEO_0: [number, number][] = [[-87.6298, 41.8781], [-104.9903, 39.7392]];
 const GEO_1: [number, number][] = [[-87.6298, 41.8781], [-95.0, 40.0], [-104.9903, 39.7392]];
 

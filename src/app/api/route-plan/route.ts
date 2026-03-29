@@ -5,6 +5,7 @@ import { getTruckById } from "@/data/trucks";
 import { GAUGE_LEVELS, LOAD_LEVEL_CONFIG } from "@/types";
 import { RISK_TOLERANCE_BUFFERS } from "@/lib/calculator";
 import { validateGasPrice } from "@/lib/validateGasPrice";
+import { validateRouteGeometry } from "@/lib/validateRouteGeometry";
 import type { PlannedRoute, RouteStop, AddressSuggestion } from "@/types";
 
 const MAPBOX_TOKEN = process.env.MAPBOX_SECRET_TOKEN;
@@ -57,6 +58,13 @@ export async function POST(request: NextRequest) {
   // reuse it directly — this avoids a second Mapbox call and eliminates the risk of
   // the alternative sets diverging between the two requests (#99).
   let coordinates: [number, number][];
+
+  // Validate client-supplied geometry — it bypasses the coordsInRange() guard
+  // applied to originCoords/destinationCoords above (#review).
+  const geometryValidation = validateRouteGeometry(routeGeometry);
+  if (!geometryValidation.ok) {
+    return NextResponse.json({ error: geometryValidation.error }, { status: 400 });
+  }
 
   if (routeGeometry && routeGeometry.length >= 2) {
     coordinates = routeGeometry;

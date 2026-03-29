@@ -135,7 +135,7 @@ test.describe("route planner — submit button aria-busy (#100)", () => {
     await expect(submitBtn).toHaveAttribute("aria-busy", "true");
 
     // Unblock the response
-    resolveAlt!();
+    resolveAlt?.();
     await expect(page.getByRole("region", { name: /route plan results/i })).toBeVisible();
 
     // Once complete, aria-busy reverts to false
@@ -165,7 +165,7 @@ test.describe("route planner — submit button aria-busy (#100)", () => {
     const submitBtn = page.getByRole("button", { name: /plan route/i });
     await expect(submitBtn).toHaveAttribute("aria-busy", "true");
 
-    resolvePlan!();
+    resolvePlan?.();
     await expect(page.getByRole("region", { name: /route plan results/i })).toBeVisible();
     await expect(submitBtn).toHaveAttribute("aria-busy", "false");
   });
@@ -201,7 +201,7 @@ test.describe("route planner — loading skeleton in results area (#100)", () =>
     // Loading skeleton should be visible during fetch
     await expect(page.getByRole("status", { name: /planning your route/i })).toBeVisible();
 
-    resolvePlan!();
+    resolvePlan?.();
     // Skeleton disappears once results arrive
     await expect(page.getByRole("status", { name: /planning your route/i })).not.toBeVisible();
     await expect(page.getByRole("region", { name: /route plan results/i })).toBeVisible();
@@ -225,7 +225,7 @@ test.describe("route planner — loading skeleton in results area (#100)", () =>
     // Skeleton should be visible while alternatives are fetching too
     await expect(page.getByRole("status", { name: /planning your route/i })).toBeVisible();
 
-    resolveAlt!();
+    resolveAlt?.();
     await expect(page.getByRole("region", { name: /route plan results/i })).toBeVisible();
     await expect(page.getByRole("status", { name: /planning your route/i })).not.toBeVisible();
   });
