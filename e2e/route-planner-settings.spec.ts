@@ -64,9 +64,11 @@ function makeMockRoute(stopCount = 2) {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
+const SINGLE_GEOMETRY: [number, number][] = [[-87.6298, 41.8781], [-104.9903, 39.7392]];
+
 const SINGLE_ALTERNATIVE = {
   alternatives: [
-    { index: 0, distanceMiles: 1000, durationMinutes: 900, label: "via I-80 E" },
+    { index: 0, distanceMiles: 1000, durationMinutes: 900, label: "via I-80 E", geometry: SINGLE_GEOMETRY },
   ],
 };
 

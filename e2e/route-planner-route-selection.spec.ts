@@ -16,16 +16,20 @@ const DENVER = {
   coordinates: { lat: 39.7392, lng: -104.9903 },
 };
 
+// Minimal 2-point geometry — enough to satisfy the >= 2 check in selectRouteCoordinates
+const GEO_0: [number, number][] = [[-87.6298, 41.8781], [-104.9903, 39.7392]];
+const GEO_1: [number, number][] = [[-87.6298, 41.8781], [-95.0, 40.0], [-104.9903, 39.7392]];
+
 const ONE_ALTERNATIVE = {
   alternatives: [
-    { index: 0, distanceMiles: 1840, durationMinutes: 1500, label: "via I-80 E" },
+    { index: 0, distanceMiles: 1840, durationMinutes: 1500, label: "via I-80 E", geometry: GEO_0 },
   ],
 };
 
 const TWO_ALTERNATIVES = {
   alternatives: [
-    { index: 0, distanceMiles: 1840, durationMinutes: 1500, label: "via I-80 E" },
-    { index: 1, distanceMiles: 1967, durationMinutes: 1620, label: "via I-84 E, I-90 E" },
+    { index: 0, distanceMiles: 1840, durationMinutes: 1500, label: "via I-80 E", geometry: GEO_0 },
+    { index: 1, distanceMiles: 1967, durationMinutes: 1620, label: "via I-84 E, I-90 E", geometry: GEO_1 },
   ],
 };
 
