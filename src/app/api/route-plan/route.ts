@@ -4,6 +4,7 @@ import { sampleWaypoints, totalRouteMiles, gasStationMapsUrl } from "@/lib/route
 import { getTruckById } from "@/data/trucks";
 import { GAUGE_LEVELS, LOAD_LEVEL_CONFIG } from "@/types";
 import { RISK_TOLERANCE_BUFFERS } from "@/lib/calculator";
+import { validateGasPrice } from "@/lib/validateGasPrice";
 import type { PlannedRoute, RouteStop, AddressSuggestion } from "@/types";
 
 const MAPBOX_TOKEN = process.env.MAPBOX_SECRET_TOKEN;
@@ -23,7 +24,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 
-  const { originId, destinationId, originCoords, destinationCoords, originName, destinationName, truckId, riskTolerance, loadLevel, gasPricePerGallon, mapsApp, routeIndex } = body;
+  const { originId, destinationId, originCoords, destinationCoords, originName, destinationName, truckId, riskTolerance, loadLevel, gasPricePerGallon, mapsApp, routeIndex, routeGeometry } = body;
 
   if (!originCoords || !destinationCoords || !truckId) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -41,53 +42,67 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // Validate gasPricePerGallon before touching Mapbox (#98)
+  const gasPriceValidation = validateGasPrice(gasPricePerGallon);
+  if (!gasPriceValidation.ok) {
+    return NextResponse.json({ error: gasPriceValidation.error }, { status: 400 });
+  }
+
   const truck = getTruckById(truckId);
   if (!truck) {
     return NextResponse.json({ error: "Unknown truck" }, { status: 400 });
   }
 
-  // Fetch route from Mapbox Directions API
-  const directionsUrl = new URL(
-    `https://api.mapbox.com/directions/v5/mapbox/driving/${originCoords.lng},${originCoords.lat};${destinationCoords.lng},${destinationCoords.lat}`
-  );
-  directionsUrl.searchParams.set("access_token", MAPBOX_TOKEN);
-  directionsUrl.searchParams.set("alternatives", "true");
-  directionsUrl.searchParams.set("geometries", "geojson");
-  directionsUrl.searchParams.set("overview", "full");
+  // If the client passed back the geometry it received from /api/route-alternatives,
+  // reuse it directly — this avoids a second Mapbox call and eliminates the risk of
+  // the alternative sets diverging between the two requests (#99).
+  let coordinates: [number, number][];
 
-  let directionsResponse: Response;
-  try {
-    directionsResponse = await fetch(directionsUrl.toString(), {
-      signal: AbortSignal.timeout(8000),
-    });
-  } catch {
-    return NextResponse.json({ error: "Route fetch timed out" }, { status: 504 });
-  }
-
-  if (!directionsResponse.ok) {
-    return NextResponse.json({ error: "Routing service error" }, { status: 502 });
-  }
-
-  const directionsData = await directionsResponse.json() as MapboxDirectionsResponse;
-  const routes = directionsData.routes;
-  if (!routes?.length) {
-    return NextResponse.json({ error: "No route found between these locations" }, { status: 422 });
-  }
-
-  // If the caller provided a routeIndex, validate it is within bounds.
-  // An out-of-range index means the alternatives listing diverged from this
-  // call (extremely unlikely but worth an explicit error over a silent fallback).
-  const resolvedIndex = routeIndex ?? 0;
-  if (resolvedIndex < 0 || resolvedIndex >= routes.length) {
-    return NextResponse.json(
-      { error: "Selected route is no longer available — please re-plan your route" },
-      { status: 422 }
+  if (routeGeometry && routeGeometry.length >= 2) {
+    coordinates = routeGeometry;
+  } else {
+    // Fetch route from Mapbox Directions API
+    const directionsUrl = new URL(
+      `https://api.mapbox.com/directions/v5/mapbox/driving/${originCoords.lng},${originCoords.lat};${destinationCoords.lng},${destinationCoords.lat}`
     );
+    directionsUrl.searchParams.set("access_token", MAPBOX_TOKEN);
+    directionsUrl.searchParams.set("alternatives", "true");
+    directionsUrl.searchParams.set("geometries", "geojson");
+    directionsUrl.searchParams.set("overview", "full");
+
+    let directionsResponse: Response;
+    try {
+      directionsResponse = await fetch(directionsUrl.toString(), {
+        signal: AbortSignal.timeout(8000),
+      });
+    } catch {
+      return NextResponse.json({ error: "Route fetch timed out" }, { status: 504 });
+    }
+
+    if (!directionsResponse.ok) {
+      return NextResponse.json({ error: "Routing service error" }, { status: 502 });
+    }
+
+    const directionsData = await directionsResponse.json() as MapboxDirectionsResponse;
+    const routes = directionsData.routes;
+    if (!routes?.length) {
+      return NextResponse.json({ error: "No route found between these locations" }, { status: 422 });
+    }
+
+    // If the caller provided a routeIndex, validate it is within bounds.
+    // An out-of-range index means the alternatives listing diverged from this
+    // call (extremely unlikely but worth an explicit error over a silent fallback).
+    const resolvedIndex = routeIndex ?? 0;
+    if (resolvedIndex < 0 || resolvedIndex >= routes.length) {
+      return NextResponse.json(
+        { error: "Selected route is no longer available — please re-plan your route" },
+        { status: 422 }
+      );
+    }
+
+    coordinates = routes[resolvedIndex].geometry.coordinates as [number, number][];
   }
 
-  const route = routes[resolvedIndex];
-
-  const coordinates = route.geometry.coordinates as [number, number][];
   const totalMiles = totalRouteMiles(coordinates);
 
   // Resolve settings — needed for both stop placement and per-leg fuel calculations
@@ -206,6 +221,8 @@ interface RoutePlanRequest {
   gasPricePerGallon?: number;
   mapsApp?: "google" | "apple";
   routeIndex?: number;
+  /** Full geometry coordinates from /api/route-alternatives — skips second Mapbox call when present (#99) */
+  routeGeometry?: [number, number][];
 }
 
 interface MapboxDirectionsResponse {

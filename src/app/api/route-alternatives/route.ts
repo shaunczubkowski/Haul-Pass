@@ -52,9 +52,9 @@ export async function GET(request: NextRequest) {
   directionsUrl.searchParams.set("access_token", MAPBOX_TOKEN);
   directionsUrl.searchParams.set("alternatives", "true");
   directionsUrl.searchParams.set("geometries", "geojson");
-  // overview=simplified: smaller geometry than "full" but still includes
-  // legs[0].summary (the highway name list). overview=false suppresses summary.
-  directionsUrl.searchParams.set("overview", "simplified");
+  // overview=full: required so the geometry can be passed back to /api/route-plan,
+  // eliminating the second Mapbox call and ensuring route consistency (#99).
+  directionsUrl.searchParams.set("overview", "full");
 
   let directionsResponse: Response;
   try {
@@ -92,6 +92,7 @@ export async function GET(request: NextRequest) {
       distanceMiles: Math.round((route.distance / 1609.344) * 10) / 10,
       durationMinutes: Math.round(route.duration / 60),
       label,
+      geometry: route.geometry.coordinates as [number, number][],
     };
   });
 
@@ -107,6 +108,9 @@ interface MapboxDirectionsResponse {
   routes?: Array<{
     distance: number;   // meters
     duration: number;   // seconds
+    geometry: {
+      coordinates: number[][];
+    };
     legs?: Array<{
       summary?: string; // e.g. "I-80 E, I-76 E" — present when overview != false
     }>;

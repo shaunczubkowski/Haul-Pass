@@ -26,7 +26,7 @@
   /* Text */
   --text-primary: #0f172a;
   --text-secondary: #475569;
-  --text-muted: #64748b;
+  --text-muted: #64748b;    /* slate-500: contrast ~4.76:1 on #ffffff surface (WCAG AA ✓) */
   --text-on-accent: #ffffff;
 
   /* Focus ring */
@@ -59,7 +59,7 @@
 
   --text-primary: #f1f5f9;
   --text-secondary: #94a3b8;
-  --text-muted: #8899b0;
+  --text-muted: #8899b0;      /* custom: contrast ~5.04:1 on #1e293b surface (WCAG AA ✓) */
   --text-on-accent: #082f49;  /* sky-950: contrast ~9.4:1 on sky-400 (WCAG AAA) */
 
   --ring: #38bdf8;
