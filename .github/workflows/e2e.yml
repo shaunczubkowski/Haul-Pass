@@ -1,10 +1,12 @@
 name: E2E Smoke Tests
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+  # Run against the Vercel preview deployment as soon as it is ready.
+  # The deployment URL is available directly in the event payload so no
+  # localhost server needs to start in CI.
+  deployment_status:
+  # Keep manual dispatch so the suite can be run against any URL on demand
+  # (e.g. a hotfix branch, staging, or production for a one-off check).
   workflow_dispatch:
     inputs:
       base_url:
@@ -13,13 +15,18 @@ on:
         default: "https://www.getfillright.com"
         type: string
 
+# Cancel an in-progress run for the same environment+branch when a newer
+# deployment comes in (e.g. two quick pushes to the same PR branch).
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.event.deployment.environment }}-${{ github.event.deployment.ref || github.ref }}
   cancel-in-progress: true
 
 jobs:
   smoke:
     name: Playwright smoke tests
+    # deployment_status: only run once Vercel marks the Preview deployment ready.
+    # workflow_dispatch: always run.
+    if: github.event_name == 'workflow_dispatch' || (github.event.deployment_status.state == 'success' && github.event.deployment.environment == 'Preview')
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -51,13 +58,15 @@ jobs:
       - name: Run smoke tests
         run: npx playwright test --project=chromium
         env:
-          BASE_URL: ${{ inputs.base_url || 'http://localhost:3000' }}
+          # deployment_status supplies the preview URL; workflow_dispatch falls
+          # back to the user-supplied input or the production URL.
+          BASE_URL: ${{ github.event.deployment_status.target_url || inputs.base_url || 'https://www.getfillright.com' }}
           FEATURE_ROUTE_PLANNER: "true"
 
       - name: Upload Playwright report
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: playwright-report
+          name: playwright-report-${{ github.run_id }}
           path: playwright-report/
           retention-days: 14
