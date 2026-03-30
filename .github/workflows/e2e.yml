@@ -51,7 +51,8 @@ jobs:
       - name: Run smoke tests
         run: npx playwright test --project=chromium
         env:
-          BASE_URL: ${{ inputs.base_url || 'https://www.getfillright.com' }}
+          BASE_URL: ${{ inputs.base_url || 'http://localhost:3000' }}
+          FEATURE_ROUTE_PLANNER: "true"
 
       - name: Upload Playwright report
         uses: actions/upload-artifact@v4
