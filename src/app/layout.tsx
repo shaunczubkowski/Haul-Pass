@@ -5,6 +5,7 @@ import { ServiceWorkerRegistration } from "@/components/ServiceWorkerRegistratio
 import { Footer } from "@/components/Footer";
 import { Analytics } from "@vercel/analytics/react";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { jsonLdFaqData, jsonLdHowToData } from "@/data/json-ld";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -136,7 +137,7 @@ export function JsonLd() {
 }
 
 // Re-exported for backwards compatibility — data lives in @/data/json-ld.
-export { jsonLdFaqData } from "@/data/json-ld";
+export { jsonLdFaqData, jsonLdHowToData };
 
 export function JsonLdFaq() {
   return (
@@ -146,9 +147,6 @@ export function JsonLdFaq() {
     />
   );
 }
-
-// Re-exported for backwards compatibility — data lives in @/data/json-ld.
-export { jsonLdHowToData } from "@/data/json-ld";
 
 export function JsonLdHowTo() {
   return (
