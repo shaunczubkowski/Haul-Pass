@@ -13,6 +13,7 @@ import { GAUGE_LEVELS, LOAD_LEVEL_CONFIG } from "@/types";
 import { getTruckById } from "@/data/trucks";
 import type { GaugeLevel, RiskTolerance, TruckType, LoadLevel } from "@/types";
 import { Fuel, MapPin } from "lucide-react";
+import { JsonLdFaq, JsonLdHowTo } from "./layout";
 
 // All 9 eighth-step levels selectable via the UI; used for URL param validation
 const VALID_LEVELS = new Set([0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0]);
@@ -209,6 +210,8 @@ export default function Home() {
 
   return (
     <main id="main-content" className="flex flex-1 flex-col items-center bg-background px-4 py-12">
+      <JsonLdFaq />
+      <JsonLdHowTo />
       <div className="relative w-full max-w-lg">
         {/* Theme toggle — top right */}
         <div className="absolute top-0 right-0">

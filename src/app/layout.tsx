@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://getfillright.com";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.getfillright.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -88,6 +88,24 @@ export const metadata: Metadata = {
     follow: true,
   },
 };
+
+export const jsonLdOrgData = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "FillRight",
+  url: siteUrl,
+  description:
+    "Free moving truck fuel return calculator — avoid the $30 rental surcharge with U-Haul, Penske, Budget, and Enterprise.",
+};
+
+export function JsonLdOrg() {
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdOrgData) }}
+    />
+  );
+}
 
 export const jsonLdData = {
   "@context": "https://schema.org",
@@ -245,9 +263,8 @@ export default function RootLayout({
           >
             Skip to main content
           </a>
+          <JsonLdOrg />
           <JsonLd />
-          <JsonLdFaq />
-          <JsonLdHowTo />
           <ServiceWorkerRegistration />
           {children}
           <Footer />

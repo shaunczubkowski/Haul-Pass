@@ -8,14 +8,25 @@ import {
 } from "@/data/trucks";
 import type { TruckType } from "@/types";
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.getfillright.com";
+
 export const metadata: Metadata = {
   title: "Moving Truck Specifications: Tank Size & MPG",
   description:
     "Compare moving truck tank capacity, MPG estimates, and fuel type across U-Haul, Penske, Budget, and Enterprise — with links to official sources.",
   robots: { index: true, follow: true },
+  alternates: { canonical: `${siteUrl}/truck-specs` },
+  openGraph: { url: `${siteUrl}/truck-specs` },
 };
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.getfillright.com";
+const jsonLdBreadcrumb = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "FillRight", item: siteUrl },
+    { "@type": "ListItem", position: 2, name: "Moving Truck Specifications", item: `${siteUrl}/truck-specs` },
+  ],
+};
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -191,6 +202,10 @@ export default function TruckSpecsPage() {
     <main id="main-content" className="flex flex-1 flex-col items-center bg-background px-4 py-12">
       <script
         type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdBreadcrumb) }}
+      />
+      <script
+        type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
@@ -245,15 +260,23 @@ export default function TruckSpecsPage() {
           </ul>
         </div>
 
-        <p className="mt-8 text-xs text-text-muted">
-          Not affiliated with U-Haul, Penske, Budget, or Enterprise. Specifications
-          sourced from public company pages and industry references.{" "}
+        {/* Calculator CTA */}
+        <div className="mt-10 rounded-xl border border-accent/30 bg-accent-subtle p-5 text-center">
+          <p className="font-semibold text-text-primary mb-1">Ready to calculate your fuel return?</p>
+          <p className="text-sm text-text-secondary mb-3">
+            Use FillRight to get the exact gallons to add before returning your U-Haul, Penske, Budget, or Enterprise truck — and avoid the $30 fuel surcharge.
+          </p>
           <Link
             href="/"
-            className="underline underline-offset-2 hover:text-text-secondary transition-colors"
+            className="inline-flex items-center gap-1 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-accent/90 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
-            Use the FillRight calculator →
+            Open the Moving Truck Fuel Calculator →
           </Link>
+        </div>
+
+        <p className="mt-8 text-xs text-text-muted">
+          Not affiliated with U-Haul, Penske, Budget, or Enterprise. Specifications
+          sourced from public company pages and industry references.
         </p>
       </div>
     </main>
