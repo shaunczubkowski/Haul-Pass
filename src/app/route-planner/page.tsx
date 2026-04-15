@@ -3,13 +3,6 @@ import Link from "next/link";
 import { Route } from "lucide-react";
 import { RoutePlannerForm } from "./RoutePlannerForm";
 
-export const metadata: Metadata = {
-  title: "Route Fuel Planner — FillRight",
-  description:
-    "Plan your moving truck fuel stops for long-distance trips. Enter your route and truck to get gallon-by-gallon stop recommendations.",
-  robots: { index: true, follow: true },
-};
-
 // force-dynamic ensures the feature flag is read from the server environment
 // at request time rather than being baked in at build time.
 // NEXT_PUBLIC_ variables are inlined by the bundler during the build and cannot
@@ -17,11 +10,37 @@ export const metadata: Metadata = {
 // read on a dynamic page gives true runtime control.
 export const dynamic = "force-dynamic";
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.getfillright.com";
 const FEATURE_ENABLED = process.env.FEATURE_ROUTE_PLANNER === "true";
+
+const jsonLdBreadcrumb = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "FillRight", item: siteUrl },
+    { "@type": "ListItem", position: 2, name: "Route Fuel Planner", item: `${siteUrl}/route-planner` },
+  ],
+};
+
+export function generateMetadata(): Metadata {
+  const featureEnabled = process.env.FEATURE_ROUTE_PLANNER === "true";
+  return {
+    title: "Route Fuel Planner for Moving Trucks — FillRight",
+    description:
+      "Plan fuel stops for long-distance moving truck trips with U-Haul, Penske, Budget, and Enterprise. Know exactly how many gallons to add at each stop.",
+    robots: featureEnabled ? { index: true, follow: true } : { index: false, follow: true },
+    alternates: { canonical: `${siteUrl}/route-planner` },
+    openGraph: { url: `${siteUrl}/route-planner` },
+  };
+}
 
 export default function RoutePlannerPage() {
   return (
     <main id="main-content" className="flex flex-1 flex-col items-center bg-background px-4 py-12">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdBreadcrumb) }}
+      />
       <div className="w-full max-w-lg">
         {/* Header */}
         <div className="mb-8 text-center">
