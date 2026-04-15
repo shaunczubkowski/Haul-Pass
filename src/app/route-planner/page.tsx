@@ -22,14 +22,17 @@ const jsonLdBreadcrumb = {
   ],
 };
 
-export const metadata: Metadata = {
-  title: "Route Fuel Planner for Moving Trucks — FillRight",
-  description:
-    "Plan fuel stops for long-distance moving truck trips with U-Haul, Penske, Budget, and Enterprise. Know exactly how many gallons to add at each stop.",
-  robots: FEATURE_ENABLED ? { index: true, follow: true } : { index: false, follow: true },
-  alternates: { canonical: `${siteUrl}/route-planner` },
-  openGraph: { url: `${siteUrl}/route-planner` },
-};
+export function generateMetadata(): Metadata {
+  const featureEnabled = process.env.FEATURE_ROUTE_PLANNER === "true";
+  return {
+    title: "Route Fuel Planner for Moving Trucks — FillRight",
+    description:
+      "Plan fuel stops for long-distance moving truck trips with U-Haul, Penske, Budget, and Enterprise. Know exactly how many gallons to add at each stop.",
+    robots: featureEnabled ? { index: true, follow: true } : { index: false, follow: true },
+    alternates: { canonical: `${siteUrl}/route-planner` },
+    openGraph: { url: `${siteUrl}/route-planner` },
+  };
+}
 
 export default function RoutePlannerPage() {
   return (
