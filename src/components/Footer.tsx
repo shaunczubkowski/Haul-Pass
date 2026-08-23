@@ -15,12 +15,6 @@ export function Footer() {
         </p>
         <nav aria-label="Site links" className="flex items-center gap-4">
           <Link
-            href="/route-planner"
-            className="text-sm text-text-secondary hover:text-text-primary transition-colors underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
-          >
-            Route Planner
-          </Link>
-          <Link
             href="/truck-specs"
             className="text-sm text-text-secondary hover:text-text-primary transition-colors underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
           >

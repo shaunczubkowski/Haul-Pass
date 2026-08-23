@@ -61,7 +61,6 @@ jobs:
           # deployment_status supplies the preview URL; workflow_dispatch falls
           # back to the user-supplied input or the production URL.
           BASE_URL: ${{ github.event.deployment_status.target_url || inputs.base_url || 'https://www.getfillright.com' }}
-          FEATURE_ROUTE_PLANNER: "true"
 
       - name: Upload Playwright report
         uses: actions/upload-artifact@v4
