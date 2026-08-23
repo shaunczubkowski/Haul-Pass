@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ServiceWorkerRegistration } from "@/components/ServiceWorkerRegistration";
@@ -48,7 +48,6 @@ export const metadata: Metadata = {
     "getfillright.com",
   ],
   manifest: "/manifest.json",
-  themeColor: "#0284c7",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -88,6 +87,11 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+};
+
+// themeColor belongs on the viewport export — Next.js ignores it in metadata.
+export const viewport: Viewport = {
+  themeColor: "#0284c7",
 };
 
 export const jsonLdOrgData = {
