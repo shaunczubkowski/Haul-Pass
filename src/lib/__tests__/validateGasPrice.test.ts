@@ -56,7 +56,6 @@ describe("validateGasPrice", () => {
     });
 
     it("rejects non-number types (string)", () => {
-      // @ts-expect-error intentional wrong type
       const result = validateGasPrice("3.99");
       expect(result.ok).toBe(false);
     });

@@ -5,15 +5,21 @@ on:
   push:
     branches: [main]
 
-# Cancel superseded runs for the same branch/PR — a newer push makes the
-# in-flight run's result irrelevant.
+# Read-only token: this job only checks out code and runs local tooling.
+permissions:
+  contents: read
+
+# Cancel superseded runs for the same PR — a newer push makes the in-flight
+# run's result irrelevant. Push runs on `main` are keyed by commit SHA instead,
+# so two merges in quick succession never cancel each other and every commit on
+# `main` keeps a completed check.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
   cancel-in-progress: true
 
 jobs:
   verify:
-    name: Unit tests and lint
+    name: Typecheck, tests, and lint
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -26,6 +32,12 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Typecheck
+        run: npx tsc --noEmit
+
+      - name: Typecheck e2e specs
+        run: npx tsc --noEmit -p e2e/tsconfig.json
 
       - name: Run unit tests
         run: npx vitest run
