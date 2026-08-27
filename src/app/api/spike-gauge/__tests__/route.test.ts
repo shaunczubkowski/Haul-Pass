@@ -145,3 +145,15 @@ describe("spike-gauge image normalisation", () => {
     expect(response.status).toBe(400);
   });
 });
+
+describe("spike-gauge payload cap", () => {
+  it("413s an oversized image instead of forwarding it to the model", async () => {
+    const { POST } = await loadAuthedRoute();
+
+    // Valid base64, far past anything a 2576px JPEG produces.
+    const oversized = "A".repeat(8_000_000);
+    const response = await POST(post(AUTHED, { image: oversized, mediaType: "image/jpeg" }));
+
+    expect(response.status).toBe(413);
+  });
+});
