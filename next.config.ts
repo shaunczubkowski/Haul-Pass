@@ -1,6 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  async redirects() {
+    return [
+      // The route planner was removed (#120). The URL was sitemapped and
+      // footer-linked sitewide, so send indexed and bookmarked traffic to the
+      // calculator instead of 404ing it.
+      { source: "/route-planner", destination: "/", permanent: true },
+    ];
+  },
+
   async headers() {
     return [
       {
