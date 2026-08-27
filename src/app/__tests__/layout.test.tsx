@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { metadata } from "@/app/layout";
+import { metadata, viewport } from "@/app/layout";
 
 describe("layout metadata", () => {
   it("exports a metadata object", () => {
@@ -212,5 +212,14 @@ describe("sitemap and robots", () => {
     const robotsModule = await import("@/app/robots");
     const robotsConfig = robotsModule.default();
     expect(robotsConfig.sitemap).toBeTruthy();
+  });
+});
+
+describe("layout viewport", () => {
+  it("exports themeColor on the viewport export, not metadata", () => {
+    // Next.js rejects themeColor in the metadata export; it belongs on viewport.
+    // #0284c7 must stay in sync with manifest.json theme_color and --accent.
+    expect(viewport.themeColor).toBe("#0284c7");
+    expect(metadata).not.toHaveProperty("themeColor");
   });
 });
