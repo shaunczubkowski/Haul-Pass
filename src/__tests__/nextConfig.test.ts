@@ -8,7 +8,10 @@ import nextConfig from "../../next.config";
  */
 describe("next.config redirects", () => {
   it("permanently redirects the retired /route-planner to the calculator", async () => {
-    const redirects = await nextConfig.redirects!();
+    if (typeof nextConfig.redirects !== "function") {
+      throw new Error("next.config.ts defines no redirects()");
+    }
+    const redirects = await nextConfig.redirects();
 
     expect(redirects).toContainEqual({
       source: "/route-planner",

@@ -13,6 +13,7 @@ export const RISK_TOLERANCE_BUFFERS: Record<RiskTolerance, number> = {
   standard: 0.5,
   lean: 0.0,
 };
+
 /**
  * The fuel level fraction below which U-Haul charges a $30 service fee.
  * Based on U-Haul's published policy: vehicles returned with less than 1/4 tank

@@ -3,13 +3,18 @@ import { describe, it, expect } from "vitest";
 /**
  * WCAG 1.4.3 AA contrast checker for the --text-muted token (#101).
  *
- * The calculator uses text-muted for:
+ * Scope: text-muted on --surface. The calculator uses that pairing for:
  *   - Step headings ("Step 1 - Your Truck", "Step 2 - Fuel Levels", "Step 3 - Final Drive")
  *   - Hint text under the gauges (the "At Pickup" contract-level note)
  *   - Selector descriptions (LoadLevelSelector, RiskToleranceSelector)
  *
  * All are small sizes (text-xs), below the WCAG large-text cutoff even where
  * they are semibold → require 4.5:1 contrast ratio.
+ *
+ * NOT covered here: text-muted on --surface-raised, used by the gauge-variant
+ * toggle (page.tsx) and FuelGauge's hovered segments. That pairing measures
+ * 4.34:1 light and 3.57:1 dark and fails AA. Pre-existing and untracked --
+ * #101 was closed against the route planner's surfaces only.
  */
 
 function hexToLinear(hex: string): number {
