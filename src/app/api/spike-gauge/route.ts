@@ -77,6 +77,40 @@ interface GaugeReading {
   reasoning: string;
 }
 
+// FileReader.readAsDataURL — what #18's camera flow will use — yields a
+// "data:<media>;base64,<payload>" string. Forwarding the whole thing as image
+// data earns an opaque 502 from the API, so unwrap it here and check that its
+// media type agrees with the declared one rather than silently trusting either.
+const DATA_URL = /^data:([a-z]+\/[a-z0-9.+-]+);base64,(.*)$/i;
+
+// Canonical base64: full quartets, at most two padding chars.
+const BASE64 = /^[A-Za-z0-9+/]+={0,2}$/;
+
+type Normalised = { data: string } | { error: string };
+
+function normaliseImage(image: string, mediaType: AcceptedMediaType): Normalised {
+  let data = image;
+
+  if (image.startsWith("data:")) {
+    const match = DATA_URL.exec(image);
+    if (!match) {
+      return { error: "Field 'image' is a data URL but not base64-encoded" };
+    }
+    if (match[1].toLowerCase() !== mediaType) {
+      return {
+        error: `Data URL media type '${match[1]}' contradicts mediaType '${mediaType}'`,
+      };
+    }
+    data = match[2];
+  }
+
+  if (data.length === 0 || data.length % 4 !== 0 || !BASE64.test(data)) {
+    return { error: "Field 'image' is not valid base64" };
+  }
+
+  return { data };
+}
+
 // Compare SHA-256 digests so the inputs are always the same length —
 // timingSafeEqual throws on a length mismatch, and raw lengths would leak the
 // size of the secret.
@@ -128,9 +162,19 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  const normalised = normaliseImage(image, mediaType as AcceptedMediaType);
+  if ("error" in normalised) {
+    return NextResponse.json({ error: normalised.error }, { status: 400 });
+  }
+
   const client = new Anthropic({
     apiKey: ANTHROPIC_API_KEY,
     timeout: MODEL_TIMEOUT_MS,
+    // No retries: the SDK's default of 2 is transparent, so a retried call
+    // would report the wall clock of three attempts as a single latencyMs and
+    // quietly inflate the number #18 is waiting on. A failed spike run is
+    // re-run by hand.
+    maxRetries: 0,
   });
 
   const startedAt = Date.now();
@@ -160,7 +204,7 @@ export async function POST(request: NextRequest) {
               source: {
                 type: "base64",
                 media_type: mediaType as AcceptedMediaType,
-                data: image,
+                data: normalised.data,
               },
             },
             { type: "text", text: "What level is this fuel gauge reading?" },
