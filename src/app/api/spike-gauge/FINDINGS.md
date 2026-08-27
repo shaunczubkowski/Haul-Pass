@@ -48,6 +48,7 @@ Latency and token counts require a live call. No `ANTHROPIC_API_KEY` and no `ant
 IMG=$(base64 -w0 gauge.jpg)
 curl -s -X POST http://localhost:3000/api/spike-gauge \
   -H 'content-type: application/json' \
+  -H "x-spike-token: $SPIKE_GAUGE_TOKEN" \
   -d "{\"image\":\"$IMG\",\"mediaType\":\"image/jpeg\"}" | jq .metrics
 ```
 
@@ -55,7 +56,9 @@ curl -s -X POST http://localhost:3000/api/spike-gauge \
 
 | Case | Result |
 |---|---|
-| Keyless `POST` | `503` — matches the Mapbox routes, so keyless previews degrade rather than error |
+| `POST` with no `SPIKE_GAUGE_TOKEN` configured | `404` — the gate fails closed |
+| `POST` with a missing or wrong `x-spike-token` | `404` — same shape as unconfigured, so the endpoint is not discoverable |
+| Keyless `POST` (gate passed) | `503` — matches the Mapbox routes, so keyless previews degrade rather than error |
 | `GET` (no handler) | `405` |
 | Non-JSON body | `400` |
 | Missing `image` | `400` |
@@ -65,3 +68,15 @@ curl -s -X POST http://localhost:3000/api/spike-gauge \
 ## Routing gotcha
 
 The plan specified `src/app/api/_spike-gauge/route.ts`. An underscore-prefixed App Router folder is a **private folder** and is excluded from routing entirely — that path would never have resolved. Renamed to `spike-gauge`.
+
+## Access gate
+
+Every request here is a billed Opus 5 vision call, so the route requires a
+shared secret in `x-spike-token` matching `SPIKE_GAUGE_TOKEN`. Both the
+unconfigured and the wrong-token case return `404`, so an unauthenticated
+caller cannot tell the endpoint exists. Comparison is over SHA-256 digests via
+`timingSafeEqual` — equal-length inputs, no length leak.
+
+Set `SPIKE_GAUGE_TOKEN` in the same Vercel scopes as `ANTHROPIC_API_KEY`
+(development + production). Without it the route is unreachable everywhere,
+which is the intended resting state for a throwaway spike.

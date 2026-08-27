@@ -1,3 +1,4 @@
+import { createHash, timingSafeEqual } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { GAUGE_LEVELS } from "@/types";
@@ -18,6 +19,14 @@ import { GAUGE_LEVELS } from "@/types";
 
 // Server-side only; never sent to the client.
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
+
+// Shared secret guarding the route. Every request to this endpoint is a billed
+// Opus 5 vision call, so the gate fails closed: with no token configured the
+// route is unreachable, which keeps a keyed production deploy from exposing an
+// unmetered inference endpoint to anyone who guesses the path.
+const SPIKE_GAUGE_TOKEN = process.env.SPIKE_GAUGE_TOKEN;
+
+const SPIKE_TOKEN_HEADER = "x-spike-token";
 
 // Node runtime: the SDK is not Edge-safe and #18 will need Buffer for image
 // handling. Confirming this choice is part of the spike.
@@ -68,7 +77,24 @@ interface GaugeReading {
   reasoning: string;
 }
 
+// Compare SHA-256 digests so the inputs are always the same length —
+// timingSafeEqual throws on a length mismatch, and raw lengths would leak the
+// size of the secret.
+function tokenMatches(provided: string, expected: string): boolean {
+  return timingSafeEqual(
+    createHash("sha256").update(provided).digest(),
+    createHash("sha256").update(expected).digest()
+  );
+}
+
 export async function POST(request: NextRequest) {
+  // 404 rather than 401 for both the unconfigured and the wrong-token case: an
+  // unauthenticated caller learns nothing about the endpoint or its key.
+  const providedToken = request.headers.get(SPIKE_TOKEN_HEADER);
+  if (!SPIKE_GAUGE_TOKEN || !providedToken || !tokenMatches(providedToken, SPIKE_GAUGE_TOKEN)) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
   if (!ANTHROPIC_API_KEY) {
     return NextResponse.json(
       { error: "Gauge reading service not configured" },
