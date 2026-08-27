@@ -118,9 +118,11 @@ test.describe("route planner — submit button aria-busy (#100)", () => {
     page,
   }) => {
     // Hold the alternatives response so we can inspect state mid-flight
-    let resolveAlt: (() => void) | null = null;
+    // Held in an object: TS does not track assignments made inside a closure,
+    // so a plain `let` would narrow to `never` at the call site below.
+    const alt: { resolve: (() => void) | null } = { resolve: null };
     await page.route("**/api/route-alternatives**", async (route) => {
-      await new Promise<void>((resolve) => { resolveAlt = resolve; });
+      await new Promise<void>((resolve) => { alt.resolve = resolve; });
       await route.fulfill({ json: SINGLE_ALTERNATIVE });
     });
     await page.route("**/api/route-plan", (route) =>
@@ -135,7 +137,7 @@ test.describe("route planner — submit button aria-busy (#100)", () => {
     await expect(submitBtn).toHaveAttribute("aria-busy", "true");
 
     // Unblock the response
-    resolveAlt?.();
+    alt.resolve?.();
     await expect(page.getByRole("region", { name: /route plan results/i })).toBeVisible();
 
     // Once complete, aria-busy reverts to false
@@ -149,9 +151,10 @@ test.describe("route planner — submit button aria-busy (#100)", () => {
       route.fulfill({ json: TWO_ALTERNATIVES })
     );
 
-    let resolvePlan: (() => void) | null = null;
+    // See note above: closure assignment needs an object to survive narrowing.
+    const plan: { resolve: (() => void) | null } = { resolve: null };
     await page.route("**/api/route-plan", async (route) => {
-      await new Promise<void>((resolve) => { resolvePlan = resolve; });
+      await new Promise<void>((resolve) => { plan.resolve = resolve; });
       await route.fulfill({ json: makeMockRoute() });
     });
 
@@ -165,7 +168,7 @@ test.describe("route planner — submit button aria-busy (#100)", () => {
     const submitBtn = page.getByRole("button", { name: /plan route/i });
     await expect(submitBtn).toHaveAttribute("aria-busy", "true");
 
-    resolvePlan?.();
+    plan.resolve?.();
     await expect(page.getByRole("region", { name: /route plan results/i })).toBeVisible();
     await expect(submitBtn).toHaveAttribute("aria-busy", "false");
   });
@@ -186,9 +189,10 @@ test.describe("route planner — loading skeleton in results area (#100)", () =>
       route.fulfill({ json: TWO_ALTERNATIVES })
     );
 
-    let resolvePlan: (() => void) | null = null;
+    // See note above: closure assignment needs an object to survive narrowing.
+    const plan: { resolve: (() => void) | null } = { resolve: null };
     await page.route("**/api/route-plan", async (route) => {
-      await new Promise<void>((resolve) => { resolvePlan = resolve; });
+      await new Promise<void>((resolve) => { plan.resolve = resolve; });
       await route.fulfill({ json: makeMockRoute() });
     });
 
@@ -201,7 +205,7 @@ test.describe("route planner — loading skeleton in results area (#100)", () =>
     // Loading skeleton should be visible during fetch
     await expect(page.getByRole("status", { name: /planning your route/i })).toBeVisible();
 
-    resolvePlan?.();
+    plan.resolve?.();
     // Skeleton disappears once results arrive
     await expect(page.getByRole("status", { name: /planning your route/i })).not.toBeVisible();
     await expect(page.getByRole("region", { name: /route plan results/i })).toBeVisible();
@@ -210,9 +214,11 @@ test.describe("route planner — loading skeleton in results area (#100)", () =>
   test("loading skeleton appears for initial form submission (single route)", async ({
     page,
   }) => {
-    let resolveAlt: (() => void) | null = null;
+    // Held in an object: TS does not track assignments made inside a closure,
+    // so a plain `let` would narrow to `never` at the call site below.
+    const alt: { resolve: (() => void) | null } = { resolve: null };
     await page.route("**/api/route-alternatives**", async (route) => {
-      await new Promise<void>((resolve) => { resolveAlt = resolve; });
+      await new Promise<void>((resolve) => { alt.resolve = resolve; });
       await route.fulfill({ json: SINGLE_ALTERNATIVE });
     });
     await page.route("**/api/route-plan", (route) =>
@@ -225,7 +231,7 @@ test.describe("route planner — loading skeleton in results area (#100)", () =>
     // Skeleton should be visible while alternatives are fetching too
     await expect(page.getByRole("status", { name: /planning your route/i })).toBeVisible();
 
-    resolveAlt?.();
+    alt.resolve?.();
     await expect(page.getByRole("region", { name: /route plan results/i })).toBeVisible();
     await expect(page.getByRole("status", { name: /planning your route/i })).not.toBeVisible();
   });
