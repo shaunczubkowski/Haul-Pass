@@ -113,7 +113,11 @@ export async function POST(request: NextRequest) {
   try {
     response = await client.messages.create({
       model: "claude-opus-5",
-      max_tokens: 2048,
+      // Adaptive thinking is on by default on Opus 5 and its tokens are drawn
+      // from this same budget (usage.output_tokens_details.thinking_tokens), so
+      // a cap sized for the JSON payload alone truncates a long-reasoning turn.
+      // 16000 is the non-streaming default and stays well inside the timeout.
+      max_tokens: 16_000,
       system: SYSTEM_PROMPT,
       // Effort low rather than thinking disabled: on Opus 5 a disabled-thinking
       // route can leak reasoning into the visible answer.
@@ -158,6 +162,15 @@ export async function POST(request: NextRequest) {
 
   if (response.stop_reason === "refusal") {
     return NextResponse.json({ error: "Request was declined" }, { status: 422 });
+  }
+
+  // Truncated output is not malformed JSON from the model — surface it as its
+  // own case so the spike does not chase a parse failure that is really a cap.
+  if (response.stop_reason === "max_tokens") {
+    return NextResponse.json(
+      { error: "Reading was truncated by the token limit" },
+      { status: 502 }
+    );
   }
 
   const textBlock = response.content.find((block) => block.type === "text");
