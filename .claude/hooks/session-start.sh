@@ -12,4 +12,6 @@ cd "${CLAUDE_PROJECT_DIR:-$(dirname "$0")/../..}"
 
 # npm install (not npm ci) so the cached container image can reuse an existing
 # node_modules; the committed package-lock.json still pins every version.
-npm install --no-audit --no-fund
+# --no-save keeps npm from rewriting package.json/package-lock.json, so a
+# session never starts with a dirty tree that could be committed by accident.
+npm install --no-save --no-audit --no-fund
