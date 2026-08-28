@@ -232,12 +232,6 @@ export default function Home() {
           <p className="text-3xl font-bold tracking-tight text-text-primary">FillRight</p>
           <h1 className="mt-1 text-xl font-semibold text-text-primary">Moving Truck Fuel Return Calculator</h1>
           <p className="mt-1 text-sm text-text-secondary">Avoid the $30 fuel surcharge — get the exact gallons for U&#8209;Haul, Penske, Budget &amp; Enterprise.</p>
-          <p className="mt-3 text-xs text-text-muted">
-            Planning a long-distance move?{" "}
-            <Link href="/route-planner" className="underline hover:text-text-secondary transition-colors">
-              Plan all your fuel stops →
-            </Link>
-          </p>
         </div>
 
         <div className="flex flex-col gap-6">
