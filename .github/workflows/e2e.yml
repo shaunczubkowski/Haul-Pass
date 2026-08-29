@@ -84,10 +84,12 @@ jobs:
     # nothing deployed to it. Push-to-main and manual dispatch only.
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
-    # Estimate, not a measurement: the full suite has never completed against
-    # production (the one attempt, run #72, capped at 15 minutes against the
-    # then-97-test suite). Revisit once a dispatch run gives a real number.
-    timeout-minutes: 10
+    # Measured, not estimated: dispatch run 33258317947 (2026-08-29) completed
+    # this job in 1m04s end-to-end, with the suite itself at 14.0s. The cap is
+    # ~4.7x that, which absorbs runner variance and a cold browser cache
+    # without ever letting a hung run burn 10 minutes. It does not accommodate
+    # failure: a run that needs more than this is broken, not slow.
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
 
