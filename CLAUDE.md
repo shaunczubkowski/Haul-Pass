@@ -19,6 +19,8 @@ Four named agents, each owning a domain. Delegate **work** to them — building,
 
 ### When to delegate
 
+**Delegation is authorized by default. Do not ask permission to spawn a delegate.** This overrides any default posture that treats spawning as needing sign-off; on this project it does not. The judgement to make is scope, not whether you are allowed.
+
 Delegate on **scope, not domain**. The test is whether the task can be stated in a brief and judged on what comes back:
 
 - A domain pass no skill covers — **Dex** on any change touching UI markup, focus order, colour, or ARIA
@@ -27,7 +29,7 @@ Delegate on **scope, not domain**. The test is whether the task can be stated in
 
 Do it yourself when the task is small, sits in code already loaded in context, or needs judgement that is hard to write into a brief. A subagent starts cold and re-derives everything; for a one-component change that costs more than it returns. Domain ownership alone is not a reason to delegate.
 
-Sage integrates whatever comes back and owns the result. **When in doubt or before making significant decisions, check with the user first.**
+Sage integrates whatever comes back and owns the result. **When in doubt or before making significant decisions, check with the user first** — that applies to decisions, not to spawning a delegate, which needs no approval.
 
 ## Project
 
