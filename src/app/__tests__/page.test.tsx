@@ -629,14 +629,14 @@ describe("Home page", () => {
     it("shows description text for the selected risk tolerance", async () => {
       render(<Home />);
       // Standard description should be visible by default
-      expect(screen.getByText(/comfortable buffer above fee threshold/i)).toBeInTheDocument();
+      expect(screen.getByText(/0\.5 gallons of buffer/i)).toBeInTheDocument();
     });
 
     it("updates description when switching to Conservative", async () => {
       const user = userEvent.setup();
       render(<Home />);
       await user.click(screen.getByRole("radio", { name: /conservative/i }));
-      expect(screen.getByText(/recommended for mountain routes/i)).toBeInTheDocument();
+      expect(screen.getByText(/2 gallons of buffer/i)).toBeInTheDocument();
     });
 
     it("reads risk param from URL on mount", async () => {

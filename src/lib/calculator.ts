@@ -1,18 +1,16 @@
 import type { CalculatorInput, CalculatorResult, RiskTolerance } from "@/types";
-import { GAUGE_LEVELS } from "@/types";
+import { GAUGE_LEVELS, RISK_TOLERANCE_CONFIG } from "@/types";
 
 /**
- * Maps each risk tolerance level to a safetyBuffer value in gallons.
- *
- * - Conservative: 2.0 gal — extra cushion for mountain routes, first-time movers
- * - Standard: 0.5 gal — default; comfortable buffer above the fee threshold
- * - Lean: 0.0 gal — no extra buffer; for experienced movers on short urban returns
+ * Gallons of safety buffer for each risk tolerance, derived from the same config the
+ * selector renders its descriptions from. Deriving rather than duplicating keeps the
+ * copy a renter reads and the number the calculator applies from drifting apart —
+ * see docs/adr/ and CONTEXT.md for the distinction between Risk Tolerance and the
+ * en-route refuelling advice this control once claimed to give.
  */
-export const RISK_TOLERANCE_BUFFERS: Record<RiskTolerance, number> = {
-  conservative: 2.0,
-  standard: 0.5,
-  lean: 0.0,
-};
+export const RISK_TOLERANCE_BUFFERS = Object.fromEntries(
+  Object.entries(RISK_TOLERANCE_CONFIG).map(([level, { bufferGallons }]) => [level, bufferGallons]),
+) as Record<RiskTolerance, number>;
 
 /**
  * The fuel level fraction below which U-Haul charges a $30 service fee.

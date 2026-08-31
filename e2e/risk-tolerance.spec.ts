@@ -122,7 +122,7 @@ test.describe("risk tolerance selector", () => {
 
     // Verify the conservative description is shown
     await expect(
-      page.getByText(/recommended for mountain routes/i)
+      page.getByText(/2 gallons of buffer/i)
     ).toBeVisible();
   });
 
@@ -143,13 +143,13 @@ test.describe("risk tolerance selector", () => {
 
     // Default: Standard description
     await expect(
-      page.getByText(/comfortable buffer above fee threshold/i)
+      page.getByText(/0\.5 gallons of buffer/i)
     ).toBeVisible();
 
     // Switch to Conservative
     await page.getByRole("radio", { name: /conservative/i }).click();
     await expect(
-      page.getByText(/recommended for mountain routes/i)
+      page.getByText(/2 gallons of buffer/i)
     ).toBeVisible();
 
     // Switch to Lean
