@@ -8,7 +8,11 @@ export default defineConfig({
   fullyParallel: true,
   timeout: 30_000,
   retries: process.env.CI ? 1 : 0,
-  reporter: process.env.CI ? "github" : "list",
+  // In CI, pair the github reporter (inline annotations) with an html one so
+  // playwright-report/ is actually written for the workflow's upload step.
+  reporter: process.env.CI
+    ? [["github"], ["html", { open: "never" }]]
+    : "list",
   use: {
     baseURL: BASE_URL,
     trace: "on-first-retry",
@@ -21,10 +25,16 @@ export default defineConfig({
   // When BASE_URL points at a deployed environment the server is already up.
   webServer: isLocalhost
     ? {
-        command: "npx next dev --port 3000",
+        // Under CI, serve a production build: dev-mode compile-on-first-request
+        // adds seconds to every first navigation and never exercises the built
+        // output that production actually ships.
+        command: process.env.CI
+          ? "npm run build && npx next start --port 3000"
+          : "npx next dev --port 3000",
         url: "http://localhost:3000",
         reuseExistingServer: true,
-        timeout: 120_000,
+        // Generous enough to cover the CI build, not just server startup.
+        timeout: 180_000,
       }
     : undefined,
   projects: [

@@ -1,10 +1,14 @@
 name: E2E Smoke Tests
 
 on:
-  # Run against the Vercel preview deployment as soon as it is ready.
-  # The deployment URL is available directly in the event payload so no
-  # localhost server needs to start in CI.
-  deployment_status:
+  # Branch-tied triggers, matching ci.yml. The suite previously ran on
+  # `deployment_status` against the Vercel Preview URL, but every preview sits
+  # behind Vercel Deployment Protection, so all 54 page.goto() calls landed on
+  # an SSO interstitial and the job timed out. The PR gate now builds and tests
+  # a localhost server instead, which needs no deployed target at all.
+  pull_request:
+  push:
+    branches: [main]
   # Keep manual dispatch so the suite can be run against any URL on demand
   # (e.g. a hotfix branch, staging, or production for a one-off check).
   workflow_dispatch:
@@ -15,20 +19,77 @@ on:
         default: "https://www.getfillright.com"
         type: string
 
-# Cancel an in-progress run for the same environment+branch when a newer
-# deployment comes in (e.g. two quick pushes to the same PR branch).
+# Read-only token: these jobs only check out code and run local tooling.
+permissions:
+  contents: read
+
+# Cancel superseded runs for the same PR — a newer push makes the in-flight
+# run's result irrelevant. Push runs on `main` are keyed by commit SHA instead,
+# so two merges in quick succession never cancel each other and every commit on
+# `main` keeps a completed check.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.deployment.environment }}-${{ github.event.deployment.ref || github.ref }}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
   cancel-in-progress: true
 
 jobs:
-  smoke:
-    name: Playwright smoke tests
-    # deployment_status: only run once Vercel marks the Preview deployment ready.
-    # workflow_dispatch: always run.
-    if: github.event_name == 'workflow_dispatch' || (github.event.deployment_status.state == 'success' && github.event.deployment.environment == 'Preview')
+  local:
+    name: Playwright smoke tests (local build)
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # Locally this job costs ~9s (build + start + 54 tests). CI additionally
+    # pays `npm ci` and the Playwright browser install on a 2-core runner, so
+    # the cap is a generous multiplier over that floor, not a measured number.
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ hashFiles('package-lock.json') }}
+
+      - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps chromium
+
+      - name: Install Playwright browser system deps (cached hit)
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps chromium
+
+      # No BASE_URL: playwright.config.ts defaults to http://localhost:3000 and
+      # its webServer block builds the app and serves it with `next start`.
+      - name: Run smoke tests
+        run: npx playwright test --project=chromium
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report-local-${{ github.run_id }}
+          path: playwright-report/
+          retention-days: 14
+
+  production:
+    name: Playwright smoke tests (production)
+    # Production is only meaningful once code has landed, and a PR branch has
+    # nothing deployed to it. Push-to-main and manual dispatch only.
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    # Measured, not estimated: dispatch run 33258317947 (2026-08-29) completed
+    # this job in 1m04s end-to-end, with the suite itself at 14.0s. The cap is
+    # ~4.7x that, which absorbs runner variance and a cold browser cache
+    # without ever letting a hung run burn 10 minutes. It does not accommodate
+    # failure: a run that needs more than this is broken, not slow.
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
 
@@ -58,14 +119,14 @@ jobs:
       - name: Run smoke tests
         run: npx playwright test --project=chromium
         env:
-          # deployment_status supplies the preview URL; workflow_dispatch falls
-          # back to the user-supplied input or the production URL.
-          BASE_URL: ${{ github.event.deployment_status.target_url || inputs.base_url || 'https://www.getfillright.com' }}
+          # A non-localhost BASE_URL suppresses the webServer block, so the
+          # suite runs against the live site. Dispatch may override the target.
+          BASE_URL: ${{ inputs.base_url || 'https://www.getfillright.com' }}
 
       - name: Upload Playwright report
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: playwright-report-${{ github.run_id }}
+          name: playwright-report-production-${{ github.run_id }}
           path: playwright-report/
           retention-days: 14
