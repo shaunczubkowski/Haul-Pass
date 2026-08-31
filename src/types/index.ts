@@ -82,21 +82,21 @@ export type RiskTolerance = "conservative" | "standard" | "lean";
 
 export const RISK_TOLERANCE_CONFIG: Record<
   RiskTolerance,
-  { threshold: GaugeLevel; label: string; description: string }
+  { label: string; description: string; bufferGallons: number }
 > = {
   conservative: {
-    threshold: GAUGE_LEVELS.HALF,
+    bufferGallons: 2.0,
     label: "Conservative",
-    description: "Fill up when tank hits 1/2 — recommended for mountain routes",
+    description: "Adds 2 gallons of buffer — for an unfamiliar gauge or a long final drive",
   },
   standard: {
-    threshold: GAUGE_LEVELS.THREE_EIGHTHS,
+    bufferGallons: 0.5,
     label: "Standard",
-    description: "Fill up when tank hits 3/8 — comfortable buffer above fee threshold",
+    description: "Adds 0.5 gallons of buffer — a margin for everyday gauge imprecision",
   },
   lean: {
-    threshold: GAUGE_LEVELS.QUARTER,
+    bufferGallons: 0.0,
     label: "Lean",
-    description: "Fill up when tank hits 1/4 — for experienced movers on urban routes",
+    description: "No extra buffer — return exactly what the calculation shows",
   },
 };
