@@ -27,9 +27,23 @@ export const GAUGE_LEVELS = {
   FULL: 1.0,
 } as const;
 
-export type GaugeLevel = (typeof GAUGE_LEVELS)[keyof typeof GAUGE_LEVELS];
+/**
+ * One of the nine marks printed on a fuel gauge — what a person selects when entering
+ * a level by hand.
+ */
+export type GaugeMark = (typeof GAUGE_LEVELS)[keyof typeof GAUGE_LEVELS];
 
-export const GAUGE_LEVEL_LABELS: Record<GaugeLevel, string> = {
+/**
+ * Any level a gauge can indicate, as a fraction of a full tank (0–1).
+ *
+ * A GaugeMark is one possible IndicatedLevel, not a separate kind of thing — a
+ * photographed needle usually rests *between* marks, so a camera read is continuous.
+ * See CONTEXT.md for the terms and docs/adr/0003-gauge-mark-subtypes-indicated-level.md
+ * for why this is a subtype relationship rather than a tagged union.
+ */
+export type IndicatedLevel = number;
+
+export const GAUGE_LEVEL_LABELS: Record<GaugeMark, string> = {
   0: "E",
   0.125: "1/8",
   0.25: "1/4",
@@ -43,8 +57,8 @@ export const GAUGE_LEVEL_LABELS: Record<GaugeLevel, string> = {
 
 export interface CalculatorInput {
   truck: TruckType;
-  pickupLevel: GaugeLevel; // fuel level at pickup (from contract)
-  currentLevel: GaugeLevel; // fuel level right now
+  pickupLevel: IndicatedLevel; // fuel level at pickup — a mark off the contract, or a camera read
+  currentLevel: IndicatedLevel; // fuel level right now — same, from either source
   distanceToDropoff: number; // miles
   safetyBuffer?: number; // extra gallons to add for gauge imprecision (default: 0.5)
   gasPricePerGallon?: number; // optional, for cost estimate; must be >= 0.01 if provided — sub-cent values are treated as unset

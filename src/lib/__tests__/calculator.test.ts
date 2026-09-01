@@ -377,4 +377,70 @@ describe("calculateFuelReturn", () => {
       expect(result.gallonsToAdd).toBe(17);
     });
   });
+  // ---------------------------------------------------------------------------
+  // #127 — a Gauge Photo produces a continuous Indicated Level, not one of the
+  // nine Gauge Marks. See docs/adr/0003-gauge-mark-subtypes-indicated-level.md.
+  // ---------------------------------------------------------------------------
+  describe("continuous indicated levels", () => {
+    it("accepts a current level resting between two gauge marks", () => {
+      // Picked up at 1/2 (20 gal), needle reads 0.37 (14.8 gal), no distance
+      // Needs: 20 - 14.8 = 5.2 gallons
+      const result = calculateFuelReturn(baseInput({ currentLevel: 0.37 }));
+      expect(result.gallonsToAdd).toBe(5.2);
+      expect(result.breakdown.gallonsNow).toBeCloseTo(14.8);
+    });
+
+    it("accepts a pickup level resting between two gauge marks", () => {
+      // Contract level photographed at 0.62 (24.8 gal), now at 1/4 (10 gal)
+      // Needs: 24.8 - 10 = 14.8 gallons
+      const result = calculateFuelReturn(baseInput({ pickupLevel: 0.62 }));
+      expect(result.gallonsToAdd).toBe(14.8);
+      expect(result.breakdown.gallonsAtPickup).toBeCloseTo(24.8);
+    });
+
+    it("does not round a continuous level to the nearest mark", () => {
+      // 0.37 and 3/8 (0.375) are 0.2 gallons apart on a 40-gallon tank. If the
+      // calculator snapped to the nearest mark these would be identical.
+      const read = calculateFuelReturn(baseInput({ currentLevel: 0.37 }));
+      const snapped = calculateFuelReturn(baseInput({ currentLevel: GAUGE_LEVELS.THREE_EIGHTHS }));
+      expect(read.gallonsToAdd).not.toBe(snapped.gallonsToAdd);
+    });
+
+    describe("guards its own inputs", () => {
+      it("clamps a level above 1 to full", () => {
+        const overfull = calculateFuelReturn(baseInput({ currentLevel: 1.7 }));
+        const full = calculateFuelReturn(baseInput({ currentLevel: GAUGE_LEVELS.FULL }));
+        expect(overfull.gallonsToAdd).toBe(full.gallonsToAdd);
+        expect(overfull.breakdown.gallonsNow).toBe(40);
+      });
+
+      it("clamps a level below 0 to empty", () => {
+        const negative = calculateFuelReturn(baseInput({ currentLevel: -0.2 }));
+        const empty = calculateFuelReturn(baseInput({ currentLevel: GAUGE_LEVELS.EMPTY }));
+        expect(negative.gallonsToAdd).toBe(empty.gallonsToAdd);
+        expect(negative.breakdown.gallonsNow).toBe(0);
+      });
+
+      it("clamps an out-of-range pickup level", () => {
+        const over = calculateFuelReturn(baseInput({ pickupLevel: 1.4 }));
+        const full = calculateFuelReturn(baseInput({ pickupLevel: GAUGE_LEVELS.FULL }));
+        expect(over.gallonsToAdd).toBe(full.gallonsToAdd);
+      });
+
+      // NaN is not clamped. An out-of-range level still carries intent — a vision
+      // model reporting 1.02 saw a full tank — but NaN carries none, and clamping
+      // it to 0 would tell a renter their tank is empty and to buy a full tank.
+      it("throws on a non-finite current level rather than clamping it", () => {
+        expect(() => calculateFuelReturn(baseInput({ currentLevel: NaN }))).toThrow();
+      });
+
+      it("throws on a non-finite pickup level rather than clamping it", () => {
+        expect(() => calculateFuelReturn(baseInput({ pickupLevel: NaN }))).toThrow();
+      });
+
+      it("throws on an infinite level", () => {
+        expect(() => calculateFuelReturn(baseInput({ currentLevel: Infinity }))).toThrow();
+      });
+    });
+  });
 });
