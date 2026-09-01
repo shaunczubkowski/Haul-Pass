@@ -36,7 +36,7 @@ const DEFAULT_SAFETY_BUFFER = 0.5;
  *
  * See docs/adr/0003-gauge-mark-subtypes-indicated-level.md.
  */
-function toIndicatedLevel(level: IndicatedLevel, field: string): IndicatedLevel {
+function clampIndicatedLevel(level: IndicatedLevel, field: string): IndicatedLevel {
   if (!Number.isFinite(level)) {
     throw new RangeError(
       `${field} must be a finite Indicated Level between 0 and 1, received ${level}`,
@@ -64,9 +64,11 @@ export function calculateFuelReturn(input: CalculatorInput): CalculatorResult {
   const { truck, distanceToDropoff, gasPricePerGallon } = input;
 
   // Levels are no longer constrained to the nine marks by their type, so they are
-  // checked here — the boundary a camera read will arrive through (#18).
-  const pickupLevel = toIndicatedLevel(input.pickupLevel, "pickupLevel");
-  const currentLevel = toIndicatedLevel(input.currentLevel, "currentLevel");
+  // checked here. This is a backstop, not the validation boundary: page.tsx calls
+  // this during render, so the throw is a render crash. A camera read (#18) must be
+  // validated at the route before it gets here. See ADR-0003.
+  const pickupLevel = clampIndicatedLevel(input.pickupLevel, "pickupLevel");
+  const currentLevel = clampIndicatedLevel(input.currentLevel, "currentLevel");
   const safetyBuffer = input.safetyBuffer ?? DEFAULT_SAFETY_BUFFER;
   const mpgMultiplier = input.mpgMultiplier ?? 1.0;
 

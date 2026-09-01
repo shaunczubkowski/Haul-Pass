@@ -33,10 +33,10 @@ tell a renter their tank is empty and to buy a full tank of fuel. That is the wo
 wrong answer this app can give, so it is the one we refuse to give quietly.
 
 `page.tsx` calls `calculateFuelReturn` during render, which makes that throw a render
-crash. Nothing can reach it today — page state is `GaugeMark` and URL parameters are
-checked against the nine before parsing. **#18 introduces the first caller that can
-produce `NaN`, and must validate the vision response before calling rather than
-relying on the calculator to be safe.**
+crash. Nothing can reach it today — page state is `GaugeMark`, and a URL parameter is
+parsed with `parseFloat` and then tested against the nine, a test `NaN` fails. **#18
+introduces the first caller that can produce `NaN`, and must validate the vision
+response before calling rather than relying on the calculator to be safe.**
 
 The constant `GAUGE_LEVELS` and its labels keep their names. Only the type was
 renamed, because only the type sat next to `IndicatedLevel` where the two words had
