@@ -11,7 +11,7 @@ import { RiskToleranceSelector } from "@/components/RiskToleranceSelector";
 import { calculateFuelReturn, RISK_TOLERANCE_BUFFERS } from "@/lib/calculator";
 import { GAUGE_LEVELS, LOAD_LEVEL_CONFIG } from "@/types";
 import { getTruckById } from "@/data/trucks";
-import type { GaugeLevel, RiskTolerance, TruckType, LoadLevel } from "@/types";
+import type { GaugeMark, RiskTolerance, TruckType, LoadLevel } from "@/types";
 import { Fuel, MapPin } from "lucide-react";
 import { jsonLdFaqData, jsonLdHowToData } from "@/data/json-ld";
 
@@ -65,18 +65,18 @@ function readUrlParams() {
     if (found) truck = found;
   }
 
-  let pickupLevel: GaugeLevel = GAUGE_LEVELS.FULL;
+  let pickupLevel: GaugeMark = GAUGE_LEVELS.FULL;
   const pickup = params.get("pickup");
   if (pickup !== null) {
     const val = parseFloat(pickup);
-    if (VALID_LEVELS.has(val)) pickupLevel = val as GaugeLevel;
+    if (VALID_LEVELS.has(val)) pickupLevel = val as GaugeMark;
   }
 
-  let currentLevel: GaugeLevel = GAUGE_LEVELS.HALF;
+  let currentLevel: GaugeMark = GAUGE_LEVELS.HALF;
   const current = params.get("current");
   if (current !== null) {
     const val = parseFloat(current);
-    if (VALID_LEVELS.has(val)) currentLevel = val as GaugeLevel;
+    if (VALID_LEVELS.has(val)) currentLevel = val as GaugeMark;
   }
 
   let distance = 10;
@@ -118,8 +118,8 @@ export default function Home() {
   // so URL params seed each piece of state exactly once without re-running on updates.
   const [initialParams] = useState(readUrlParams);
   const [truck, setTruck] = useState<TruckType | null>(initialParams.truck);
-  const [pickupLevel, setPickupLevel] = useState<GaugeLevel>(initialParams.pickupLevel);
-  const [currentLevel, setCurrentLevel] = useState<GaugeLevel>(initialParams.currentLevel);
+  const [pickupLevel, setPickupLevel] = useState<GaugeMark>(initialParams.pickupLevel);
+  const [currentLevel, setCurrentLevel] = useState<GaugeMark>(initialParams.currentLevel);
   const [distance, setDistance] = useState<number>(initialParams.distance);
   const [gasPrice, setGasPrice] = useState<string>(initialParams.gasPrice);
   const [gaugeVariant, setGaugeVariant] = useState<"arc" | "horizontal">(initialParams.gaugeVariant);

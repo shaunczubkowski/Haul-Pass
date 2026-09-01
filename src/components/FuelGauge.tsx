@@ -2,10 +2,10 @@
 
 import { useId } from "react";
 import { GAUGE_LEVELS, GAUGE_LEVEL_LABELS } from "@/types";
-import type { GaugeLevel } from "@/types";
+import type { GaugeMark } from "@/types";
 
 // All nine gauge levels available for precise input
-const ALL_LEVELS: GaugeLevel[] = [
+const ALL_LEVELS: GaugeMark[] = [
   GAUGE_LEVELS.EMPTY,
   GAUGE_LEVELS.ONE_EIGHTH,
   GAUGE_LEVELS.QUARTER,
@@ -18,7 +18,7 @@ const ALL_LEVELS: GaugeLevel[] = [
 ];
 
 // Quarter-step levels get thicker, more prominent tick marks
-const MAJOR_LEVELS = new Set<GaugeLevel>([
+const MAJOR_LEVELS = new Set<GaugeMark>([
   GAUGE_LEVELS.EMPTY,
   GAUGE_LEVELS.QUARTER,
   GAUGE_LEVELS.HALF,
@@ -44,7 +44,7 @@ function polarToCartesian(angleDeg: number): { x: number; y: number } {
   };
 }
 
-function levelToAngle(level: GaugeLevel): number {
+function levelToAngle(level: GaugeMark): number {
   // Map 0→0°, 1→180°
   return level * 180;
 }
@@ -63,7 +63,7 @@ const H_BAR_Y = 32;
 const H_BAR_HEIGHT = 16;
 
 interface ArcGaugeSvgProps {
-  value: GaugeLevel;
+  value: GaugeMark;
   gradientId: string;
 }
 
@@ -166,7 +166,7 @@ function ArcGaugeSvg({ value, gradientId }: ArcGaugeSvgProps) {
 }
 
 interface HorizontalGaugeSvgProps {
-  value: GaugeLevel;
+  value: GaugeMark;
   gradientId: string;
 }
 
@@ -242,8 +242,8 @@ function HorizontalGaugeSvg({ value, gradientId }: HorizontalGaugeSvgProps) {
 }
 
 interface FuelGaugeProps {
-  value: GaugeLevel;
-  onChange: (value: GaugeLevel) => void;
+  value: GaugeMark;
+  onChange: (value: GaugeMark) => void;
   label: string;
   disabled?: boolean;
   variant?: "arc" | "horizontal";
